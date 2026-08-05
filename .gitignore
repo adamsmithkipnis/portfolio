@@ -48,3 +48,9 @@ IMPLEMENTATION.md
 ARCHITECTURE.md
 SPEC.md
 prompts.db
+
+# fork-specific
+assets/wallpapers-src/
+design-tokens/tokens.css
+design-tokens/tailwind.tokens.js
+design-tokens/err.log
