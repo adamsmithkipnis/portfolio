@@ -4,7 +4,7 @@ A professional portfolio site presented as a macOS Tahoe desktop environment.
 Forked from [alanagoyal/alanagoyal](https://github.com/alanagoyal/alanagoyal) (MIT).
 
 **Owner:** Adam Smith-Kipnis
-**Status:** Planning complete, implementation not started
+**Status:** Steps 0–2 complete (pending a by-eye pass over every app)
 **Last updated:** 2026-08-05
 
 ---
@@ -79,18 +79,51 @@ export const notesApp: AppManifest = {
 
 ## Phases
 
-### Step 0 — Prerequisites ⛔
-- [ ] `brew install node` (or `fnm`) — nothing works without it
-- [ ] Verify `node build-tokens.mjs` runs clean (**never executed yet**)
+### Step 0 — Prerequisites ✅
+- [x] `brew install node` — Node 26.6.0 / npm 11.18.0 via Homebrew.
+      Note this is the **current** channel, not LTS. If native modules ever
+      fail to build, drop to `brew install node@22` or pin with `fnm`
+- [x] Verify `node build-tokens.mjs` runs clean — first successful run:
+      41 colors × 2 schemes · 14 materials · 11 type styles.
+      Outputs are gitignored build artifacts, regenerate freely
 
-### Step 1 — Repo setup
-- [ ] Clone fork to `~/Documents/Claude/portfolio`
-- [ ] `git remote add upstream …` && merge **once** && `git tag baseline-upstream`
-- [ ] Move `design-tokens/` and `docs/` into the repo
+### Step 1 — Repo setup ✅
+- [x] Clone fork to `~/Documents/Claude/portfolio`
+- [x] `git remote add upstream …` && merge **once** && `git tag baseline-upstream`
+      (tag is on `origin`, pointing at `4409b6d`)
+- [x] Move `design-tokens/` and `docs/` into the repo
 
 ### Step 2 — Baseline
-- [ ] Own Supabase project, run migrations, fill `.env.local`
-- [ ] `npm install && npm run dev` — confirm **every** app works before changing anything
+- [x] Own Supabase project — **`portfolio`**, ref `wqnsmwgehthxoeqfgwyw`,
+      us-west-1, free tier. Both migrations applied (`notes`, `photos`),
+      RLS enabled on both. `.env.local` written and gitignored
+- [x] `npm install` — clean on Node 26; `sharp` (libvips 8.17.3) loads, so
+      Next's image pipeline is intact despite npm's `allow-scripts` warning
+- [x] `npm run dev` starts clean — Next 16.1.1 / Turbopack, ready in 2.4s.
+      `/`, `/notes`, `/finder`, `/messages` all 200; Supabase REST answers
+      200 with the anon key
+- [ ] **Confirm every app works by eye in a browser** — HTTP 200 only proves
+      the route renders, not that the app behaves. Do this before Step 3
+
+**Not yet configured** (deliberately, all blank in `.env.local`):
+`SUPABASE_SERVICE_ROLE_KEY` and `PHOTOS_UPLOAD_API_KEY` (only used by
+`app/api/photos/upload/route.ts`, which Step 3 deletes) and
+`BRAINTRUST_API_KEY` (Messages AI won't reply until it's set — Step 4).
+
+### Step 2b — Dependency audit ← only after the baseline is confirmed green
+Inherited from the fork, not introduced here: **42 vulnerabilities
+(11 low, 14 moderate, 16 high, 1 critical)**. Mostly transitive; the two
+direct ones are `lodash` and **`next` itself** — the latter is what matters,
+since it serves every request on a public site.
+
+- [ ] `npm audit fix` (plain) first, then re-run the baseline
+- [ ] Review what's left individually. **Do not run `npm audit fix --force`
+      casually** — it will bump `next` across a major version and break the app
+- [ ] Re-confirm every app still works before moving on
+
+Sequenced *after* the baseline deliberately: fixing it earlier means debugging
+dependency churn and an unverified fork at the same time, with no known-good
+state to diff against.
 
 ### Step 3 — Prune & rebrand
 - [ ] Cut Photos (removes the OpenAI dependency entirely), Weather, Music, Preview
