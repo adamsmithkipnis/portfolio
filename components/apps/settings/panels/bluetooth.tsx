@@ -16,18 +16,18 @@ interface BluetoothDevice {
 }
 
 const myDevicesDesktop: BluetoothDevice[] = [
-  { name: "Alana's Magic Keyboard", connected: true, battery: 91, type: "keyboard" },
-  { name: "Alana's Magic Trackpad", connected: true, battery: 20, type: "trackpad" },
+  { name: "Adam's Magic Keyboard", connected: true, battery: 91, type: "keyboard" },
+  { name: "Adam's Magic Trackpad", connected: true, battery: 20, type: "trackpad" },
   { name: "Nothing Headphones", connected: false, type: "headphones" },
-  { name: "Alana's AirPods Max", connected: false, type: "airpods-max" },
-  { name: "Alana's AirPods Pro", connected: false, type: "airpods" },
+  { name: "Adam's AirPods Max", connected: false, type: "airpods-max" },
+  { name: "Adam's AirPods Pro", connected: false, type: "airpods" },
   { name: "Flipper Reg0l1", connected: false, type: "headphones" },
 ];
 
 const myDevicesMobile = [
   { name: "Nothing Headphones", connected: true },
-  { name: "Alana's AirPods Max", connected: false },
-  { name: "Alana's AirPods Pro", connected: false },
+  { name: "Adam's AirPods Max", connected: false },
+  { name: "Adam's AirPods Pro", connected: false },
   { name: "Flipper Reg0l1", connected: false },
   { name: "Matic-Robot-07m-53jp", connected: false },
   { name: "Porsche BT 1524", connected: false },
@@ -204,7 +204,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
         <>
           {/* Discoverable text */}
           <p className="text-xs text-muted-foreground py-4 border-b border-border/50">
-            This Mac is discoverable as &quot;Alana&apos;s MacBook Air&quot; while Bluetooth Settings is open.
+            This Mac is discoverable as &quot;Adam&apos;s MacBook Pro&quot; while Bluetooth Settings is open.
           </p>
 
           {/* My Devices section */}

@@ -513,7 +513,7 @@ export function MenuBar({
         onSave={() => focusedWindowId && onTextEditSave?.(focusedWindowId)}
         onDuplicate={() => focusedWindowId && onTextEditDuplicate?.(focusedWindowId)}
         onRename={() => setTextEditRenameOpen(true)}
-        renameDisabled={focusedTextEditFilePath.startsWith("/Users/alanagoyal/Projects/")}
+        renameDisabled={focusedTextEditFilePath.startsWith("/Users/adamsmithkipnis/Projects/")}
       />
 
       <TextEditRenameDialog

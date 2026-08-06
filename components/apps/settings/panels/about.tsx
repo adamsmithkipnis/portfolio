@@ -159,7 +159,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
             />
           </svg>
         </div>
-        <h2 className="text-xl font-semibold">MacBook Air</h2>
+        <h2 className="text-xl font-semibold">MacBook Pro</h2>
         <p className="text-xs text-muted-foreground">M2, 2022</p>
       </div>
 
@@ -168,7 +168,7 @@ export function AboutPanel({ isMobile = false, onCategorySelect }: AboutPanelPro
         <div className="divide-y divide-border/50">
           <div className="flex justify-between px-4 py-3">
             <span className="text-xs text-muted-foreground">Name</span>
-            <span className="text-xs">Alana&apos;s MacBook Air</span>
+            <span className="text-xs">Adam&apos;s MacBook Pro</span>
           </div>
           <div className="flex justify-between px-4 py-3">
             <span className="text-xs text-muted-foreground">Chip</span>

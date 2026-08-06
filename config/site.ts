@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "alana goyal",
-  title: "alana goyal",
-  url: "https://alanagoyal.com",
+  name: "adam smith kipnis",
+  title: "adam smith kipnis",
+  url: "https://smithkipnis.com",
 };
 

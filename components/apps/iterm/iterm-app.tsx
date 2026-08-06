@@ -5,7 +5,7 @@ import { Nav } from "./nav";
 import { Terminal } from "./terminal";
 import { cn } from "@/lib/utils";
 
-const HOME_DIR = "/Users/alanagoyal";
+const HOME_DIR = "/Users/adamsmithkipnis";
 
 interface ITermAppProps {
   isMobile?: boolean;

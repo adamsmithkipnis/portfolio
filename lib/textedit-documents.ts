@@ -1,4 +1,4 @@
-const DEFAULT_DOCUMENT_DIRECTORY = "/Users/alanagoyal/Documents";
+const DEFAULT_DOCUMENT_DIRECTORY = "/Users/adamsmithkipnis/Documents";
 
 function splitFileName(fileName: string): { stem: string; extension: string } {
   const extensionIndex = fileName.lastIndexOf(".");

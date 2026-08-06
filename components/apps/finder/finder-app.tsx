@@ -36,7 +36,7 @@ import { FinderSearchEngine, type EntryInput } from "./search-engine";
 import type { FinderViewMode } from "./view-mode";
 import { getFinderPathSegments } from "@/lib/finder-path";
 
-const USERNAME = HOME_DIR.split("/").pop() ?? "alanagoyal";
+const USERNAME = HOME_DIR.split("/").pop() ?? "adamsmithkipnis";
 
 interface FileItem {
   name: string;

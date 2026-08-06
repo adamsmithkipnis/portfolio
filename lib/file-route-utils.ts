@@ -4,7 +4,7 @@ import {
   isTextEditPathHidden,
 } from "@/lib/file-storage";
 
-export const HOME_DIR = "/Users/alanagoyal";
+export const HOME_DIR = "/Users/adamsmithkipnis";
 export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
 const TEXT_FILE_EXTENSIONS = new Set(["txt", "md", "markdown", "json", "js", "jsx", "ts", "tsx", "css", "html", "xml", "yaml", "yml"]);
 

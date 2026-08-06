@@ -6,7 +6,7 @@ import {
   getUntitledTextEditPath,
 } from "../lib/textedit-documents";
 
-const documents = "/Users/alanagoyal/Documents";
+const documents = "/Users/adamsmithkipnis/Documents";
 
 test("creates a numbered untitled document without collisions", () => {
   assert.equal(getUntitledTextEditPath([]), `${documents}/Untitled.txt`);
@@ -21,11 +21,11 @@ test("creates a numbered untitled document without collisions", () => {
 
 test("duplicates into Documents while preserving the source extension", () => {
   assert.equal(
-    getDuplicateTextEditPath("/Users/alanagoyal/Documents/hello.md", []),
+    getDuplicateTextEditPath("/Users/adamsmithkipnis/Documents/hello.md", []),
     `${documents}/hello copy.md`
   );
   assert.equal(
-    getDuplicateTextEditPath("/Users/alanagoyal/Projects/site/README.md", [
+    getDuplicateTextEditPath("/Users/adamsmithkipnis/Projects/site/README.md", [
       `${documents}/README copy.md`,
     ]),
     `${documents}/README copy 2.md`
