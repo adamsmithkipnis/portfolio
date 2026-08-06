@@ -12,6 +12,7 @@ import {
   getConversationState,
 } from "../lib/messages/temporal-context";
 import type { Message, Recipient } from "../types/messages";
+import { initialContacts } from "../data/messages/initial-contacts";
 
 dotenv.config({ path: ".env.local" });
 
@@ -214,49 +215,107 @@ function buildParticipantDescriptions(participants: EvalParticipant[]): string {
     .join("\n");
 }
 
+// Participants are pulled from the shipped roster so the eval always exercises
+// the real prompts. If a contact is renamed or removed, this throws rather than
+// silently testing a persona that no longer exists.
+function participant(name: string): EvalParticipant {
+  const contact = initialContacts.find((c) => c.name === name);
+  if (!contact?.prompt) {
+    throw new Error(
+      `Eval references "${name}", which is not in initialContacts (or has no prompt).`
+    );
+  }
+  return {
+    id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    name: contact.name,
+    description: contact.prompt,
+  };
+}
+
 const participants = {
-  guillermo: {
-    id: "guillermo-rauch",
-    name: "Guillermo Rauch",
-    description:
-      "You are Guillermo Rauch, a technical founder. Communicate with deep technical knowledge and entrepreneurial vision. Your style combines technical precision with a bit of fun trolling every now and then.",
-  },
-  paul: {
-    id: "paul-copplestone",
-    name: "Paul Copplestone",
-    description:
-      "You are Paul Copplestone the founder of Supabase. You are casual and love talking technical topics and memes.",
-  },
+  yeager: participant("Chuck Yeager"),
+  hoover: participant("Bob Hoover"),
+  jacobs: participant("Jane Jacobs"),
+  moses: participant("Robert Moses"),
+  gehry: participant("Frank Gehry"),
+  guidara: participant("Will Guidara"),
+  bourdain: participant("Anthony Bourdain"),
+  rubin: participant("Rick Rubin"),
+  eno: participant("Brian Eno"),
+  kondo: participant("Koji Kondo"),
+  socrates: participant("Socrates"),
+  turing: participant("Alan Turing"),
+  fred: participant("Fred again.."),
 } satisfies Record<string, EvalParticipant>;
+
+/**
+ * Per-persona voice rules. These encode the specific instructions in each
+ * prompt that a general brevity check cannot catch — the ones most likely to
+ * be quietly ignored by the model.
+ */
+interface VoiceRule {
+  maxChars?: number;
+  maxSentences?: number;
+  /** Patterns that must NOT appear (the prompt's "never do X" clauses). */
+  forbidden?: Array<{ pattern: RegExp; why: string }>;
+  /** Custom predicate; return an error string when violated. */
+  custom?: (text: string) => string | null;
+}
+
+const voiceRules: Record<string, VoiceRule> = {
+  "Chuck Yeager": {
+    // Character count only. A sentence cap punishes exactly what we want from
+    // him — "scared? nah. just busy." is three sentences and perfectly in voice.
+    maxChars: 100,
+    forbidden: [
+      { pattern: /\b(thank you|honou?red|proud of|means a lot)\b/i, why: "accepts praise" },
+      { pattern: /\b(taught me|realized that|what it meant)\b/i, why: "explains significance" },
+    ],
+  },
+  "Socrates": {
+    maxChars: 160,
+    custom: (text) =>
+      text.trim().endsWith("?") ? null : "did not end with a question",
+  },
+  "Koji Kondo": {
+    forbidden: [
+      { pattern: /\b(art|artistry|beautiful|soul|magic)\b/i, why: "grand terms about art" },
+    ],
+  },
+  "Fred again..": {
+    custom: (text) =>
+      /^[A-Z]/.test(text.trim()) ? "started with a capital letter" : null,
+  },
+  "Robert Moses": {
+    forbidden: [
+      { pattern: /\b(sorry|regret|mistake|I was wrong|apolog)/i, why: "concedes or apologizes" },
+    ],
+  },
+};
 
 const cases: Array<{ input: GroupChatEvalInput; expected: GroupChatExpected }> = [
   {
     input: {
-      caseId: "direct-question-routes-to-guillermo",
-      participants: [participants.guillermo, participants.paul],
+      caseId: "direct-question-routes-to-yeager",
+      participants: [participants.yeager, participants.hoover],
       messages: [
         {
           id: "m1",
           sender: "me",
-          content: "what products have you guys enjoyed using lately?",
+          content: "who actually closed the hatch on the x-1",
           timestamp: minutesAgo(12),
         },
         {
           id: "m2",
-          sender: "Guillermo Rauch",
-          content: "container queries changed everything tbh",
+          sender: "Bob Hoover",
+          content:
+            "Ridley cut down a broom handle for him. He'd broken two ribs off a horse two nights before.",
           timestamp: minutesAgo(11),
         },
         {
           id: "m3",
-          sender: "Paul Copplestone",
-          content: "htmx is fun if you don't take it too seriously",
-          timestamp: minutesAgo(10),
-        },
-        {
-          id: "m4",
           sender: "me",
-          content: "guillermo what's actually underrated on the web platform right now?",
+          content: "chuck were you scared going up that morning?",
           timestamp: minutesAgo(1),
         },
       ],
@@ -264,30 +323,31 @@ const cases: Array<{ input: GroupChatEvalInput; expected: GroupChatExpected }> =
     expected: {
       requiredAction: "respond",
       allowedActions: ["respond", "react"],
-      participant: "Guillermo Rauch",
+      participant: "Chuck Yeager",
     },
   },
   {
     input: {
       caseId: "participant-question-does-not-wait",
-      participants: [participants.guillermo, participants.paul],
+      participants: [participants.jacobs, participants.moses, participants.gehry],
       messages: [
         {
           id: "m1",
           sender: "me",
-          content: "what gets harder as infra products scale?",
+          content: "if you could un-build one thing what would it be",
           timestamp: minutesAgo(14),
         },
         {
           id: "m2",
-          sender: "Paul Copplestone",
-          content: "support and docs start becoming part of the product surface",
+          sender: "Frank Gehry",
+          content: "are we doing cities? I make buildings. different job",
           timestamp: minutesAgo(13),
         },
         {
           id: "m3",
-          sender: "Guillermo Rauch",
-          content: "paul where do you think teams overcomplicate postgres the most?",
+          sender: "Robert Moses",
+          content:
+            "Jane, name one thing you have ever actually built. I'll wait.",
           timestamp: minutesAgo(2),
         },
       ],
@@ -295,30 +355,30 @@ const cases: Array<{ input: GroupChatEvalInput; expected: GroupChatExpected }> =
     expected: {
       requiredAction: "respond",
       allowedActions: ["respond", "react"],
-      participant: "Paul Copplestone",
+      participant: "Jane Jacobs",
     },
   },
   {
     input: {
       caseId: "wait-when-human-needs-to-answer",
-      participants: [participants.guillermo, participants.paul],
+      participants: [participants.guidara, participants.bourdain],
       messages: [
         {
           id: "m1",
           sender: "me",
-          content: "thinking of rebuilding messages with realtime later",
+          content: "thinking about what hospitality even means outside a restaurant",
           timestamp: minutesAgo(8),
         },
         {
           id: "m2",
-          sender: "Paul Copplestone",
-          content: "could be fun",
+          sender: "Anthony Bourdain",
+          content: "it means the same thing, people just charge less for it",
           timestamp: minutesAgo(7),
         },
         {
           id: "m3",
-          sender: "Guillermo Rauch",
-          content: "what stack are you leaning toward for it?",
+          sender: "Will Guidara",
+          content: "what's the last time somebody made you feel taken care of?",
           timestamp: minutesAgo(1),
         },
       ],
@@ -331,30 +391,32 @@ const cases: Array<{ input: GroupChatEvalInput; expected: GroupChatExpected }> =
   {
     input: {
       caseId: "wrap-up-after-three-ai-messages",
-      participants: [participants.guillermo, participants.paul],
+      participants: [participants.rubin, participants.eno, participants.kondo],
       messages: [
         {
           id: "m1",
           sender: "me",
-          content: "what should i prototype first?",
+          content: "what does a producer actually add",
           timestamp: minutesAgo(9),
         },
         {
           id: "m2",
-          sender: "Paul Copplestone",
-          content: "make the scrappiest version you can ship tonight",
+          sender: "Rick Rubin",
+          content: "as little as possible. mostly I sit there and pay attention",
           timestamp: minutesAgo(8),
         },
         {
           id: "m3",
-          sender: "Guillermo Rauch",
-          content: "ship the interface before polishing the backend",
+          sender: "Brian Eno",
+          content:
+            "I do the opposite. I hand you a card and make you follow it.",
           timestamp: minutesAgo(7),
         },
         {
           id: "m4",
-          sender: "Paul Copplestone",
-          content: "and instrument it from day one so you see the failures fast",
+          sender: "Koji Kondo",
+          content:
+            "The field theme has twelve phrases assembled in a random order. There is no take.",
           timestamp: minutesAgo(1),
         },
       ],
@@ -362,7 +424,58 @@ const cases: Array<{ input: GroupChatEvalInput; expected: GroupChatExpected }> =
     expected: {
       requiredAction: "wrap_up",
       allowedActions: ["wrap_up"],
-      participant: "Guillermo Rauch",
+    },
+  },
+  {
+    input: {
+      caseId: "socrates-answers-with-a-question",
+      participants: [participants.socrates, participants.turing],
+      messages: [
+        {
+          id: "m1",
+          sender: "me",
+          content: "could a machine think",
+          timestamp: minutesAgo(6),
+        },
+        {
+          id: "m2",
+          sender: "Alan Turing",
+          content:
+            "If it converses well enough that you cannot tell, the question has answered itself.",
+          timestamp: minutesAgo(1),
+        },
+      ],
+    },
+    expected: {
+      requiredAction: "respond",
+      allowedActions: ["respond", "react"],
+      participant: "Socrates",
+    },
+  },
+  {
+    input: {
+      caseId: "fred-stays-lowercase",
+      participants: [participants.fred, participants.eno],
+      messages: [
+        {
+          id: "m1",
+          sender: "me",
+          content: "how do you know when a voice note is worth building on",
+          timestamp: minutesAgo(5),
+        },
+        {
+          id: "m2",
+          sender: "Brian Eno",
+          content:
+            "You don't. That's why you keep the recorder running and decide much later.",
+          timestamp: minutesAgo(1),
+        },
+      ],
+    },
+    expected: {
+      requiredAction: "respond",
+      allowedActions: ["respond", "react"],
+      participant: "Fred again..",
     },
   },
 ];
@@ -496,10 +609,12 @@ const brevityScore: EvalScorer<
   const generatedTexts = extractGeneratedTexts(output.actions);
   const valid = generatedTexts.every((text) => {
     const trimmed = text.trim();
+    // A short burst of fragments ("scared? nah. just busy.") is good texting,
+    // so the sentence cap only applies once a message has real length to it.
     return (
       trimmed.length > 0 &&
       trimmed.length <= 160 &&
-      sentenceCount(trimmed) <= 2
+      (sentenceCount(trimmed) <= 2 || trimmed.length <= 100)
     );
   });
 
@@ -512,9 +627,136 @@ const brevityScore: EvalScorer<
   };
 };
 
+/**
+ * Checks the per-persona instructions that a generic brevity bar cannot catch:
+ * Yeager's fragments, Socrates answering only in questions, Fred's lowercase,
+ * Kondo never reaching for "art", Moses never conceding.
+ *
+ * Only scores personas that have a rule; everything else passes trivially.
+ */
+const voiceDisciplineScore: EvalScorer<
+  GroupChatEvalInput,
+  GroupChatEvalOutput,
+  GroupChatExpected
+> = ({ output }) => {
+  const violations: Array<{ speaker: string; text: string; reason: string }> = [];
+  let checked = 0;
+
+  for (const action of output.actions) {
+    const speaker = action.participant;
+    if (!speaker) continue;
+    const rule = voiceRules[speaker];
+    if (!rule) continue;
+
+    const texts = [action.message, ...(action.messages ?? [])].filter(
+      (value): value is string => typeof value === "string" && value.trim().length > 0
+    );
+
+    for (const text of texts) {
+      checked += 1;
+      const trimmed = text.trim();
+
+      if (rule.maxChars && trimmed.length > rule.maxChars) {
+        violations.push({
+          speaker,
+          text: trimmed,
+          reason: `${trimmed.length} chars exceeds ${rule.maxChars}`,
+        });
+      }
+      if (rule.maxSentences && sentenceCount(trimmed) > rule.maxSentences) {
+        violations.push({
+          speaker,
+          text: trimmed,
+          reason: `${sentenceCount(trimmed)} sentences exceeds ${rule.maxSentences}`,
+        });
+      }
+      for (const { pattern, why } of rule.forbidden ?? []) {
+        if (pattern.test(trimmed)) {
+          violations.push({ speaker, text: trimmed, reason: why });
+        }
+      }
+      const customFailure = rule.custom?.(trimmed);
+      if (customFailure) {
+        violations.push({ speaker, text: trimmed, reason: customFailure });
+      }
+    }
+  }
+
+  return {
+    name: "voice_discipline",
+    // No rule for this persona means nothing to check — don't penalize.
+    score: checked === 0 ? null : violations.length === 0 ? 1 : 0,
+    metadata: { violations, textsChecked: checked },
+  };
+};
+
+/**
+ * Blind attribution: hide the speaker and ask a judge which participant wrote
+ * it. If the judge cannot pick the right person out of the lineup, the persona
+ * is not distinct — which is the property we actually care about.
+ *
+ * Note: with two participants, chance alone scores 0.5, so read this as a
+ * trend across cases rather than a verdict on any single one.
+ */
+const personaAttributionScore: EvalScorer<
+  GroupChatEvalInput,
+  GroupChatEvalOutput,
+  GroupChatExpected
+> = async ({ input, output }) => {
+  const attempts: Array<{ text: string; actual: string; guessed: string }> = [];
+
+  for (const action of output.actions) {
+    const speaker = action.participant;
+    if (!speaker) continue;
+    const texts = [action.message, ...(action.messages ?? [])].filter(
+      (value): value is string => typeof value === "string" && value.trim().length > 0
+    );
+
+    for (const text of texts) {
+      const lineup = input.participants.map((p) => p.name);
+      const response = await getClient().chat.completions.create({
+        model: GROUP_CHAT_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You will be shown one text message and a list of people. Reply with exactly one name from the list — the person most likely to have written it. No punctuation, no explanation.",
+          },
+          {
+            role: "user",
+            content: `People: ${lineup.join(", ")}\n\nMessage: ${text}`,
+          },
+        ],
+        temperature: 0,
+        max_tokens: 20,
+      });
+
+      const raw = response.choices[0]?.message?.content?.trim() ?? "";
+      const guessed =
+        lineup.find((name) => raw.toLowerCase().includes(name.toLowerCase())) ?? raw;
+      attempts.push({ text, actual: speaker, guessed });
+    }
+  }
+
+  if (attempts.length === 0) {
+    return { name: "persona_attribution", score: null, metadata: { attempts } };
+  }
+
+  const correct = attempts.filter((a) => a.guessed === a.actual).length;
+  return {
+    name: "persona_attribution",
+    score: correct / attempts.length,
+    metadata: { attempts, correct, total: attempts.length },
+  };
+};
+
 async function runEval() {
   const result = await Eval("messages-group-chat", {
     data: cases,
+    // Generation runs at temperature 0.7, so a single sample per case cannot
+    // separate a prompt change from sampling noise. Repeat each case and read
+    // the averages.
+    trialCount: 5,
     maxConcurrency: 1,
     metadata: {
       app: "messages",
@@ -564,6 +806,8 @@ async function runEval() {
       schemaScore,
       noRepeatedPointScore,
       brevityScore,
+      voiceDisciplineScore,
+      personaAttributionScore,
     ],
   });
 
