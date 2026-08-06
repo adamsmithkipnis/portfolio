@@ -84,7 +84,7 @@ export const notesApp: AppManifest = {
 - [ ] Verify `node build-tokens.mjs` runs clean (**never executed yet**)
 
 ### Step 1 — Repo setup
-- [ ] Clone fork to `~/Documents/Claude/tahoe-portfolio`
+- [ ] Clone fork to `~/Documents/Claude/portfolio`
 - [ ] `git remote add upstream …` && merge **once** && `git tag baseline-upstream`
 - [ ] Move `design-tokens/` and `docs/` into the repo
 
