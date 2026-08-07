@@ -1,6 +1,12 @@
 MIT License
 
 Copyright (c) 2024 Alana Goyal
+Copyright (c) 2026 Adam Smith Kipnis
+
+This project is a fork of https://github.com/alanagoyal/alanagoyal. The
+original work is copyright (c) 2024 Alana Goyal and is used under the terms
+of the MIT License, reproduced below. All modifications and additions are
+copyright (c) 2026 Adam Smith Kipnis and are released under the same terms.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

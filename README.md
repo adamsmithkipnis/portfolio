@@ -1,4 +1,4 @@
-# [alanagoyal.com](https://alanagoyal.com)
+# [smithkipnis.com](https://smithkipnis.com)
 
 i'm obsessed with re-creating apple products. this is a macos-inspired personal website featuring a full desktop environment with multiple apps.
 
@@ -373,4 +373,14 @@ you can also manually add images:
 
 ## license
 
-licensed under the [mit license](https://github.com/alanagoyal/alanagoyal/blob/main/LICENSE.md).
+licensed under the [mit license](LICENSE.md).
+
+## attribution
+
+this project is a fork of [alanagoyal/alanagoyal](https://github.com/alanagoyal/alanagoyal),
+copyright (c) 2024 alana goyal, used under the mit license. the desktop shell, window
+manager, and app framework are her work.
+
+modifications and additions — the messages roster and seed conversations, the persona
+eval harness, and the tahoe visual pass — are copyright (c) 2026 adam smith kipnis,
+released under the same license.
