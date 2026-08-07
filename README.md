@@ -1,6 +1,6 @@
 # [smithkipnis.com](https://smithkipnis.com)
 
-i'm obsessed with re-creating apple products. this is a macos-inspired personal website featuring a full desktop environment with multiple apps.
+I found the original version of this inspiring, so I wanted to personalize and extend it.
 
 ## features
 
