@@ -179,7 +179,7 @@ export function AboutDialog({
 
           {app && (
             <p className="text-xs leading-[1.35] text-zinc-400 dark:text-white/50">
-              <span className="block">Built by Adam Smith Kipnis</span>
+              <span className="block">Built by Adam Smith-Kipnis</span>
               <span className="block">Using {app.provenance.agent}</span>
               <span className="block">Circa {app.provenance.circa}</span>
             </p>

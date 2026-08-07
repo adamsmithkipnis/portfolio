@@ -62,7 +62,7 @@ export async function generateMetadata({
   const emoji = note.emoji || "👋🏼";
 
   return {
-    title: "adam smith kipnis",
+    title: "adam smith-kipnis",
     openGraph: {
       images: [
         `/notes/api/og/?title=${encodeURIComponent(title)}&emoji=${encodeURIComponent(emoji)}`,

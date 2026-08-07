@@ -91,7 +91,7 @@ export function PersonalInfoPanel() {
           >
             <span className="text-xs">Name</span>
             <div className="flex items-center gap-1 text-muted-foreground">
-              <span className="text-xs">Adam Smith Kipnis</span>
+              <span className="text-xs">Adam Smith-Kipnis</span>
               <ChevronRight className="w-4 h-4" />
             </div>
           </a>

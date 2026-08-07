@@ -87,7 +87,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl">
           <Image
             src="/headshot.jpg"
-            alt="Adam Smith Kipnis"
+            alt="Adam Smith-Kipnis"
             width={64}
             height={64}
             className="object-cover w-full h-full"
@@ -96,7 +96,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
 
         {/* Name */}
         <div className="mt-2 text-sm font-medium text-white drop-shadow-md">
-          Adam Smith Kipnis
+          Adam Smith-Kipnis
         </div>
 
         {/* Touch ID prompt */}

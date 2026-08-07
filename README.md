@@ -382,5 +382,5 @@ copyright (c) 2024 alana goyal, used under the mit license. the desktop shell, w
 manager, and app framework are her work.
 
 modifications and additions — the messages roster and seed conversations, the persona
-eval harness, and the tahoe visual pass — are copyright (c) 2026 adam smith kipnis,
+eval harness, and the tahoe visual pass — are copyright (c) 2026 adam smith-kipnis,
 released under the same license.
