@@ -175,8 +175,8 @@ function serializeWeatherDataForCache(weatherByCity: Record<string, CityWeather>
 }
 
 const DEFAULT_CITIES: CityConfig[] = [
-  { id: "san-francisco", name: "San Francisco", latitude: 37.78, longitude: -122.42 },
   { id: "seattle", name: "Seattle", latitude: 47.61, longitude: -122.33 },
+  { id: "san-francisco", name: "San Francisco", latitude: 37.78, longitude: -122.42 },
   { id: "los-angeles", name: "Los Angeles", latitude: 34.05, longitude: -118.24 },
   { id: "new-york", name: "New York", latitude: 40.71, longitude: -74.01 },
   { id: "london", name: "London", latitude: 51.51, longitude: -0.13 },
@@ -628,7 +628,7 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
     () => restoreWeatherDataFromCache(loadWeatherDataCache())
   );
   const [selectedCityId, setSelectedCityId] = useState(
-    () => loadWeatherSelectedCity() ?? DEFAULT_CITIES[0]?.id ?? "san-francisco"
+    () => loadWeatherSelectedCity() ?? DEFAULT_CITIES[0]?.id ?? "seattle"
   );
   const [failed, setFailed] = useState(false);
   const [containerWidth, setContainerWidth] = useState(1200);
