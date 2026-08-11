@@ -53,3 +53,26 @@ Run `npm run build`, then verify:
 13. Use File → Duplicate and Rename, then confirm the copied content, updated title, and Finder-visible file name persist after closing and reopening the document.
 14. Edit a document and confirm the title shows `Edited`; use File → Save and confirm the marker clears before using File → Close.
 15. In an iPhone viewport with touch/coarse-pointer emulation, confirm `/textedit` still routes to Finder and TextEdit remains absent from Applications.
+
+## PDF rendering
+
+Preview renders PDFs with **pdf.js drawing to canvas**, not an `<iframe>`.
+
+An iframe pointing at a PDF delegates rendering to whatever plugin the visitor's
+browser provides, which is not dependable: some Chromium builds inject the PDF
+extension's stylesheet but never create the `<embed>`, leaving a blank pane, and
+any browser set to "download PDFs instead of automatically opening them" shows
+nothing at all. The resume is the most important document on the site, so it
+cannot be contingent on a browser setting.
+
+- `pdfjs-dist` is imported dynamically, so it stays out of the main bundle until
+  a PDF is actually opened
+- the worker is served from our own origin at `/pdf.worker.min.mjs`, copied from
+  `node_modules` by `npm run pdf-worker` (wired into `predev` and `prebuild`)
+- **the worker and the library must be the same version.** never hand-edit the
+  copy in `public/`; a stale one fails with a version-mismatch error that gives
+  no hint that the cause was upgrading `pdfjs-dist`
+- pages render at a fixed scale into stacked canvases with per-page aria labels
+
+Bytes still flow through the `/api/preview/pdf` proxy, which keeps the existing
+same-origin path allowlist and remote-host restrictions.
