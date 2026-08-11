@@ -11,6 +11,7 @@ import { MenuBar } from "./menu-bar";
 import { Dock } from "./dock";
 import { Window } from "./window";
 import { DesktopNotificationBanner } from "./messages-notification-banner";
+import { DesktopIcons } from "./desktop-icons";
 import { NotesApp } from "@/components/apps/notes/notes-app";
 import { MessagesApp } from "@/components/apps/messages/messages-app";
 import type { PreviewFileType } from "@/components/apps/preview";
@@ -537,6 +538,16 @@ function DesktopContent({
     [openMultiWindow]
   );
 
+  // Desktop icons hand over just a path; resolve the text content the way Finder would
+  const handleOpenTextFileByPath = useCallback(
+    (filePath: string) => {
+      void fetchFileContent(filePath).then((content) => {
+        handleOpenTextFile(filePath, content ?? "");
+      });
+    },
+    [handleOpenTextFile]
+  );
+
   // Handler for Finder dock icon click - focuses existing window or opens new one at Recents
   const handleFinderDockClick = useCallback(() => {
     focusFinderApp();
@@ -874,6 +885,11 @@ function DesktopContent({
 
       {isActive && (
         <>
+          <DesktopIcons
+            onOpenPreviewFile={handleOpenPreviewFile}
+            onOpenTextFile={handleOpenTextFileByPath}
+          />
+
           <Window appId="notes">
             <NotesApp inShell={true} initialSlug={initialNoteSlug} />
           </Window>

@@ -3,7 +3,6 @@ import {
   getTextEditContent,
   isTextEditPathHidden,
 } from "@/lib/file-storage";
-
 export const HOME_DIR = "/Users/adamsmithkipnis";
 export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
 const TEXT_FILE_EXTENSIONS = new Set(["txt", "md", "markdown", "json", "js", "jsx", "ts", "tsx", "css", "html", "xml", "yaml", "yml"]);
@@ -49,22 +48,10 @@ const LOCAL_SAMPLE_FILES: LocalSampleFile[] = [
     path: `${HOME_DIR}/Documents/hello.md`,
   },
   {
-    assetUrl: "/documents/Base%20Case%20Capital%20I%20-%20Form%20D.pdf",
+    assetUrl: "/documents/Adam%20Smith-Kipnis%20-%20Resume.pdf",
     directoryPath: `${HOME_DIR}/Desktop`,
     kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital I - Form D.pdf`,
-  },
-  {
-    assetUrl: "/documents/Base%20Case%20Capital%20II%20-%20Form%20D.pdf",
-    directoryPath: `${HOME_DIR}/Desktop`,
-    kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital II - Form D.pdf`,
-  },
-  {
-    assetUrl: "/documents/Base%20Case%20Capital%20III%20-%20Form%20D.pdf",
-    directoryPath: `${HOME_DIR}/Desktop`,
-    kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital III - Form D.pdf`,
+    path: `${HOME_DIR}/Desktop/Adam Smith-Kipnis - Resume.pdf`,
   },
 ];
 
