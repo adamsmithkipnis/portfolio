@@ -5,6 +5,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { PreviewFileType } from "./preview-window";
 import { PdfViewer } from "@/components/apps/preview/pdf-viewer";
+import { ContentDetail } from "@/components/content/content-detail";
+import { getContentNode } from "@/lib/content-files";
 
 interface PreviewAppProps {
   isMobile?: boolean;
@@ -150,6 +152,17 @@ export function PreviewApp({
   }
 
   const renderContent = () => {
+    if (fileType === "case-study") {
+      const node = getContentNode(filePath ?? "");
+      return node ? (
+        <ContentDetail node={node} />
+      ) : (
+        <div className="flex h-full items-center justify-center px-4 text-sm text-zinc-500 dark:text-zinc-400">
+          This case study is no longer available
+        </div>
+      );
+    }
+
     if (fileType === "pdf") {
       return <PdfViewer fileUrl={fileUrl} fileName={fileName} errorContentClassName="px-4" />;
     }

@@ -149,10 +149,14 @@ state to diff against.
 - [ ] MenuBar → Dock → Window chrome → app interiors
 
 ### Step 7 — Content
-- [ ] Case studies into Finder
+- [x] Case study pipeline into Finder — `content/` walk, Work sidebar, column-view
+      reading surface, Get Info metadata, click-to-load video embeds
+- [ ] The two real case studies (currently one placeholder folder to delete)
+- [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
 - [ ] Essays into Notes
 - [ ] Messages personas
-- [ ] Front door + resume escape hatch
+- [x] Resume escape hatch — `~/Desktop`, opens in Preview, visible as a desktop icon
+- [ ] Front door
 
 ---
 
@@ -163,8 +167,8 @@ state to diff against.
   desktop-only with content still reachable? **Biggest practical risk to the
   project.**
 - **Which fifth app**, if any, beyond Notes/Messages/Finder/Terminal
-- **Case study content model** — MDX in repo vs. Supabase (leaning MDX; they
-  change rarely and version control is a feature)
+- ~~**Case study content model**~~ — resolved: Markdown files in `content/`, walked
+  at build time. See the implementation notes in `docs/CONTENT-MODEL.md`
 
 ---
 

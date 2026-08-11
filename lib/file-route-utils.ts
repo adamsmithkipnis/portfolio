@@ -3,8 +3,17 @@ import {
   getTextEditContent,
   isTextEditPathHidden,
 } from "@/lib/file-storage";
+import {
+  getContentChildren,
+  getContentDirectoryPaths,
+  hasContent,
+  isContentPath,
+  WORK_DIR,
+} from "@/lib/content-files";
+
 export const HOME_DIR = "/Users/adamsmithkipnis";
 export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
+export { WORK_DIR };
 const TEXT_FILE_EXTENSIONS = new Set(["txt", "md", "markdown", "json", "js", "jsx", "ts", "tsx", "css", "html", "xml", "yaml", "yml"]);
 
 export type DocumentAppId = "textedit" | "preview";
@@ -65,6 +74,7 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     { name: "Documents", type: "dir", path: `${HOME_DIR}/Documents` },
     { name: "Downloads", type: "dir", path: `${HOME_DIR}/Downloads` },
     { name: "Projects", type: "dir", path: `${HOME_DIR}/Projects` },
+    ...(hasContent() ? [{ name: "Work", type: "dir" as const, path: WORK_DIR }] : []),
   ],
   [`${HOME_DIR}/Desktop`]: LOCAL_SAMPLE_FILES.filter((file) => file.directoryPath === `${HOME_DIR}/Desktop`).map((file) => ({
     name: file.path.split("/").pop() ?? file.path,
@@ -92,6 +102,10 @@ export function getLocalTextFileContent(filePath: string): string | null {
 }
 
 export function getLocalFinderFiles(directoryPath: string): LocalFinderItem[] {
+  // Content keeps its authored order — numeric filename prefixes are the reading
+  // sequence, so the alphabetical sort below would be wrong here.
+  if (isContentPath(directoryPath)) return getContentChildren(directoryPath);
+
   const staticItems = (LOCAL_FINDER_FILES[directoryPath] ?? []).filter(
     (item) => !isTextEditPathHidden(item.path)
   );
@@ -110,7 +124,7 @@ export function getLocalFinderFiles(directoryPath: string): LocalFinderItem[] {
 
 export function getAllLocalFinderFiles(): Record<string, LocalFinderItem[]> {
   return Object.fromEntries(
-    Object.keys(LOCAL_FINDER_FILES).map((directoryPath) => [
+    [...Object.keys(LOCAL_FINDER_FILES), ...getContentDirectoryPaths()].map((directoryPath) => [
       directoryPath,
       getLocalFinderFiles(directoryPath),
     ])

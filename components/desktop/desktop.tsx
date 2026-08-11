@@ -72,6 +72,9 @@ type DesktopMode = "active" | "locked" | "sleeping" | "shuttingDown" | "restarti
 const FINDER_STATUS_BAR_STORAGE_KEY = "finder-show-status-bar";
 const FINDER_PATH_BAR_STORAGE_KEY = "finder-show-path-bar";
 
+// Wide enough for a readable measure plus a 16:9 video embed, tall enough to scroll little
+const CASE_STUDY_WINDOW_SIZE = { width: 820, height: 720 };
+
 interface DesktopProps {
   initialAppId?: string;
   initialNoteSlug?: string;
@@ -522,9 +525,15 @@ function DesktopContent({
     [focusMultiWindow, openMultiWindow, textEditWindows]
   );
 
-  // Handler for opening preview files (images and PDFs) in Preview
+  // Handler for opening preview files (images, PDFs, case studies) in Preview
   const handleOpenPreviewFile = useCallback(
     (filePath: string, fileUrl: string, fileType: PreviewFileType) => {
+      if (fileType === "case-study") {
+        // Prose, so size for a comfortable measure rather than to a document's aspect
+        openMultiWindow("preview", filePath, { filePath, fileUrl, fileType }, CASE_STUDY_WINDOW_SIZE);
+        return;
+      }
+
       if (fileType === "pdf") {
         openMultiWindow("preview", filePath, { filePath, fileUrl, fileType });
         return;

@@ -16,8 +16,10 @@ import {
 } from "@/lib/use-window-behavior";
 import { MAXIMIZED_Z_INDEX, useWindowManager } from "@/lib/window-context";
 import { PdfViewer } from "@/components/apps/preview/pdf-viewer";
+import { ContentDetail } from "@/components/content/content-detail";
+import { getContentNode } from "@/lib/content-files";
 
-export type PreviewFileType = "image" | "pdf";
+export type PreviewFileType = "image" | "pdf" | "case-study";
 
 interface PreviewWindowProps {
   filePath: string;
@@ -64,7 +66,10 @@ export function PreviewWindow({
 }: PreviewWindowProps) {
   const windowRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const fileName = filePath?.split("/").pop() || "Untitled";
+  // Case studies title the window with their display name ("Approach"), not the
+  // path segment ("02-approach") that carries the ordering prefix.
+  const contentNode = getContentNode(filePath);
+  const fileName = contentNode?.name || filePath?.split("/").pop() || "Untitled";
   const { isMenuOpenRef } = useWindowManager();
   const [zoom, setZoom] = useState(initialZoom);
   const [rotation, setRotation] = useState(0);
@@ -305,6 +310,16 @@ export function PreviewWindow({
   }, []);
 
   const renderContent = () => {
+    if (fileType === "case-study") {
+      return contentNode ? (
+        <ContentDetail node={contentNode} className="bg-background" />
+      ) : (
+        <div className="flex h-full items-center justify-center text-sm text-zinc-500 dark:text-zinc-400">
+          This case study is no longer available
+        </div>
+      );
+    }
+
     if (fileType === "pdf") {
       return (
         <PdfViewer
