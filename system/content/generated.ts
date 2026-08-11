@@ -9,7 +9,7 @@ export const CONTENT_TREE: ContentNode = {
   "path": "/finder",
   "kind": "folder",
   "size": 666,
-  "modified": "2026-08-10",
+  "modified": "2026-08-11",
   "children": [
     {
       "slug": "work",
@@ -17,7 +17,7 @@ export const CONTENT_TREE: ContentNode = {
       "path": "/finder/work",
       "kind": "folder",
       "size": 666,
-      "modified": "2026-08-10",
+      "modified": "2026-08-11",
       "children": [
         {
           "slug": "example-project",
@@ -59,7 +59,7 @@ export const CONTENT_TREE: ContentNode = {
               "path": "/finder/work/example-project/01-problem",
               "kind": "document",
               "size": 276,
-              "modified": "2026-08-10",
+              "modified": "2026-08-11",
               "body": "Sections are ordinary Markdown. The numeric filename prefix sets reading order;\nFinder sorts by name, so you get a narrative sequence without building a stepper.\n\n## Sub-headings work\n\nSo do lists, **emphasis**, `inline code`, and [links](https://smithkipnis.com).\n\n- One\n- Two\n- Three\n\n> Blockquotes render too."
             },
             {
@@ -68,7 +68,7 @@ export const CONTENT_TREE: ContentNode = {
               "path": "/finder/work/example-project/02-approach",
               "kind": "document",
               "size": 390,
-              "modified": "2026-08-10",
+              "modified": "2026-08-11",
               "body": "Video embeds use a `video-embed` tag. Both platforms are supported, and the\nplayer is lazy — it loads only after a click, so a case study with four videos\ndoes not pull four players on open.\n\n<video-embed platform=\"youtube\" id=\"aqz-KE-bpKQ\" title=\"Example YouTube embed\"></video-embed>\n\nSet `platform` to `vimeo` and pass the numeric id for Vimeo:\n\n<video-embed platform=\"vimeo\" id=\"76979871\" title=\"Example Vimeo embed\"></video-embed>\n\nText continues normally after an embed."
             }
           ]
