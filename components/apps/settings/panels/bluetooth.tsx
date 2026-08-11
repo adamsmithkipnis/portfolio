@@ -6,7 +6,7 @@ import { useSystemSettings } from "@/lib/system-settings-context";
 import { SettingsSwitch } from "../settings-switch";
 
 // Device type for different icons
-type DeviceType = "keyboard" | "trackpad" | "airpods" | "airpods-max" | "headphones";
+type DeviceType = "keyboard" | "trackpad" | "airpods" | "headphones";
 
 interface BluetoothDevice {
   name: string;
@@ -18,17 +18,11 @@ interface BluetoothDevice {
 const myDevicesDesktop: BluetoothDevice[] = [
   { name: "Adam's Magic Keyboard", connected: true, battery: 91, type: "keyboard" },
   { name: "Adam's Magic Trackpad", connected: true, battery: 20, type: "trackpad" },
-  { name: "Nothing Headphones", connected: false, type: "headphones" },
-  { name: "Adam's AirPods Max", connected: false, type: "airpods-max" },
-  { name: "Adam's AirPods Pro", connected: false, type: "airpods" },
-  { name: "Flipper Reg0l1", connected: false, type: "headphones" },
+  { name: "Gear IconX", connected: false, type: "airpods" },
 ];
 
 const myDevicesMobile = [
-  { name: "Nothing Headphones", connected: true },
-  { name: "Adam's AirPods Max", connected: false },
-  { name: "Adam's AirPods Pro", connected: false },
-  { name: "Flipper Reg0l1", connected: false },
+  { name: "Gear IconX", connected: true },
   { name: "Matic-Robot-07m-53jp", connected: false },
   { name: "Porsche BT 1524", connected: false },
 ];
@@ -64,14 +58,6 @@ function DeviceIcon({ type, className }: { type: DeviceType; className?: string 
           <path d="M22 10C22 8 21 6 19 6C17 6 16 8 16 10V18C16 20 17 22 19 22C21 22 22 20 22 18V10Z" stroke="currentColor" strokeWidth="1.5" fill="none" />
           <line x1="13" y1="22" x2="13" y2="26" stroke="currentColor" strokeWidth="1.5" />
           <line x1="19" y1="22" x2="19" y2="26" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      );
-    case "airpods-max":
-      return (
-        <svg className={cn("w-8 h-8", className)} viewBox="0 0 32 32" fill="none">
-          <path d="M8 14C8 10 11 6 16 6C21 6 24 10 24 14" stroke="currentColor" strokeWidth="2" fill="none" />
-          <rect x="6" y="14" width="6" height="10" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
-          <rect x="20" y="14" width="6" height="10" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
         </svg>
       );
     case "headphones":
@@ -139,7 +125,7 @@ export function BluetoothPanel({ isMobile = false }: BluetoothPanelProps) {
 
         {/* Discoverable note */}
         <p className="text-sm text-muted-foreground px-2">
-          This iPhone is discoverable as &quot;alana&apos;s iphone&quot; while Bluetooth Settings is open.
+          This iPhone is discoverable as &quot;Adam&apos;s iPhone&quot; while Bluetooth Settings is open.
         </p>
 
         {/* My Devices section */}

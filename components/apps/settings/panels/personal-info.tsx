@@ -5,11 +5,12 @@ import { ChevronRight } from "lucide-react";
 interface Device {
   name: string;
   model: string;
-  type: "macbook" | "iphone" | "ipad" | "apple-tv";
+  type: "macbook" | "mac-mini" | "iphone" | "ipad" | "apple-tv";
 }
 
 const devices: Device[] = [
   { name: "Adam's MacBook Pro", model: "This MacBook Pro", type: "macbook" },
+  { name: "RobOtTheClaw's Mac Mini", model: "Mac mini", type: "mac-mini" },
   { name: "Adam's iPhone 16 Pro", model: "iPhone 16 Pro", type: "iphone" },
   { name: "Adam's iPad", model: "iPad Air", type: "ipad" },
   { name: "Family Room", model: "Apple TV", type: "apple-tv" },
@@ -37,6 +38,20 @@ function DeviceIcon({ type }: { type: Device["type"] }) {
           <rect x="9" y="10" width="30" height="18" rx="1" fill="url(#macbook-screen)" />
           <path d="M4 30h40l-3 5H7l-3-5z" fill="url(#macbook-body)" />
           <rect x="18" y="29.5" width="12" height="1" rx="0.5" fill="#d1d5db" />
+        </svg>
+      );
+    case "mac-mini":
+      return (
+        <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none">
+          <defs>
+            <linearGradient id="mac-mini-body" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e5e7eb" />
+              <stop offset="100%" stopColor="#c8ccd1" />
+            </linearGradient>
+          </defs>
+          <rect x="7" y="17" width="34" height="14" rx="3" fill="url(#mac-mini-body)" />
+          <rect x="7" y="27" width="34" height="4" rx="2" fill="#b6bbc2" />
+          <circle cx="12.5" cy="24" r="1.25" fill="#9ca3af" />
         </svg>
       );
     case "iphone":
@@ -84,7 +99,7 @@ export function PersonalInfoPanel() {
       <div className="rounded-xl bg-muted/50 overflow-hidden">
         <div className="divide-y divide-border/50">
           <a
-            href="https://x.com/alanaagoyal"
+            href="https://x.com/AdamSmithKipnis"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between px-4 py-3 can-hover:hover:bg-muted/50 transition-colors cursor-pointer"
@@ -97,7 +112,7 @@ export function PersonalInfoPanel() {
           </a>
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-xs">Birthday</span>
-            <span className="text-xs text-muted-foreground">1/12/1996</span>
+            <span className="text-xs text-muted-foreground">4/14/1980</span>
           </div>
         </div>
       </div>
