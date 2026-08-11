@@ -132,7 +132,7 @@ const BASE_FILE_SYSTEM: Record<string, FileNode> = {
   "/Users/adamsmithkipnis/Documents": { type: "dir", contents: [] },
   "/Users/adamsmithkipnis/Downloads": { type: "dir", contents: [] },
   "/Users/adamsmithkipnis/Projects": { type: "dir", contents: [] }, // Dynamic from GitHub
-  "/Applications": { type: "dir", contents: ["iTerm.app", "Safari.app", "Notes.app", "Messages.app"] },
+  "/Applications": { type: "dir", contents: ["Terminal.app", "Safari.app", "Notes.app", "Messages.app"] },
   "/System": { type: "dir", contents: ["Library"] },
   "/Library": { type: "dir", contents: ["Fonts", "Preferences"] },
 };
@@ -479,13 +479,13 @@ Together, we make what seems impossible, inevitable.`;
                     'c.          ${USERNAME}@${HOSTNAME}
                  ,xNMM.          -----------------------
                .OMMMMo           OS: macOS ${currentOS.name} ${currentOS.version}
-               OMMM0,            Host: MacBook Pro (M2, 2022)
+               OMMM0,            Host: MacBook Pro (M4 Max, 2024)
      .;loddo:' loolloddol;.      Kernel: Darwin ${currentOS.darwinVersion}
    cKMMMMMMMMMMNWMMMMMMMMMM0:    Uptime: ${Math.floor(Math.random() * 100) + 1} days
  .KMMMMMMMMMMMMMMMMMMMMMMMWd.    Shell: zsh 5.9
- XMMMMMMMMMMMMMMMMMMMMMMMX.      Terminal: iTerm2
-;MMMMMMMMMMMMMMMMMMMMMMMM:       CPU: Apple M2
-:MMMMMMMMMMMMMMMMMMMMMMMM:       Memory: 8GB
+ XMMMMMMMMMMMMMMMMMMMMMMMX.      Terminal: Terminal.app
+;MMMMMMMMMMMMMMMMMMMMMMMM:       CPU: Apple M4 Max
+:MMMMMMMMMMMMMMMMMMMMMMMM:       Memory: 48GB
 .MMMMMMMMMMMMMMMMMMMMMMMMX.
  kMMMMMMMMMMMMMMMMMMMMMMMMWd.
  .XMMMMMMMMMMMMMMMMMMMMMMMMMMk

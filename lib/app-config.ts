@@ -96,15 +96,15 @@ export const APPS: AppConfig[] = [
   },
   {
     id: "iterm",
-    name: "iTerm",
-    icon: "/iterm.png",
+    name: "Terminal",
+    icon: "/terminal.png",
     description: "Terminal emulator",
     provenance: { agent: "Claude Code", circa: "January 2026" },
     accentColor: "#00D455",
     defaultPosition: { x: 120, y: 70 },
     defaultSize: { width: 800, height: 500 },
     minSize: { width: 500, height: 300 },
-    menuBarTitle: "iTerm",
+    menuBarTitle: "Terminal",
   },
   {
     id: "settings",
