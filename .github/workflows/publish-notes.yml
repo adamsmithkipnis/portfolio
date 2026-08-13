@@ -1,0 +1,67 @@
+name: Publish notes
+
+# Public note content lives in supabase/seed/*.sql but is served from Supabase,
+# so merging a copy edit does not publish it — the SQL has to run against the
+# database. This closes that gap: edit the prose, merge to main, notes update.
+#
+# Requires a SUPABASE_DB_URL repository secret. Use the *session pooler* URI
+# from the Supabase dashboard (Connect → Session pooler, port 5432), not the
+# direct connection — GitHub runners are IPv4-only and the direct host is IPv6.
+#
+# The seed files are written as upserts, so re-running them is always safe.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/seed/**.sql"
+      - ".github/workflows/publish-notes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-notes
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check psql is available
+        run: command -v psql || sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Run the seed files
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SUPABASE_DB_URL:-}" ]; then
+            echo "::error::SUPABASE_DB_URL is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          shopt -s nullglob
+          files=(supabase/seed/*.sql)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::No files matched supabase/seed/*.sql"
+            exit 1
+          fi
+
+          for file in "${files[@]}"; do
+            echo "Running $file"
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$file"
+          done
+
+      - name: Show what is now published
+        run: |
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+            "select slug, title, emoji, category, length(content) as chars
+               from notes
+              where public = true
+              order by created_at desc;"
