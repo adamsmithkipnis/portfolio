@@ -218,3 +218,94 @@ escape hatch that makes the whole metaphor safe.**
 `confidential: true` redacts the org name (→ "Fortune 500 retailer") and hides
 `artifacts/`. Lets you show process and outcomes for work under NDA without
 hand-maintaining a separate sanitized copy.
+
+---
+
+## Implementation notes
+
+Shipped August 2026. Where the build differs from the design above, this section wins.
+
+### Markdown, not full MDX
+
+Sections are `.mdx` files but the body is parsed as **Markdown**, not compiled MDX
+— rendered by `react-markdown` + `remark-gfm` + `rehype-raw`, all already in the
+tree for Notes. No MDX toolchain was added.
+
+The one thing MDX was wanted for — embedding video — is served by a single custom
+tag that `rehype-raw` turns into a real element node and `case-study-body.tsx`
+maps to a component:
+
+```html
+<video-embed platform="youtube" id="aqz-KE-bpKQ" title="Prototype walkthrough"></video-embed>
+<video-embed platform="vimeo" id="76979871" title="Concept reel"></video-embed>
+```
+
+Embeds are **click-to-load**: nothing is requested from YouTube or Vimeo until the
+viewer presses play, so a case study with four videos does not pull four players.
+YouTube uses `youtube-nocookie.com`. If a section ever needs arbitrary JSX, that's
+the point to revisit real MDX.
+
+### Frontmatter is a small YAML subset
+
+`scripts/build-content.mjs` parses frontmatter itself rather than pulling in a YAML
+dependency. Supported: scalars, inline arrays (`tags: [a, b]`), and lists of flat
+objects (`outcomes:` → `- label:` / `value:`). That covers `ProjectMeta` exactly.
+Anything richer belongs in the body.
+
+### Build-time walk, bundled tree
+
+Finder is a client component and cannot touch the filesystem, so the walk runs at
+build time and its result is bundled:
+
+```bash
+npm run content   # also runs automatically via predev and prebuild
+```
+
+| File | Role |
+|---|---|
+| `scripts/build-content.mjs` | walks `content/`, emits the tree |
+| `system/content/generated.ts` | **generated — do not edit** |
+| `system/content/types.ts` | `ContentNode`, `ProjectMeta` |
+| `lib/content-files.ts` | mounts the tree into Finder's paths |
+
+### Mounted at ~/Work
+
+`content/work/` is what Finder shows under **Work** in the sidebar; the folder
+appears only when there is at least one project. Reading order comes from numeric
+filename prefixes, so content children are *not* re-sorted alphabetically the way
+the rest of the virtual filesystem is.
+
+Other top-level content folders (`writing/`, loose assets) get their own mounts
+when they're needed.
+
+### Sections open in Preview windows
+
+Double-clicking a section opens it in its own **Preview window**, the same way a
+PDF does — `PreviewFileType` gained a `case-study` member alongside `image` and
+`pdf`, and `PreviewWindow` renders `ContentDetail` for it. Windows cascade, so
+several sections can sit open side by side, and each is titled with the section's
+display name ("Approach"), not its slug.
+
+Selecting (single click) a project or section in **column view** still previews it
+in the detail pane: Get Info metadata for a project — role, org, year, duration,
+team, outcomes, tags — and the rendered body for a section. Browse in the column,
+open a window when you want to keep something around.
+
+Where no window manager exists (mobile, standalone Finder), opening a section
+falls back to rendering it in place inside Finder, since there is nowhere to put
+a window.
+
+Two gotchas worth remembering, both fixed:
+
+- `<video-embed>` alone on a line gets wrapped in a `<p>`, so the embed root must
+  be a block-displayed `<span>`. A `<div>` there is invalid HTML and React throws
+  a hydration error.
+- Finder clears its selection on background click, so the detail pane must stop
+  click propagation or interacting with a video or link closes what you're reading.
+
+### Not yet built
+
+Quick Look (spacebar), tag filtering, sort-by-date, and the `confidential: true`
+redaction are specified above but unimplemented. `artifacts/` folders render as
+ordinary files. Deep-link routes (`/finder/work/<project>/<section>`) resolve to
+the Finder shell but do not yet restore the selected path.

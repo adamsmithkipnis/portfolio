@@ -68,14 +68,14 @@ const categories: { id: SettingsCategory; name: string; icon: React.ReactNode; i
 
 const connectivityItems = [
   { id: "airplane", name: "Airplane Mode", icon: <Plane className="w-5 h-5 text-white" />, iconBg: "bg-orange-500", type: "toggle" as const, value: false },
-  { id: "wifi", name: "Wi-Fi", icon: <Wifi className="w-5 h-5 text-white" />, iconBg: "bg-blue-500", type: "value" as const, value: "basecase" },
+  { id: "wifi", name: "Wi-Fi", icon: <Wifi className="w-5 h-5 text-white" />, iconBg: "bg-blue-500", type: "value" as const, value: "Kippy" },
   { id: "bluetooth", name: "Bluetooth", icon: <Bluetooth className="w-5 h-5 text-white" />, iconBg: "bg-blue-500", type: "nav" as const, value: "On" },
   { id: "cellular", name: "Cellular", icon: <Radio className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "static" as const },
   { id: "hotspot", name: "Personal Hotspot", icon: <Link2 className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "value" as const, value: "Off" },
   { id: "battery", name: "Battery", icon: <Battery className="w-5 h-5 text-white" />, iconBg: "bg-green-500", type: "static" as const },
 ];
 
-const appleAccountKeywords = ["alana", "goyal", "apple", "account", "personal", "information", "name", "birthday"];
+const appleAccountKeywords = ["adam", "smith-kipnis", "apple", "account", "personal", "information", "name", "birthday"];
 
 export function Sidebar({
   selectedCategory,

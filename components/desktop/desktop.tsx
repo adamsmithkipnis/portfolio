@@ -11,6 +11,7 @@ import { MenuBar } from "./menu-bar";
 import { Dock } from "./dock";
 import { Window } from "./window";
 import { DesktopNotificationBanner } from "./messages-notification-banner";
+import { DesktopIcons } from "./desktop-icons";
 import { NotesApp } from "@/components/apps/notes/notes-app";
 import { MessagesApp } from "@/components/apps/messages/messages-app";
 import type { PreviewFileType } from "@/components/apps/preview";
@@ -70,6 +71,9 @@ type DesktopMode = "active" | "locked" | "sleeping" | "shuttingDown" | "restarti
 
 const FINDER_STATUS_BAR_STORAGE_KEY = "finder-show-status-bar";
 const FINDER_PATH_BAR_STORAGE_KEY = "finder-show-path-bar";
+
+// Wide enough for a readable measure plus a 16:9 video embed, tall enough to scroll little
+const CASE_STUDY_WINDOW_SIZE = { width: 820, height: 720 };
 
 interface DesktopProps {
   initialAppId?: string;
@@ -521,9 +525,15 @@ function DesktopContent({
     [focusMultiWindow, openMultiWindow, textEditWindows]
   );
 
-  // Handler for opening preview files (images and PDFs) in Preview
+  // Handler for opening preview files (images, PDFs, case studies) in Preview
   const handleOpenPreviewFile = useCallback(
     (filePath: string, fileUrl: string, fileType: PreviewFileType) => {
+      if (fileType === "case-study") {
+        // Prose, so size for a comfortable measure rather than to a document's aspect
+        openMultiWindow("preview", filePath, { filePath, fileUrl, fileType }, CASE_STUDY_WINDOW_SIZE);
+        return;
+      }
+
       if (fileType === "pdf") {
         openMultiWindow("preview", filePath, { filePath, fileUrl, fileType });
         return;
@@ -535,6 +545,16 @@ function DesktopContent({
       });
     },
     [openMultiWindow]
+  );
+
+  // Desktop icons hand over just a path; resolve the text content the way Finder would
+  const handleOpenTextFileByPath = useCallback(
+    (filePath: string) => {
+      void fetchFileContent(filePath).then((content) => {
+        handleOpenTextFile(filePath, content ?? "");
+      });
+    },
+    [handleOpenTextFile]
   );
 
   // Handler for Finder dock icon click - focuses existing window or opens new one at Recents
@@ -874,6 +894,11 @@ function DesktopContent({
 
       {isActive && (
         <>
+          <DesktopIcons
+            onOpenPreviewFile={handleOpenPreviewFile}
+            onOpenTextFile={handleOpenTextFileByPath}
+          />
+
           <Window appId="notes">
             <NotesApp inShell={true} initialSlug={initialNoteSlug} />
           </Window>

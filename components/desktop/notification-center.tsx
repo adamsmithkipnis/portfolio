@@ -22,14 +22,16 @@ import { getThumbnailUrl } from "@/lib/photos/image-utils";
 import { getEventsForDay, formatEventTime } from "@/components/apps/calendar/utils";
 import { loadCalendars } from "@/components/apps/calendar/data";
 import { WeatherSceneEffects } from "@/components/apps/weather/weather-scene-effects";
-import { PodcastTweetCard } from "@/components/desktop/x-podcast-notification";
+// Temporarily hidden — see PodcastNotificationWidget below.
+// import { PodcastTweetCard } from "@/components/desktop/x-podcast-notification";
 import {
   buildOpenMeteoForecastUrl,
   getWeatherDescription,
   getWeatherIconName,
   getWeatherScene,
 } from "@/lib/weather";
-import { getPodcastNotificationPayload } from "@/lib/podcast-notification";
+// Temporarily hidden — see PodcastNotificationWidget below.
+// import { getPodcastNotificationPayload } from "@/lib/podcast-notification";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/components/apps/calendar/types";
 import type { Conversation } from "@/types/messages";
@@ -50,36 +52,38 @@ const clickableCardClass =
 const weatherCardClass = `${notificationCardClass} h-[134px]`;
 const clickableWeatherCardClass = `${weatherCardClass} transition-colors cursor-pointer`;
 
-function PodcastNotificationWidget({
-  onActivate,
-  onOpen,
-}: {
-  onActivate: () => void;
-  onOpen?: (notification: PodcastNotificationPayload) => void;
-}) {
-  const notification = getPodcastNotificationPayload();
-
-  return (
-    <button
-      type="button"
-      className={`${clickableCardClass} w-full`}
-      onClick={() => {
-        if (onOpen) {
-          onOpen(notification);
-        } else {
-          window.open(notification.tweetUrl, "_blank", "noopener,noreferrer");
-        }
-        onActivate();
-      }}
-    >
-      <PodcastTweetCard
-        notification={notification}
-        compact
-        className="rounded-none border-0 bg-transparent p-0 shadow-none dark:bg-transparent"
-      />
-    </button>
-  );
-}
+// Temporarily removed from the Notification Center. To restore: uncomment this
+// widget, its render site below, and the two imports at the top of the file.
+// function PodcastNotificationWidget({
+//   onActivate,
+//   onOpen,
+// }: {
+//   onActivate: () => void;
+//   onOpen?: (notification: PodcastNotificationPayload) => void;
+// }) {
+//   const notification = getPodcastNotificationPayload();
+//
+//   return (
+//     <button
+//       type="button"
+//       className={`${clickableCardClass} w-full`}
+//       onClick={() => {
+//         if (onOpen) {
+//           onOpen(notification);
+//         } else {
+//           window.open(notification.tweetUrl, "_blank", "noopener,noreferrer");
+//         }
+//         onActivate();
+//       }}
+//     >
+//       <PodcastTweetCard
+//         notification={notification}
+//         compact
+//         className="rounded-none border-0 bg-transparent p-0 shadow-none dark:bg-transparent"
+//       />
+//     </button>
+//   );
+// }
 
 // WMO weather code → icon + description
 function getWeatherInfo(code: number): {
@@ -446,7 +450,7 @@ function WeatherWidget({
         )}
         {!loading && weather && (
           <>
-            <p className="text-sm font-medium">San Francisco</p>
+            <p className="text-sm font-medium">Seattle</p>
             <p className="text-4xl font-light mt-0.5">{Math.round(weather.temp)}°</p>
             <div className="flex items-center gap-1.5 mt-3">
               <div className={iconClassName}>{weatherInfo?.icon}</div>
@@ -492,8 +496,8 @@ export function NotificationCenter({
       try {
         const res = await fetch(
           buildOpenMeteoForecastUrl({
-            latitude: 37.78,
-            longitude: -122.42,
+            latitude: 47.61,
+            longitude: -122.33,
             currentFields: ["temperature_2m", "weather_code"],
             dailyFields: ["temperature_2m_max", "temperature_2m_min"],
             forecastDays: 1,
@@ -547,10 +551,11 @@ export function NotificationCenter({
           <p className="text-2xl font-bold">{monthDay}</p>
         </div>
         <CalendarWidget onActivate={onClose} refreshKey={openRefreshKey} />
-        <PodcastNotificationWidget
+        {/* Temporarily hidden — see PodcastNotificationWidget above. */}
+        {/* <PodcastNotificationWidget
           onActivate={onClose}
           onOpen={onOpenPodcastNotification}
-        />
+        /> */}
         <MessagesWidget
           onActivate={onClose}
           refreshKey={openRefreshKey}

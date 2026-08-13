@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { getPdfProxyUrl } from "@/lib/preview-utils";
 
@@ -12,6 +12,13 @@ interface PdfViewerProps {
   errorContentClassName?: string;
 }
 
+// Rendered with pdf.js rather than an <iframe>, because inline PDF display via
+// <iframe> depends on the visitor's browser plugin — some Chromium builds render
+// nothing, and browsers set to "download PDFs instead of opening them" show an
+// empty pane. Canvas rendering behaves identically everywhere.
+const PDF_WORKER_SRC = "/pdf.worker.min.mjs";
+const RENDER_SCALE = 1.5; // crisp at typical window widths without ballooning memory
+
 export function PdfViewer({
   fileUrl,
   fileName,
@@ -19,34 +26,73 @@ export function PdfViewer({
   onRequestFocus,
   errorContentClassName,
 }: PdfViewerProps) {
-  const [pdfLoading, setPdfLoading] = useState(true);
-  const [pdfError, setPdfError] = useState(false);
-  const [pdfAttempt, setPdfAttempt] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
 
-  const pdfProxyUrl = useMemo(() => getPdfProxyUrl(fileUrl), [fileUrl]);
-  const pdfSrc = useMemo(() => `${pdfProxyUrl}&attempt=${pdfAttempt}`, [pdfProxyUrl, pdfAttempt]);
+  const proxyUrl = getPdfProxyUrl(fileUrl);
 
   useEffect(() => {
-    setPdfLoading(true);
-    setPdfError(false);
-    setPdfAttempt(0);
-  }, [fileUrl]);
+    let cancelled = false;
+    const container = containerRef.current;
+    if (!container) return;
 
-  // Timeout for PDF loading - if it takes too long, show error with download link
-  useEffect(() => {
-    if (!pdfLoading || pdfError) return;
+    setLoading(true);
+    setFailed(false);
+    container.replaceChildren();
 
-    const timeoutId = setTimeout(() => {
-      if (pdfLoading) {
-        setPdfError(true);
-        setPdfLoading(false);
+    (async () => {
+      try {
+        // Dynamic so pdf.js stays out of the main bundle until a PDF is opened
+        const pdfjs = await import("pdfjs-dist");
+        pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
+
+        const document = await pdfjs.getDocument({ url: proxyUrl }).promise;
+        if (cancelled) return;
+        setPageCount(document.numPages);
+
+        for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+          const page = await document.getPage(pageNumber);
+          if (cancelled) return;
+
+          const viewport = page.getViewport({ scale: RENDER_SCALE });
+          const canvas = window.document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (!context) continue;
+
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.className = "mx-auto mb-4 block h-auto w-full max-w-3xl rounded shadow-sm";
+          canvas.setAttribute("role", "img");
+          canvas.setAttribute("aria-label", `${fileName}, page ${pageNumber} of ${document.numPages}`);
+          container.appendChild(canvas);
+
+          await page.render({ canvasContext: context, viewport }).promise;
+          if (cancelled) return;
+        }
+
+        setLoading(false);
+      } catch {
+        if (cancelled) return;
+        setFailed(true);
+        setLoading(false);
       }
-    }, 10000); // 10 second timeout
+    })();
 
-    return () => clearTimeout(timeoutId);
-  }, [pdfLoading, pdfError, pdfAttempt, fileUrl]);
+    return () => {
+      cancelled = true;
+    };
+  }, [proxyUrl, fileName, attempt]);
 
-  if (pdfError) {
+  const retry = useCallback(() => {
+    setFailed(false);
+    setLoading(true);
+    setAttempt((value) => value + 1);
+  }, []);
+
+  if (failed) {
     return (
       <div className="flex items-center justify-center h-full text-zinc-500 dark:text-zinc-400">
         <div className={cn("text-center", errorContentClassName)}>
@@ -60,17 +106,13 @@ export function PdfViewer({
           <p className="text-sm mt-1 mb-3">The PDF viewer couldn&apos;t load this file</p>
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
-              onClick={() => {
-                setPdfError(false);
-                setPdfLoading(true);
-                setPdfAttempt((attempt) => attempt + 1);
-              }}
+              onClick={retry}
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
             >
               Retry
             </button>
             <a
-              href={pdfProxyUrl}
+              href={proxyUrl}
               download={fileName}
               className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
             >
@@ -96,7 +138,7 @@ export function PdfViewer({
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full w-full bg-zinc-100 dark:bg-zinc-900">
       {focusOverlayActive && onRequestFocus && (
         <div
           className="absolute inset-0 z-10"
@@ -110,8 +152,8 @@ export function PdfViewer({
           }}
         />
       )}
-      {pdfLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900">
+      {loading && (
+        <div className="absolute inset-0 z-[1] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900">
           <div className="flex flex-col items-center gap-2 text-zinc-500 dark:text-zinc-400">
             <svg className="w-8 h-8 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
@@ -121,21 +163,10 @@ export function PdfViewer({
           </div>
         </div>
       )}
-      <iframe
-        key={pdfSrc}
-        src={pdfSrc}
-        className="w-full h-full border-0"
-        title={fileName}
-        tabIndex={0}
-        onFocus={onRequestFocus ? () => onRequestFocus() : undefined}
-        onLoad={() => {
-          setPdfLoading(false);
-          setPdfError(false);
-        }}
-        onError={() => {
-          setPdfLoading(false);
-          setPdfError(true);
-        }}
+      <div
+        ref={containerRef}
+        data-page-count={pageCount}
+        className="h-full w-full overflow-auto p-4"
       />
     </div>
   );

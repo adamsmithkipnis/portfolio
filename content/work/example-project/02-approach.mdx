@@ -1,0 +1,15 @@
+---
+title: Approach
+---
+
+Video embeds use a `video-embed` tag. Both platforms are supported, and the
+player is lazy — it loads only after a click, so a case study with four videos
+does not pull four players on open.
+
+<video-embed platform="youtube" id="aqz-KE-bpKQ" title="Example YouTube embed"></video-embed>
+
+Set `platform` to `vimeo` and pass the numeric id for Vimeo:
+
+<video-embed platform="vimeo" id="76979871" title="Example Vimeo embed"></video-embed>
+
+Text continues normally after an embed.

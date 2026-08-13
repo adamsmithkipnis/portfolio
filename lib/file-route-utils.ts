@@ -3,9 +3,17 @@ import {
   getTextEditContent,
   isTextEditPathHidden,
 } from "@/lib/file-storage";
+import {
+  getContentChildren,
+  getContentDirectoryPaths,
+  hasContent,
+  isContentPath,
+  WORK_DIR,
+} from "@/lib/content-files";
 
 export const HOME_DIR = "/Users/adamsmithkipnis";
 export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
+export { WORK_DIR };
 const TEXT_FILE_EXTENSIONS = new Set(["txt", "md", "markdown", "json", "js", "jsx", "ts", "tsx", "css", "html", "xml", "yaml", "yml"]);
 
 export type DocumentAppId = "textedit" | "preview";
@@ -49,22 +57,10 @@ const LOCAL_SAMPLE_FILES: LocalSampleFile[] = [
     path: `${HOME_DIR}/Documents/hello.md`,
   },
   {
-    assetUrl: "/documents/Base%20Case%20Capital%20I%20-%20Form%20D.pdf",
+    assetUrl: "/documents/Adam%20Smith-Kipnis%20-%20Resume.pdf",
     directoryPath: `${HOME_DIR}/Desktop`,
     kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital I - Form D.pdf`,
-  },
-  {
-    assetUrl: "/documents/Base%20Case%20Capital%20II%20-%20Form%20D.pdf",
-    directoryPath: `${HOME_DIR}/Desktop`,
-    kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital II - Form D.pdf`,
-  },
-  {
-    assetUrl: "/documents/Base%20Case%20Capital%20III%20-%20Form%20D.pdf",
-    directoryPath: `${HOME_DIR}/Desktop`,
-    kind: "preview",
-    path: `${HOME_DIR}/Desktop/Base Case Capital III - Form D.pdf`,
+    path: `${HOME_DIR}/Desktop/Adam Smith-Kipnis - Resume.pdf`,
   },
 ];
 
@@ -78,6 +74,7 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     { name: "Documents", type: "dir", path: `${HOME_DIR}/Documents` },
     { name: "Downloads", type: "dir", path: `${HOME_DIR}/Downloads` },
     { name: "Projects", type: "dir", path: `${HOME_DIR}/Projects` },
+    ...(hasContent() ? [{ name: "Work", type: "dir" as const, path: WORK_DIR }] : []),
   ],
   [`${HOME_DIR}/Desktop`]: LOCAL_SAMPLE_FILES.filter((file) => file.directoryPath === `${HOME_DIR}/Desktop`).map((file) => ({
     name: file.path.split("/").pop() ?? file.path,
@@ -105,6 +102,10 @@ export function getLocalTextFileContent(filePath: string): string | null {
 }
 
 export function getLocalFinderFiles(directoryPath: string): LocalFinderItem[] {
+  // Content keeps its authored order — numeric filename prefixes are the reading
+  // sequence, so the alphabetical sort below would be wrong here.
+  if (isContentPath(directoryPath)) return getContentChildren(directoryPath);
+
   const staticItems = (LOCAL_FINDER_FILES[directoryPath] ?? []).filter(
     (item) => !isTextEditPathHidden(item.path)
   );
@@ -123,7 +124,7 @@ export function getLocalFinderFiles(directoryPath: string): LocalFinderItem[] {
 
 export function getAllLocalFinderFiles(): Record<string, LocalFinderItem[]> {
   return Object.fromEntries(
-    Object.keys(LOCAL_FINDER_FILES).map((directoryPath) => [
+    [...Object.keys(LOCAL_FINDER_FILES), ...getContentDirectoryPaths()].map((directoryPath) => [
       directoryPath,
       getLocalFinderFiles(directoryPath),
     ])

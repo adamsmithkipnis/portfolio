@@ -15,6 +15,9 @@ import {
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
+import { getContentNode, isContentPath, WORK_DIR } from "@/lib/content-files";
+import { ContentDetail } from "@/components/content/content-detail";
+import type { PreviewFileType } from "@/components/apps/preview";
 import { getFinderVisibleApps } from "@/lib/app-availability";
 import {
   getFileModifiedDate,
@@ -47,11 +50,12 @@ interface FileItem {
 }
 
 // Sidebar items
-export type SidebarItem = "recents" | "applications" | "desktop" | "documents" | "downloads" | "projects" | "trash";
+export type SidebarItem = "recents" | "applications" | "work" | "desktop" | "documents" | "downloads" | "projects" | "trash";
 
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "recents", label: "Recents", icon: "clock" },
   { id: "applications", label: "Applications", icon: "grid" },
+  { id: "work", label: "Work", icon: "briefcase" },
   { id: "desktop", label: "Desktop", icon: "desktop" },
   { id: "documents", label: "Documents", icon: "document" },
   { id: "downloads", label: "Downloads", icon: "download" },
@@ -77,7 +81,7 @@ interface FinderAppProps {
   showPathBar?: boolean;
   onOpenApp?: (appId: string) => void;
   onOpenTextFile?: (filePath: string, content: string) => void;
-  onOpenPreviewFile?: (filePath: string, fileUrl: string, fileType: "image" | "pdf") => void;
+  onOpenPreviewFile?: (filePath: string, fileUrl: string, fileType: PreviewFileType) => void;
   initialPath?: string;
   onPathChange?: (path: string) => void;
 }
@@ -187,6 +191,11 @@ function SidebarIcon({ icon, className }: { icon: string; className?: string }) 
         <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
       </svg>
     ),
+    briefcase: (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z" />
+      </svg>
+    ),
     trash: (
       <svg className={className} viewBox="0 0 24 24" fill="currentColor">
         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
@@ -219,6 +228,7 @@ export function FinderApp({
     switch (tab) {
       case "recents": return "recents";
       case "applications": return "applications";
+      case "work": return WORK_DIR;
       case "desktop": return `${HOME_DIR}/Desktop`;
       case "documents": return `${HOME_DIR}/Documents`;
       case "downloads": return `${HOME_DIR}/Downloads`;
@@ -233,6 +243,7 @@ export function FinderApp({
     if (path === "recents") return "recents";
     if (path === "applications") return "applications";
     if (path === "trash" || path.startsWith("trash/")) return "trash";
+    if (isContentPath(path)) return "work";
     if (path === `${HOME_DIR}/Desktop` || path.startsWith(`${HOME_DIR}/Desktop/`)) return "desktop";
     if (path === `${HOME_DIR}/Documents` || path.startsWith(`${HOME_DIR}/Documents/`)) return "documents";
     if (path === `${HOME_DIR}/Downloads` || path.startsWith(`${HOME_DIR}/Downloads/`)) return "downloads";
@@ -286,6 +297,12 @@ export function FinderApp({
   const currentPathRef = useRef(currentPath);
   currentPathRef.current = currentPath;
   const lastReportedPathRef = useRef<string | null>(null);
+
+  // Set when the current path points at a case study section rather than a folder
+  const openContentDocument = useMemo(() => {
+    const node = getContentNode(currentPath);
+    return node && node.kind !== "folder" ? node : null;
+  }, [currentPath]);
 
   const setCurrentPath = useCallback((path: string) => {
     if (path === currentPathRef.current) return;
@@ -389,6 +406,13 @@ export function FinderApp({
           type: item.type,
           path: `${PROJECTS_DIR}/${repo}/${item.path}`,
         })));
+        setLoading(false);
+        return;
+      }
+
+      // Case studies, mounted from the build-time content tree
+      if (isContentPath(path)) {
+        setFiles(getLocalFinderFiles(path));
         setLoading(false);
         return;
       }
@@ -684,6 +708,20 @@ export function FinderApp({
       // Don't preview files in trash (they don't exist)
       if (file.path.startsWith("trash/")) return;
 
+      // Case study sections open in their own Preview window, like a PDF does.
+      // Without a window manager (mobile, standalone Finder) there is nowhere to
+      // put a window, so fall back to rendering the reader in place.
+      if (getContentNode(file.path)) {
+        addRecent({ path: file.path, name: file.name, type: file.type });
+        setSelectedFile(null);
+        if (onOpenPreviewFile) {
+          onOpenPreviewFile(file.path, "", "case-study");
+        } else {
+          setCurrentPath(file.path);
+        }
+        return;
+      }
+
       // Clear selection immediately when opening a file
       setSelectedFile(null);
 
@@ -843,6 +881,17 @@ export function FinderApp({
       const parts = currentPath.split("/");
       parts[0] = "Trash"; // Capitalize Trash
       return parts;
+    }
+
+    // Content crumbs show display names ("Approach"), never slugs ("02-approach")
+    if (isContentPath(currentPath)) {
+      const crumbs = [USERNAME, "Work"];
+      let path = WORK_DIR;
+      for (const segment of currentPath.slice(WORK_DIR.length).split("/").filter(Boolean)) {
+        path += `/${segment}`;
+        crumbs.push(getContentNode(path)?.name ?? segment);
+      }
+      return crumbs;
     }
 
     const parts = currentPath.replace(HOME_DIR, USERNAME).split("/").filter(Boolean);
@@ -1213,6 +1262,7 @@ export function FinderApp({
     onOpen: (file: FileItem) => void,
   ) => {
     const selectedItem = items.find((file) => file.path === selectedPath) ?? null;
+    const selectedContentNode = selectedPath ? getContentNode(selectedPath) : null;
 
     return (
       <div className="flex h-full min-h-0">
@@ -1244,26 +1294,32 @@ export function FinderApp({
           ))}
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-center p-6">
-          {selectedItem ? (
-            <div className="flex max-w-sm flex-col items-center text-center">
-              <FileIcon
-                type={selectedItem.type}
-                name={selectedItem.name}
-                icon={selectedItem.icon}
-                className="h-20 w-20"
-              />
-              <p className="mt-3 max-w-full truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {selectedItem.displayName || selectedItem.name}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {getFileKind(selectedItem)} · {getFileDate(selectedItem)}
-              </p>
-            </div>
-          ) : (
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">Select an item</p>
-          )}
-        </div>
+        {selectedContentNode ? (
+          // Case studies read in place rather than launching a document app —
+          // column view is the reading surface (see docs/CONTENT-MODEL.md).
+          <ContentDetail node={selectedContentNode} className="min-w-0 flex-1" />
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center justify-center p-6">
+            {selectedItem ? (
+              <div className="flex max-w-sm flex-col items-center text-center">
+                <FileIcon
+                  type={selectedItem.type}
+                  name={selectedItem.name}
+                  icon={selectedItem.icon}
+                  className="h-20 w-20"
+                />
+                <p className="mt-3 max-w-full truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {selectedItem.displayName || selectedItem.name}
+                </p>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  {getFileKind(selectedItem)} · {getFileDate(selectedItem)}
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-400 dark:text-zinc-500">Select an item</p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -1691,6 +1747,10 @@ export function FinderApp({
             renderSearchResults()
           ) : loading ? (
             viewMode === "list" || viewMode === "columns" ? renderDesktopListSkeleton() : renderIconsGridSkeleton()
+          ) : openContentDocument ? (
+            // A case study section is open: it fills the pane in every view mode,
+            // since a document path has no children to list.
+            <ContentDetail node={openContentDocument} className="h-full" />
           ) : previewContent !== null ? (
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">

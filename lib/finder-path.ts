@@ -1,4 +1,5 @@
-import { HOME_DIR, PROJECTS_DIR } from "@/lib/file-route-utils";
+import { HOME_DIR, PROJECTS_DIR, WORK_DIR } from "@/lib/file-route-utils";
+import { getContentNode } from "@/lib/content-files";
 
 export interface FinderPathSegment {
   label: string;
@@ -6,6 +7,7 @@ export interface FinderPathSegment {
 }
 
 const FINDER_ROOTS = [
+  { label: "Work", path: WORK_DIR },
   { label: "Desktop", path: `${HOME_DIR}/Desktop` },
   { label: "Documents", path: `${HOME_DIR}/Documents` },
   { label: "Downloads", path: `${HOME_DIR}/Downloads` },
@@ -37,7 +39,8 @@ export function getFinderPathSegments(path: string): FinderPathSegment[] {
   let currentPath = root.path;
   for (const part of path.slice(root.path.length).split("/").filter(Boolean)) {
     currentPath += `/${part}`;
-    segments.push({ label: part, path: currentPath });
+    // Content crumbs use the node's display name ("Problem"), not its slug ("01-problem")
+    segments.push({ label: getContentNode(currentPath)?.name ?? part, path: currentPath });
   }
   return segments;
 }

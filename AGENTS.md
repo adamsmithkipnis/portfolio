@@ -14,6 +14,8 @@ this file captures the patterns and conventions that matter most when working in
 | path | purpose |
 |------|---------|
 | `lib/app-config.ts` | app registry (all apps defined here) |
+| `lib/content-files.ts` | mounts the build-time case study tree into Finder's paths |
+| `system/content/generated.ts` | **generated** content tree — run `npm run content` |
 | `lib/window-context.tsx` | window state machine (open/close/focus/minimize/drag/resize) |
 | `lib/sidebar-persistence.ts` | view state persistence + `clearAppState()` |
 | `lib/desktop/z-index.ts` | z-index layers: windows 1-50, dock 60, menu bar 70, fullscreen 80, overlays 90-100 |
@@ -40,6 +42,7 @@ read before building, update when you ship:
 - **hover states**: gate hover-only styles with Tailwind's `can-hover:` variant so touch devices never get sticky hover treatments
 - **menu system**: menus are mutually exclusive via `openMenu` state in `menu-bar.tsx`. panel-style menus follow the `status-menus.tsx` pattern. use `useClickOutside()` for dismissal
 - **app discoverability + availability**: define Dock, Finder, and mobile support policy in `lib/app-config.ts` (`showOnDockByDefault`, `showInFinderApplications`, and `mobile.*`). avoid hardcoded app-id allow/deny lists in app components
+- **case study content**: `content/work/<project>/` is the source of truth — adding a project is creating a folder, never a registry edit. `npm run content` regenerates the bundled tree (`predev`/`prebuild` do it for you). case study sections open in Preview windows (`PreviewFileType` includes `case-study`); column view previews them on selection. see `docs/CONTENT-MODEL.md`
 - **finder + document apps**: Finder is multi-window on desktop. keep per-window Finder browsing state inside the Finder window/app pair, and keep TextEdit/Preview launch roots aligned with `components/desktop/desktop.tsx`, route files, and `docs/document-apps.md`
 - **weather scenes**: weather visuals are shared between the weather app and notification center. use `components/apps/weather/weather-scene-effects.tsx` for scene rendering and `lib/weather.ts` for palettes/effect selection instead of duplicating scene markup
 
