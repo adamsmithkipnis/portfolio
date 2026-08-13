@@ -145,10 +145,13 @@ export function BatteryMenu({
 }
 
 // Other networks from desktop settings
+const knownNetworks = [
+  { name: "Aurafice Cafe" },
+  { name: "virus.exe" },
+];
+
 const otherNetworks = [
-  { name: "DIRECT-7A-HP OfficeJet Pro 9730e" },
-  { name: "Xfinity Wifi" },
-  { name: "Xfinity Mobile" },
+  { name: "HP Officejet Pro 8600" },
 ];
 
 // Wi-Fi Menu
@@ -188,6 +191,7 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500">
               <Smartphone className="w-3 h-3 text-white" />
             </div>
+            <Check className="w-3 h-3 shrink-0" />
             <span className="text-xs flex-1">Kippy</span>
             <div className="flex items-center gap-1 text-muted-foreground can-hover:group-hover:text-white/70">
               <div className="flex items-end gap-px h-2.5">
@@ -202,18 +206,23 @@ export function WifiMenu({ isOpen, onClose, onOpenWifiSettings }: WifiMenuProps)
 
           <MenuDivider />
 
-          {/* Known Network */}
+          {/* Known Networks */}
           <div className="px-3 py-1">
-            <span className="text-xs font-semibold text-muted-foreground">Known Network</span>
+            <span className="text-xs font-semibold text-muted-foreground">Known Networks</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-blue-500 can-hover:hover:text-white transition-colors cursor-pointer group">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500">
-              <Wifi className="w-3 h-3 text-white" />
+          {knownNetworks.map((network) => (
+            <div
+              key={network.name}
+              className="flex items-center gap-2 px-3 py-1.5 can-hover:hover:bg-blue-500 can-hover:hover:text-white transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500">
+                <Wifi className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-xs flex-1">{network.name}</span>
+              <Lock className="w-3 h-3 text-muted-foreground can-hover:group-hover:text-white/70" />
             </div>
-            <span className="text-xs flex-1">basecase</span>
-            <Lock className="w-3 h-3 text-muted-foreground can-hover:group-hover:text-white/70" />
-          </div>
+          ))}
 
           <MenuDivider />
 
@@ -349,7 +358,7 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
             <div className="text-left min-w-0">
               <div className="text-xs font-medium truncate">Wi-Fi</div>
               <div className="text-[10px] truncate text-muted-foreground">
-                {wifiEnabled ? "basecase" : "Off"}
+                {wifiEnabled ? "Kippy" : "Off"}
               </div>
             </div>
           </button>

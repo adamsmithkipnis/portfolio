@@ -13,15 +13,16 @@ function WifiSignal({ className }: { className?: string }) {
 }
 
 const knownNetworks = [
-  { name: "virus.exe", connected: true },
+  { name: "Aurafice Cafe", connected: false },
+  { name: "virus.exe", connected: false },
 ];
 
 const personalHotspots = [
-  { name: "Kippy" },
+  { name: "Kippy", connected: true },
 ];
 
 const otherNetworks = [
-  { name: "DIRECT-7A-HP OfficeJet Pro 9730e" },
+  { name: "HP Officejet Pro 8600" },
 ];
 
 interface WifiPanelProps {
@@ -61,7 +62,7 @@ export function WifiPanel({}: WifiPanelProps) {
           <div className="py-4 border-b border-border/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium">virus.exe</span>
+                <span className="text-xs font-medium">Kippy</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-xs text-green-600">
@@ -69,7 +70,7 @@ export function WifiPanel({}: WifiPanelProps) {
                   Connected
                 </span>
                 <Lock className="w-4 h-4 text-muted-foreground" />
-                <WifiSignal className="text-muted-foreground" />
+                <Smartphone className="w-4 h-4 text-muted-foreground" />
                 <button className="px-3 py-1 text-xs border border-border rounded-md hover:bg-muted/50 transition-colors">
                   Details...
                 </button>
@@ -86,7 +87,10 @@ export function WifiPanel({}: WifiPanelProps) {
                   key={hotspot.name}
                   className="flex items-center justify-between py-2 px-2 rounded-lg can-hover:hover:bg-muted/50 transition-colors cursor-pointer"
                 >
-                  <span className="text-xs">{hotspot.name}</span>
+                  <div className="flex items-center gap-2">
+                    {hotspot.connected && <Check className="w-4 h-4 text-foreground" />}
+                    <span className="text-xs">{hotspot.name}</span>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4 text-muted-foreground" />
                     <Smartphone className="w-4 h-4 text-muted-foreground" />
@@ -98,7 +102,7 @@ export function WifiPanel({}: WifiPanelProps) {
 
           {/* Known Network */}
           <div className="py-4 border-b border-border/50">
-            <h3 className="text-xs font-medium text-muted-foreground mb-3">Known Network</h3>
+            <h3 className="text-xs font-medium text-muted-foreground mb-3">Known Networks</h3>
             <div className="space-y-1">
               {knownNetworks.map((network) => (
                 <div
