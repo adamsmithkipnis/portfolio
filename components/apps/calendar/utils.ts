@@ -39,20 +39,30 @@ const WEEKDAY_MEETING_PATTERNS = [
   [{ start: "14:00", end: "15:00" }, { start: "15:30", end: "16:30" }], // lighter day
 ];
 
-// Meeting time patterns for weekends - all 1-hour blocks with 30-min gaps
-const WEEKEND_MEETING_PATTERNS = [
-  [{ start: "14:00", end: "15:00" }, { start: "15:30", end: "16:30" }],
-  [{ start: "13:30", end: "14:30" }, { start: "15:00", end: "16:00" }],
-  [{ start: "15:00", end: "16:00" }, { start: "16:30", end: "17:30" }],
-  [{ start: "14:30", end: "15:30" }], // very light day
-  [{ start: "14:00", end: "15:00" }, { start: "16:00", end: "17:00" }],
-  [{ start: "13:30", end: "14:30" }, { start: "15:30", end: "16:30" }],
-  [{ start: "14:30", end: "15:30" }, { start: "16:30", end: "17:30" }],
-];
-
 // Pull a meeting's end time back to WORKDAY_END when the pattern runs past it
 function clampToWorkdayEnd(meeting: { start: string; end: string }): { start: string; end: string } {
   return meeting.end > WORKDAY_END ? { start: meeting.start, end: WORKDAY_END } : meeting;
+}
+
+// Western (Gregorian) Easter for a given year, via the anonymous Gregorian computus.
+// Easter is a moving feast, so it has to be computed rather than pinned to a date.
+// Returns a 0-indexed month to match Date#getMonth.
+function getEasterDate(year: number): { month: number; date: number } {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const date = ((h + l - 7 * m + 114) % 31) + 1;
+  return { month: month - 1, date };
 }
 
 // Get a deterministic pattern index based on the date (varies week to week)
@@ -71,7 +81,6 @@ function generateSampleEventsForDay(day: Date): CalendarEvent[] {
   const dayOfWeek = day.getDay();
   const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
   const isSaturday = dayOfWeek === 6;
-  const isSunday = dayOfWeek === 0;
 
   const events: CalendarEvent[] = [];
 
@@ -87,33 +96,48 @@ function generateSampleEventsForDay(day: Date): CalendarEvent[] {
       isAllDay: false,
       calendarId: "events",
     });
+
+    // dog park - 8:15-8:45am on weekdays
+    events.push({
+      id: `sample-dog-park-${dateStr}`,
+      title: "dog park",
+      startDate: dateStr,
+      endDate: dateStr,
+      startTime: "08:15",
+      endTime: "08:45",
+      isAllDay: false,
+      calendarId: "exercise",
+    });
   }
 
-  // dog park - 8:15-8:45am every day
-  events.push({
-    id: `sample-dog-park-${dateStr}`,
-    title: "dog park",
-    startDate: dateStr,
-    endDate: dateStr,
-    startTime: "08:15",
-    endTime: "08:45",
-    isAllDay: false,
-    calendarId: "exercise",
-  });
-
-  // focus time - 9am-12:30pm every day
-  events.push({
-    id: `sample-focus-${dateStr}`,
-    title: "focus time",
-    startDate: dateStr,
-    endDate: dateStr,
-    startTime: "09:00",
-    endTime: "12:30",
-    isAllDay: false,
-    calendarId: "focus",
-  });
+  // easter egg hunt - 2:30-3:30pm on Easter Sunday
+  const easter = getEasterDate(day.getFullYear());
+  if (day.getMonth() === easter.month && day.getDate() === easter.date) {
+    events.push({
+      id: `sample-egg-${dateStr}`,
+      title: "Egg",
+      startDate: dateStr,
+      endDate: dateStr,
+      startTime: "14:30",
+      endTime: "15:30",
+      isAllDay: false,
+      calendarId: "events",
+    });
+  }
 
   if (isWeekday) {
+    // focus time - 9am-12:30pm on weekdays
+    events.push({
+      id: `sample-focus-${dateStr}`,
+      title: "focus time",
+      startDate: dateStr,
+      endDate: dateStr,
+      startTime: "09:00",
+      endTime: "12:30",
+      isAllDay: false,
+      calendarId: "focus",
+    });
+
     // Select a meeting pattern based on the date
     const patternIndex = getPatternIndex(day, WEEKDAY_MEETING_PATTERNS.length);
     const meetingPattern = WEEKDAY_MEETING_PATTERNS[patternIndex];
@@ -168,46 +192,18 @@ function generateSampleEventsForDay(day: Date): CalendarEvent[] {
       isAllDay: false,
       calendarId: "focus",
     });
-  } else {
-    // Select a meeting pattern for weekends
-    const patternIndex = getPatternIndex(day, WEEKEND_MEETING_PATTERNS.length);
-    const meetingPattern = WEEKEND_MEETING_PATTERNS[patternIndex];
-
-    meetingPattern.map(clampToWorkdayEnd).forEach((meeting, index) => {
-      events.push({
-        id: `sample-meeting${index + 1}-${dateStr}`,
-        title: "busy",
-        startDate: dateStr,
-        endDate: dateStr,
-        startTime: meeting.start,
-        endTime: meeting.end,
-        isAllDay: false,
-        calendarId: "meetings",
-      });
-    });
-
-    if (isSaturday) {
-      events.push({
-        id: `sample-soccer-${dateStr}`,
-        title: "soccer practice",
-        startDate: dateStr,
-        endDate: dateStr,
-        startTime: "10:00",
-        endTime: "11:00",
-        isAllDay: false,
-        calendarId: "exercise",
-      });
-    }
-
+  } else if (isSaturday) {
+    // Weekends stay clear of focus time, busy blocks, dinner, and the dog park.
+    // Soccer sits on the "events" calendar so it renders blue rather than exercise red.
     events.push({
-      id: isSunday ? `sample-meals-sunday-${dateStr}` : `sample-meals-${dateStr}`,
-      title: "dinner",
+      id: `sample-soccer-${dateStr}`,
+      title: "soccer practice",
       startDate: dateStr,
       endDate: dateStr,
-      startTime: "17:00",
-      endTime: "18:30",
+      startTime: "10:00",
+      endTime: "11:00",
       isAllDay: false,
-      calendarId: "meals",
+      calendarId: "events",
     });
   }
 

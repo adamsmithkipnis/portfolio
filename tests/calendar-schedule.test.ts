@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { getEventsForDay } from "../components/apps/calendar/utils";
+import { DEFAULT_CALENDARS } from "../components/apps/calendar/data";
 
 // Fixed reference week so the assertions do not drift with the clock.
 // August 2026: 10th is a Monday, so this covers every weekday plus both weekend days.
@@ -51,13 +52,52 @@ test("no busy block runs past 5pm, any day of the week", () => {
   }
 });
 
-test("dinner is 5:00-6:30 every day", () => {
-  for (const day of [MONDAY, THURSDAY, SATURDAY, SUNDAY]) {
+test("dinner is 5:00-6:30 on weekdays", () => {
+  for (const day of [MONDAY, THURSDAY]) {
     const dinners = find(day, "dinner");
     assert.equal(dinners.length, 1);
     assert.equal(dinners[0].startTime, "17:00");
     assert.equal(dinners[0].endTime, "18:30");
   }
+});
+
+test("weekends carry no focus time, busy blocks, or dinner", () => {
+  // Sweep a full month so every weekend in the rotation is exercised
+  for (let dayOfMonth = 1; dayOfMonth <= 31; dayOfMonth += 1) {
+    const day = new Date(2026, 7, dayOfMonth);
+    const dayOfWeek = day.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) continue;
+
+    for (const title of ["focus time", "busy", "dinner"]) {
+      assert.equal(
+        find(day, title).length,
+        0,
+        `${title} still on the calendar for Aug ${dayOfMonth}`
+      );
+    }
+  }
+});
+
+test("saturdays keep only soccer practice, sundays stay empty", () => {
+  assert.deepEqual(titles(SATURDAY), ["soccer practice"]);
+  assert.deepEqual(titles(SUNDAY), []);
+});
+
+test("the dog park is weekdays only", () => {
+  for (const day of WEEKDAYS) {
+    assert.equal(find(day, "dog park").length, 1);
+  }
+  assert.equal(find(SATURDAY, "dog park").length, 0);
+  assert.equal(find(SUNDAY, "dog park").length, 0);
+});
+
+test("soccer practice renders blue, on the events calendar", () => {
+  const soccer = find(SATURDAY, "soccer practice")[0];
+  assert.ok(soccer, "expected soccer practice on Saturday");
+  assert.equal(soccer.calendarId, "events");
+
+  const blue = DEFAULT_CALENDARS.find((calendar) => calendar.id === soccer.calendarId);
+  assert.equal(blue?.color, "#5B9BD5");
 });
 
 test("evening focus time is weeknights only", () => {
@@ -82,6 +122,43 @@ test("soccer practice is Saturday mornings only", () => {
 
   assert.equal(find(SUNDAY, "soccer practice").length, 0);
   assert.equal(find(MONDAY, "soccer practice").length, 0);
+});
+
+test("Egg lands on Easter Sunday, 2:30-3:30, every year", () => {
+  // Western Easter dates, verified against the Gregorian computus
+  const easters: Array<[number, number, number]> = [
+    [2026, 3, 5],   // April 5, 2026
+    [2027, 2, 28],  // March 28, 2027
+    [2028, 3, 16],  // April 16, 2028
+    [2029, 3, 1],   // April 1, 2029
+    [2030, 3, 21],  // April 21, 2030
+    [2035, 2, 25],  // March 25, 2035 - earliest in this range
+    [2038, 3, 25],  // April 25, 2038 - latest possible Easter
+  ];
+
+  for (const [year, month, date] of easters) {
+    const day = new Date(year, month, date);
+    assert.equal(day.getDay(), 0, `Easter ${year} should be a Sunday`);
+
+    const eggs = find(day, "Egg");
+    assert.equal(eggs.length, 1, `expected one Egg on ${year}-${month + 1}-${date}`);
+    assert.equal(eggs[0].startTime, "14:30");
+    assert.equal(eggs[0].endTime, "15:30");
+    assert.equal(eggs[0].isAllDay, false);
+  }
+});
+
+test("Egg appears exactly once a year and never off Easter", () => {
+  for (const year of [2026, 2027, 2028]) {
+    let count = 0;
+    for (let month = 0; month < 12; month += 1) {
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      for (let date = 1; date <= daysInMonth; date += 1) {
+        count += find(new Date(year, month, date), "Egg").length;
+      }
+    }
+    assert.equal(count, 1, `expected exactly one Egg in ${year}, found ${count}`);
+  }
 });
 
 test("the hacker meetup is Thursdays at Harry's", () => {
