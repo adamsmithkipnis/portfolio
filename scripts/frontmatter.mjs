@@ -19,6 +19,7 @@ export function parseScalar(raw) {
   return value;
 }
 
+/** @returns {{ data: Record<string, unknown>, body: string }} */
 export function parseFrontmatter(source) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(source);
   if (!match) return { data: {}, body: source };
