@@ -44,6 +44,15 @@ export default function App({ isDesktop = false }: AppProps) {
   const inShell = !!(isDesktop && windowFocus);
 
   const { hostRef, state, failed, playTrack, togglePlay } = useSpotifyEmbed();
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+
+  const handleTrackPlay = useCallback(
+    (uri: string, index: number) => {
+      setPlayingIndex(index);
+      playTrack(uri);
+    },
+    [playTrack]
+  );
 
   // Mobile layout is determined by shell context, not viewport width
   useEffect(() => {
@@ -96,8 +105,9 @@ export default function App({ isDesktop = false }: AppProps) {
         <PlaylistView
           playlist={selectedPlaylist}
           playingUri={state.playingUri}
+          playingIndex={playingIndex}
           isPaused={state.isPaused}
-          onTrackPlay={playTrack}
+          onTrackPlay={handleTrackPlay}
           isMobileView={isMobileView}
         />
       );

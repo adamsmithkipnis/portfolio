@@ -30,7 +30,14 @@ import { join } from "node:path";
 // Accepts a bare id, a spotify: URI, or an open.spotify.com URL.
 // ---------------------------------------------------------------------------
 const PLAYLISTS = [
-  // "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
+  "https://open.spotify.com/playlist/3Xx6Rw0wnsBkXLOApUNWM9",
+  "https://open.spotify.com/playlist/0NG9SPYqcqLDqNgESCJhLs",
+  "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1",
+  "https://open.spotify.com/playlist/5P7T0iKh7qO4Fdvh6ko0sW",
+  "https://open.spotify.com/playlist/4bScjAZD4W2UGaNVbNHgdQ",
+  "https://open.spotify.com/playlist/3cai0SGQQ03gcvaEB4VMYw",
+  "https://open.spotify.com/playlist/1cKu6eH7jmqwlKjW1Nxcdf",
+  "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU",
 ];
 
 const ROOT = process.cwd();
@@ -119,11 +126,36 @@ async function runAuthorizationCodeFlow() {
       }
       const returnedState = url.searchParams.get("state");
       const returnedCode = url.searchParams.get("code");
+      const returnedError = url.searchParams.get("error");
       res.writeHead(200, { "Content-Type": "text/html" });
-      if (returnedState !== state || !returnedCode) {
+
+      if (returnedError) {
+        res.end(`<p>Spotify returned: ${returnedError}. You can close this tab.</p>`);
+        // Only abort if this error belongs to the current attempt.
+        if (returnedState === state) {
+          server.close();
+          reject(new Error(`Spotify denied the request: ${returnedError}`));
+        } else {
+          console.log(`  (ignored a stale error callback: ${returnedError})`);
+        }
+        return;
+      }
+
+      // A stale tab reloading an older callback URL must not kill this run:
+      // answer it, keep listening for the callback that matches this attempt.
+      if (returnedState !== state) {
+        res.end(
+          "<p>This is an old authorization link, so it was ignored. " +
+            "Use the newest URL printed in the terminal.</p>"
+        );
+        console.log("  (ignored a stale callback from an earlier run)");
+        return;
+      }
+
+      if (!returnedCode) {
         res.end("<p>Authorization failed. You can close this tab.</p>");
         server.close();
-        reject(new Error("state mismatch or missing code"));
+        reject(new Error("callback arrived with no authorization code"));
         return;
       }
       res.end("<p>Authorized. You can close this tab.</p>");
@@ -133,8 +165,14 @@ async function runAuthorizationCodeFlow() {
     server.listen(8888, "127.0.0.1");
     setTimeout(() => {
       server.close();
-      reject(new Error("timed out waiting for authorization"));
-    }, 300_000);
+      reject(
+        new Error(
+          "timed out waiting for authorization. Re-run to get a fresh URL. If " +
+            "Spotify showed INVALID_CLIENT, add http://127.0.0.1:8888/callback " +
+            "to the app's Redirect URIs in the developer dashboard first."
+        )
+      );
+    }, 900_000);
   });
 
   const json = await tokenRequest({
@@ -191,16 +229,23 @@ async function fetchPlaylistItems(playlistId, token) {
       }
       return collected;
     } catch (error) {
-      if (error.status === 404) continue; // wrong endpoint name for this API version
+      // 404 = endpoint name not in this API version, 403 = deprecated and
+      // forbidden for this app. Either way, try the other name. A 401 is a
+      // genuine auth failure and must surface.
+      if (error.status === 404 || error.status === 403) continue;
       throw error;
     }
   }
   throw new Error(`could not read items for playlist ${playlistId}`);
 }
 
-function normalizeTrack(item) {
-  const track = item?.track;
-  if (!track || track.type !== "track" || !track.id) return null;
+function normalizeTrack(entry) {
+  // The Feb 2026 Web API revision renamed the playlist entry's payload from
+  // `track` to `item` (and `track` is now a boolean flag on that payload).
+  // Accept both so this keeps working either way.
+  const track = entry?.item ?? entry?.track;
+  if (!track || typeof track !== "object") return null;
+  if (track.type !== "track" || !track.id) return null;
   return {
     id: track.id,
     uri: track.uri,
@@ -252,13 +297,18 @@ async function resolveToken() {
 
   const probeId = parsePlaylistId(PLAYLISTS[0]);
   const appToken = await getClientCredentialsToken();
+
+  // Probe the ITEMS endpoint, not the playlist endpoint. As of the Feb 2026
+  // Web API revision an app-only token still reads playlist metadata (name,
+  // cover) but is rejected for the track list, so probing /playlists/{id}
+  // would report success and then fail on the very next call.
   try {
-    await api(`/playlists/${probeId}`, appToken);
-    console.log("Client-credentials token can read playlists.");
+    await api(`/playlists/${probeId}/items?limit=1`, appToken);
+    console.log("Client-credentials token can read playlist items.");
     return appToken;
   } catch (error) {
     console.log(
-      `Client credentials rejected for playlist reads (${error.status}). ` +
+      `Client credentials cannot read playlist items (${error.status}). ` +
         "Falling back to a one-time user authorization."
     );
     return runAuthorizationCodeFlow();
@@ -274,7 +324,9 @@ function renderDataFile(playlists) {
 
 import type { SpotifyPlaylist } from "./types";
 
-export const SPOTIFY_PLAYLISTS: SpotifyPlaylist[] = ${JSON.stringify(playlists, null, 2)};
+export const SPOTIFY_PLAYLISTS: SpotifyPlaylist[] = [
+${playlists.map((p) => "  " + JSON.stringify(p)).join(",\n")}
+];
 `;
 }
 

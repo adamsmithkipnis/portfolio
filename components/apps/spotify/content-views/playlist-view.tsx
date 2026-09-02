@@ -14,14 +14,17 @@ import { ExternalLink, ListMusic, Pause, Play } from "lucide-react";
 interface PlaylistViewProps {
   playlist: SpotifyPlaylist;
   playingUri: string | null;
+  /** Row index of the playing track. A playlist may list the same track twice. */
+  playingIndex: number | null;
   isPaused: boolean;
-  onTrackPlay: (uri: string) => void;
+  onTrackPlay: (uri: string, index: number) => void;
   isMobileView: boolean;
 }
 
 export function PlaylistView({
   playlist,
   playingUri,
+  playingIndex,
   isPaused,
   onTrackPlay,
   isMobileView,
@@ -76,7 +79,7 @@ export function PlaylistView({
 
             <div className="flex items-center gap-3 mt-4">
               <button
-                onClick={() => firstTrackUri && onTrackPlay(firstTrackUri)}
+                onClick={() => firstTrackUri && onTrackPlay(firstTrackUri, 0)}
                 disabled={!firstTrackUri}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A7CFF] text-white text-sm font-medium transition-opacity can-hover:hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -101,7 +104,7 @@ export function PlaylistView({
             <div className="flex items-center gap-3 px-2 py-2 border-b border-muted-foreground/20 text-xs text-muted-foreground uppercase tracking-wide">
               <span className="w-5 text-center">#</span>
               <span className="w-10" />
-              <span className="flex-1">Title</span>
+              <span className="w-0 flex-1">Title</span>
               <span className="w-[150px]">Album</span>
               <span className="w-12 text-right">Time</span>
             </div>
@@ -109,13 +112,16 @@ export function PlaylistView({
 
           <div className="space-y-1 mt-1">
             {playlist.tracks.map((track, index) => {
-              const isCurrentTrack = playingUri === track.uri;
+              // Match on index too: a playlist can list the same track more
+              // than once, and only the row that was clicked should light up.
+              const isCurrentTrack =
+                playingUri === track.uri && playingIndex === index;
               const isPlaying = isCurrentTrack && !isPaused;
 
               return (
                 <div
-                  key={track.id}
-                  onClick={() => onTrackPlay(track.uri)}
+                  key={`${track.id}-${index}`}
+                  onClick={() => onTrackPlay(track.uri, index)}
                   className={cn(
                     "flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors group overflow-hidden",
                     isCurrentTrack
@@ -153,7 +159,7 @@ export function PlaylistView({
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
+                  <div className="w-0 flex-1 min-w-0">
                     <p
                       className={cn(
                         "text-sm truncate",
@@ -168,7 +174,7 @@ export function PlaylistView({
                   </div>
 
                   {!isMobileView && (
-                    <span className="w-[150px] text-xs text-muted-foreground truncate">
+                    <span className="w-[150px] shrink-0 text-xs text-muted-foreground truncate">
                       {track.album}
                     </span>
                   )}
