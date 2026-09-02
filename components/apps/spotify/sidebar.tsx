@@ -3,58 +3,33 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Home, Library, ListMusic } from "lucide-react";
+import { Library, ListMusic } from "lucide-react";
 import type { SpotifyPlaylist, SpotifyView } from "@/lib/spotify/types";
 
 interface SidebarProps {
-  children: React.ReactNode;
   playlists: SpotifyPlaylist[];
   activeView: SpotifyView;
   selectedPlaylistId: string | null;
   onViewSelect: (view: SpotifyView, playlistId?: string) => void;
   isMobileView: boolean;
-  onScroll?: (isScrolled: boolean) => void;
 }
 
 export function Sidebar({
-  children,
   playlists,
   activeView,
   selectedPlaylistId,
   onViewSelect,
   isMobileView,
-  onScroll,
 }: SidebarProps) {
   return (
-    <div className="flex flex-col h-full bg-[var(--spotify-base)]">
-      {children}
-
-      <button
-        onClick={() => onViewSelect("home")}
-        className={cn(
-          "flex items-center gap-4 px-5 py-2 text-sm font-bold transition-colors",
-          activeView === "home"
-            ? "text-[var(--spotify-text)]"
-            : "text-[var(--spotify-text-subdued)] can-hover:hover:text-[var(--spotify-text)]"
-        )}
-      >
-        <Home className="w-6 h-6" />
-        Home
-      </button>
-
-      <div className="flex items-center gap-4 px-5 pt-3 pb-2 text-sm font-bold text-[var(--spotify-text-subdued)]">
+    <div className="flex flex-col h-full bg-[var(--spotify-surface)]">
+      <div className="flex items-center gap-3 px-4 pt-4 pb-2 text-[var(--spotify-text-subdued)]">
         <Library className="w-6 h-6" />
-        Your Library
+        <span className="text-base font-bold">Your Library</span>
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea
-          className="h-full"
-          onScrollCapture={(e) => {
-            const target = e.target as HTMLElement;
-            onScroll?.(target.scrollTop > 0);
-          }}
-        >
+        <ScrollArea className="h-full">
           <div className={cn("px-2 pb-2", isMobileView ? "w-full" : "w-[264px]")}>
             {playlists.map((playlist) => {
               const isActive =
