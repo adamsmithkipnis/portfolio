@@ -47,3 +47,29 @@ export function findPlaylistById(
   if (!id) return null;
   return playlists.find((playlist) => playlist.id === id) ?? null;
 }
+
+/**
+ * Spotify tints each playlist header with the cover's dominant colour. Reading
+ * that would mean canvas-sampling a cross-origin image, so derive a stable hue
+ * from the playlist id instead: deterministic, varied between playlists, and
+ * identical on server and client.
+ */
+export function playlistHeaderHue(playlistId: string): number {
+  let hash = 0;
+  for (let i = 0; i < playlistId.length; i += 1) {
+    hash = (hash * 31 + playlistId.charCodeAt(i)) % 360;
+  }
+  return hash;
+}
+
+/** "May 20, 2021" — the format Spotify uses in its Date added column. */
+export function formatAddedDate(iso: string): string {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}

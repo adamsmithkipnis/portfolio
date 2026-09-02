@@ -93,7 +93,7 @@ export default function App({ isDesktop = false }: AppProps) {
   const selectedPlaylist = findPlaylistById(SPOTIFY_PLAYLISTS, selectedPlaylistId);
 
   if (!isLayoutInitialized) {
-    return <div className="h-full bg-background" />;
+    return <div className="spotify-app h-full bg-[var(--spotify-base)]" />;
   }
 
   const showSidebar = !isMobileView || !showContent;
@@ -128,7 +128,7 @@ export default function App({ isDesktop = false }: AppProps) {
       data-app="spotify"
       tabIndex={-1}
       onMouseDown={() => containerRef.current?.focus()}
-      className="spotify-app h-full flex flex-col bg-background text-foreground outline-none overflow-hidden"
+      className="spotify-app h-full flex flex-col bg-[var(--spotify-base)] text-[var(--spotify-text)] outline-none overflow-hidden"
     >
       <main className="flex-1 flex min-h-0 overflow-hidden">
         <div
@@ -137,7 +137,7 @@ export default function App({ isDesktop = false }: AppProps) {
             showSidebar
               ? isMobileView
                 ? "block w-full"
-                : "block w-[220px] border-r dark:border-foreground/20"
+                : "block w-[264px]"
               : "hidden"
           )}
         >
@@ -159,7 +159,7 @@ export default function App({ isDesktop = false }: AppProps) {
 
         <div
           className={cn(
-            "flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative",
+            "flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden relative bg-[var(--spotify-surface)]",
             showMainContent ? "block" : "hidden"
           )}
         >
@@ -171,7 +171,6 @@ export default function App({ isDesktop = false }: AppProps) {
         hostRef={hostRef}
         hasPlayed={state.playingUri !== null}
         failed={failed}
-        isMobileView={isMobileView}
       />
     </div>
   );

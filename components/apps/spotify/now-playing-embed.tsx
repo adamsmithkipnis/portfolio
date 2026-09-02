@@ -1,13 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
 interface NowPlayingEmbedProps {
   /** From useSpotifyEmbed — the controller replaces this element with its iframe. */
   hostRef: React.RefObject<HTMLDivElement>;
   hasPlayed: boolean;
   failed: boolean;
-  isMobileView: boolean;
 }
 
 /**
@@ -22,21 +19,17 @@ export function NowPlayingEmbed({
   hostRef,
   hasPlayed,
   failed,
-  isMobileView,
 }: NowPlayingEmbedProps) {
   return (
     <div
-      className={cn(
-        "shrink-0 border-t border-muted-foreground/20",
-        isMobileView ? "bg-background" : "bg-muted"
-      )}
+      className="shrink-0 border-t border-[var(--spotify-divider)] bg-[var(--spotify-base)]"
     >
       <div className="relative min-h-[80px]">
         <div ref={hostRef} className="w-full" />
 
         {!hasPlayed && !failed && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[var(--spotify-text-subdued)]">
               Select a song to start playing
             </p>
           </div>
@@ -44,7 +37,7 @@ export function NowPlayingEmbed({
 
         {failed && (
           <div className="absolute inset-0 flex items-center justify-center px-4">
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-[var(--spotify-text-subdued)] text-center">
               Spotify&rsquo;s player could not be loaded. A content blocker or an
               offline connection will do this.
             </p>

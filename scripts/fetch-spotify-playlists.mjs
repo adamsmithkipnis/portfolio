@@ -254,6 +254,8 @@ function normalizeTrack(entry) {
     album: track.album?.name ?? "",
     albumArt: track.album?.images?.[0]?.url ?? "",
     durationMs: track.duration_ms ?? 0,
+    explicit: Boolean(track.explicit),
+    addedAt: entry.added_at ?? "",
     externalUrl: track.external_urls?.spotify ?? `https://open.spotify.com/track/${track.id}`,
   };
 }

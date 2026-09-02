@@ -468,3 +468,26 @@ html, body {
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Spotify app palette
+
+   Deviates deliberately from the shared design tokens. The real Spotify client
+   has no light mode and its black/green identity is the whole point of the
+   simulation, so this app pins its own palette and forces a dark color scheme.
+   Values are declared once here as tokens rather than sprinkled as literals,
+   which keeps the "never hardcode a color" rule in AGENTS.md intact at the
+   component level. See docs/design-system.md.
+--------------------------------------------------------------------------- */
+.spotify-app {
+  --spotify-base: #000000;
+  --spotify-surface: #121212;
+  --spotify-surface-raised: #1a1a1a;
+  --spotify-surface-hover: #242424;
+  --spotify-green: #1ed760;
+  --spotify-text: #ffffff;
+  --spotify-text-subdued: #b3b3b3;
+  --spotify-divider: rgb(255 255 255 / 0.1);
+
+  color-scheme: dark;
+}

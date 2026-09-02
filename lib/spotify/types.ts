@@ -12,6 +12,8 @@ export interface SpotifyTrack {
   album: string;
   albumArt: string; // i.scdn.co URL
   durationMs: number;
+  explicit: boolean;
+  addedAt: string; // ISO timestamp of when it was added to the playlist
   externalUrl: string; // open.spotify.com link — required by Spotify's terms
 }
 
