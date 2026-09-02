@@ -24,7 +24,14 @@ export function NowPlayingEmbed({
     <div
       className="shrink-0 border-t border-[var(--spotify-divider)] bg-[var(--spotify-base)]"
     >
-      <div className="relative min-h-[80px]">
+      {/*
+        Spotify's embed draws a rounded card (12px) over a document that paints
+        white, so the area outside that radius shows through as white notches —
+        all four corners once the player is live. The iframe is cross-origin, so
+        the document's background cannot be restyled; clipping the host at the
+        same radius removes those corners and lets our black show instead.
+      */}
+      <div className="relative min-h-[80px] overflow-hidden rounded-xl">
         <div ref={hostRef} className="w-full" />
 
         {!hasPlayed && !failed && (
