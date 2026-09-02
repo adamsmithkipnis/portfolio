@@ -98,7 +98,7 @@ export function useSpotifyEmbed({
 
         api.createController(
           hostRef.current,
-          { uri: initialUri ?? "", width: "100%", height },
+          { uri: initialUri ?? "", width: "100%", height, theme: "dark" },
           (controller) => {
             if (cancelled) {
               controller.destroy();

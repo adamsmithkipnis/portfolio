@@ -33,6 +33,12 @@ export interface SpotifyEmbedControllerOptions {
   uri?: string;
   width?: string | number;
   height?: string | number;
+  /**
+   * "dark" pins the neutral dark player (embed URL `theme=0`) instead of
+   * letting Spotify tint the bar with the album's dominant colour. The real
+   * desktop client's footer is always dark, so this is what matches it.
+   */
+  theme?: "dark";
 }
 
 export interface SpotifyIframeApi {
