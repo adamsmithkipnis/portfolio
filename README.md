@@ -82,6 +82,15 @@ a macos sierra 10.12 themed desktop with:
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
 
+**spotify** - macos spotify simulation with real playback at `/spotify`
+- playlist and track metadata is baked into `lib/spotify/data.ts`; regenerate it
+  with `npm run spotify:fetch` (dev-time only — no spotify credentials are needed
+  in production)
+- audio comes from spotify's own embed, driven through their iframe api. full-length
+  playback requires a desktop browser signed into spotify premium; everyone else
+  gets ~30 second previews
+- desktop only
+
 ### mobile
 
 responsive mobile interface with:
