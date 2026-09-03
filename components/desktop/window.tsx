@@ -154,12 +154,21 @@ export function Window({
         "fixed",
         isHiddenMinimized && "invisible pointer-events-none",
         !isFocused && !isMaximized && !isHiddenMinimized && "opacity-95",
-        // Drag and resize listen on `window`, but a hovered iframe consumes
-        // the mouse events before they get there — so the moment the cursor
-        // crossed embedded content mid-drag, the window stopped following it.
-        // Taking iframes out of hit-testing for the duration keeps the stream
-        // unbroken. Applies to every embed: Safari's site, Spotify, PDFs.
-        isInteracting && "[&_iframe]:pointer-events-none",
+        // An iframe under the cursor consumes mouse events before they reach
+        // this window, which breaks two things.
+        //
+        // Mid-drag, the moment the cursor crossed embedded content the window
+        // stopped following it, because drag and resize listen on `window`.
+        //
+        // And while the window is in the background, a click on the embed
+        // never reached the focus handler below, so clicking an app's content
+        // did not bring it to the front — only its chrome did. Suppressing hit
+        // testing until the window is focused makes that first click activate,
+        // exactly the click-through protection this handler already applies to
+        // ordinary content, and the embed becomes interactive once focused.
+        //
+        // Applies to every embed: Safari's site, Spotify, PDFs.
+        (isInteracting || !isFocused) && "[&_iframe]:pointer-events-none",
       )}
       style={windowStyle}
       aria-hidden={isHiddenMinimized || undefined}
@@ -182,11 +191,16 @@ export function Window({
         onFocus?.();
 
         // If window wasn't focused, don't let the event reach children
-        // Exception: window controls and resize handles should always work
+        // Exception: window controls, resize handles and drag handles should
+        // always work. Swallowing the drag handle's mousedown cost a whole
+        // gesture — the click activated the window but never began the move,
+        // so a background window had to be clicked once and then dragged.
+        // macOS activates and moves in the same gesture.
         if (!wasAlreadyFocused) {
           const isWindowControl = (e.target as HTMLElement).closest(".window-controls");
           const isResizeHandle = (e.target as HTMLElement).closest("[data-window-resize-handle='true']");
-          if (!isWindowControl && !isResizeHandle) {
+          const isDragHandle = (e.target as HTMLElement).closest("[data-window-drag-handle='true']");
+          if (!isWindowControl && !isResizeHandle && !isDragHandle) {
             e.stopPropagation();
             e.preventDefault();
             suppressDoubleClickUntil.current = performance.now() + 500;

@@ -64,6 +64,7 @@ export function TopBar({
   return (
     <div
       onMouseDown={nav.onDragStart}
+      data-window-drag-handle="true"
       className="shrink-0 flex items-center gap-2 px-4 h-16 bg-[var(--spotify-base)] select-none"
     >
       <div onMouseDown={stopDrag}>
