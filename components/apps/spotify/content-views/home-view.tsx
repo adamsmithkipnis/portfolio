@@ -7,10 +7,14 @@ import { formatTotalDuration, totalPlaylistDuration } from "@/lib/spotify/format
 import type { SpotifyAudiobook, SpotifyPlaylist } from "@/lib/spotify/types";
 import { BookAudio, ListMusic, Play } from "lucide-react";
 
+/** Spotify shows eight quick-access tiles on Home. */
+const QUICK_ACCESS_COUNT = 8;
+
 interface HomeViewProps {
   playlists: SpotifyPlaylist[];
   audiobooks: SpotifyAudiobook[];
   onPlaylistSelect: (id: string) => void;
+  onPlaylistPlay: (id: string) => void;
   onAudiobookSelect: (id: string) => void;
   isMobileView: boolean;
 }
@@ -26,6 +30,7 @@ export function HomeView({
   playlists,
   audiobooks,
   onPlaylistSelect,
+  onPlaylistPlay,
   onAudiobookSelect,
   isMobileView,
 }: HomeViewProps) {
@@ -51,27 +56,29 @@ export function HomeView({
           {greeting()}
         </h1>
 
-        {/* Quick-access tiles, the grid Spotify puts at the top of Home. */}
+        {/* Quick-access tiles: two columns of eight, the way Spotify's Home
+            opens. The play button is absolutely positioned so it overlays the
+            tile on hover instead of reserving width, which is what lets the
+            tiles stay this narrow. */}
         <div
           className={cn(
-            // auto-fill responds to this grid's own width; a viewport
-            // breakpoint would not, and the window resizes independently of
-            // the viewport. A tile needs ~144px for art, gaps and the play
-            // affordance, so anything under ~260px leaves the title too little
-            // room and it wraps a character at a time.
             "grid gap-2 mb-8",
-            isMobileView
-              ? "grid-cols-1"
-              : "grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
+            isMobileView ? "grid-cols-1" : "grid-cols-2"
           )}
         >
-          {playlists.map((playlist) => (
-            <button
+          {playlists.slice(0, QUICK_ACCESS_COUNT).map((playlist) => (
+            <div
               key={playlist.id}
-              onClick={() => onPlaylistSelect(playlist.id)}
-              className="group flex items-center gap-3 h-[64px] rounded-md overflow-hidden text-left bg-[var(--spotify-surface-raised)] transition-colors can-hover:hover:bg-[var(--spotify-surface-hover)]"
+              className="relative group flex items-center gap-3 h-[64px] rounded-md overflow-hidden bg-[var(--spotify-surface-raised)] transition-colors can-hover:hover:bg-[var(--spotify-surface-hover)]"
             >
-              <div className="relative w-16 h-16 shrink-0 bg-[var(--spotify-surface)]">
+              {/* Covers the tile so a click anywhere opens the playlist. */}
+              <button
+                onClick={() => onPlaylistSelect(playlist.id)}
+                aria-label={`Open ${playlist.name}`}
+                className="absolute inset-0"
+              />
+
+              <div className="relative w-16 h-16 shrink-0 bg-[var(--spotify-surface)] pointer-events-none">
                 {playlist.coverArt ? (
                   <Image
                     src={playlist.coverArt}
@@ -87,14 +94,19 @@ export function HomeView({
                 )}
               </div>
 
-              <span className="flex-1 min-w-0 pr-2 text-[15px] font-bold leading-tight text-[var(--spotify-text)] line-clamp-2">
+              <span className="relative flex-1 min-w-0 pr-2 text-[15px] font-bold leading-tight text-[var(--spotify-text)] line-clamp-2 pointer-events-none">
                 {playlist.name}
               </span>
 
-              <span className="shrink-0 mr-4 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--spotify-green)] text-black opacity-0 translate-y-1 transition-all can-hover:group-hover:opacity-100 can-hover:group-hover:translate-y-0">
+              <button
+                onClick={() => onPlaylistPlay(playlist.id)}
+                aria-label={`Play ${playlist.name}`}
+                title={`Play ${playlist.name}`}
+                className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--spotify-green)] text-black shadow-lg opacity-0 translate-y-1 transition-all can-hover:group-hover:opacity-100 can-hover:group-hover:translate-y-[-50%] focus-visible:opacity-100"
+              >
                 <Play className="w-4 h-4 fill-current ml-0.5" />
-              </span>
-            </button>
+              </button>
+            </div>
           ))}
         </div>
 
