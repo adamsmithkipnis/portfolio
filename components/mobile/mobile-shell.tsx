@@ -42,6 +42,10 @@ const WeatherApp = dynamic(
   () => import("@/components/apps/weather/weather-app").then((mod) => mod.WeatherApp),
   { ssr: false }
 );
+const SafariApp = dynamic(
+  () => import("@/components/apps/safari/safari-app").then((mod) => mod.SafariApp),
+  { ssr: false }
+);
 const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then((mod) => mod.MusicApp), {
   ssr: false,
 });
@@ -123,6 +127,7 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
         {activeAppId === "photos" && <PhotosApp isMobile={true} inShell={false} />}
         {activeAppId === "calendar" && <CalendarApp isMobile={true} inShell={false} />}
         {activeAppId === "weather" && <WeatherApp isMobile={true} inShell={false} />}
+        {activeAppId === "safari" && <SafariApp isMobile={true} inShell={false} />}
         {activeAppId === "music" && <MusicApp isMobile={true} />}
       </div>
     </RecentsProvider>
