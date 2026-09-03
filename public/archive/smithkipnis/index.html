@@ -24,7 +24,10 @@
     --paper: #e0e0db;
     --ink: #253551;
     --footer: #2d3b4f;
-    --measure: 1180px;
+    /* Sized so the content box (inside the 4vw gutters) lands on the
+       original's 1400px at a 1800px viewport, which also puts the left edge
+       at 200px exactly as the live site does. */
+    --measure: 1544px;
   }
 
   * { box-sizing: border-box; }
@@ -44,7 +47,7 @@
   a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
   a:hover { text-decoration-thickness: 2px; }
 
-  .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 6vw; }
+  .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 4vw; }
 
   /* ---------- header ---------- */
 
@@ -74,34 +77,34 @@
 
   h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 
-  .hero {
-    font-size: clamp(34px, 5.2vw, 62px);
-    line-height: 1.08;
-    margin: 8vh 0 0;
-    max-width: 15ch;
-  }
-  .hero strong { font-weight: 600; }
+  /* Type and measure are fitted to the live site, sampled at 940px, 1200px
+     and 1800px. Measures are percentages of the container because the
+     original's columns hold a constant fraction of it (headline 41%, body
+     66%) rather than a fixed character count — a fixed ch cap held the
+     measure still while the type kept growing, which wrapped three lines
+     into six on a wide window.
 
-  .hero-sub {
-    font-size: clamp(30px, 4.4vw, 52px);
-    line-height: 1.1;
-    margin: 0.55em 0 0;
-    max-width: 16ch;
-  }
-  .hero-sub strong { font-weight: 600; }
+     The type ramp is piecewise: steep below 1200px, flat above, and the two
+     lines intersect exactly at 1200px. min() of the pair reproduces that
+     without a media query. Headline: 36.30px @940 -> 41.92 @1200 -> 46.24
+     @1800. Body: 29.54 -> 33.28 -> 36.16. */
 
-  .lede {
-    font-size: clamp(22px, 2.5vw, 30px);
-    line-height: 1.16;
-    margin: 14vh 0 0;
-    max-width: 30ch;
+  .hero, .hero-sub {
+    font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
+    line-height: 1.11;
+    max-width: 41%;
   }
+  .hero { margin: 8vh 0 0; }
+  .hero-sub { margin: 0.55em 0 0; }
+  .hero strong, .hero-sub strong { font-weight: 600; }
 
-  .patents {
-    font-size: clamp(22px, 2.5vw, 30px);
-    line-height: 1.16;
-    margin: 0.9em 0 0;
+  .lede, .patents {
+    font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
+    line-height: 1.14;
+    max-width: 66%;
   }
+  .lede { margin: 14vh 0 0; }
+  .patents { margin: 0.9em 0 0; }
 
   /* ---------- collage ----------
      Free-form scatter, not a grid: each tile is placed by percentage inside a
@@ -127,9 +130,9 @@
 
   .speaking { margin: 12vh 0 0; }
   .speaking h3 {
-    font-size: clamp(22px, 2.5vw, 30px);
-    line-height: 1.16;
-    max-width: 26ch;
+    font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
+    line-height: 1.14;
+    max-width: 62%;
   }
   .speaking .label { margin: 1.6em 0 0.9em; font-size: clamp(17px, 1.6vw, 20px); }
   .speaking ul { list-style: none; margin: 0; padding: 0; }
@@ -178,7 +181,7 @@
        to beat those inline widths — hence the !important. */
     .collage img { position: static; width: 100% !important; }
     .collage img:nth-child(even) { transform: translateY(26px); }
-    .hero, .hero-sub, .lede { max-width: none; }
+    .hero, .hero-sub, .lede, .patents, .speaking h3 { max-width: none; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
