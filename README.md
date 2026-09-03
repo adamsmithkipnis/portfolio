@@ -86,8 +86,12 @@ a macos sierra 10.12 themed desktop with:
 - opens at `/safari`
 - start page is the archived smithkipnis.com, framed same-origin from `/website`,
   which is also directly visitable on its own
-- favorites bar links open in a new tab outside the desktop; add or edit one in
-  `config/bookmarks.ts` — no component changes
+- five archived pages: home, the case studies index, and three case studies, at
+  the same paths the original used
+- it really browses — links between archived pages load in the frame, back and
+  forward walk session history, and the address bar tracks where you are
+- favorites bar: the site's own pages navigate in the frame, bookmarks open a new
+  tab outside the desktop. add or edit either in `config/bookmarks.ts`
 - address bar opens whatever you type; non-urls become a search
 - nothing renders the open web — most sites refuse framing, the archived
   squarespace site included

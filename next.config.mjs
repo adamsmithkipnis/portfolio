@@ -10,6 +10,7 @@
  * - /notes/{invalid}     → redirects to /notes/error
  * - /{legacy-slug}       → redirects to /notes/{legacy-slug} (server-side, permanent)
  * - /website             → archived smithkipnis.com (framed by the Safari app)
+ * - /website/casestudies → archived case studies, same paths as the original
  * - /{other}             → 404
  */
 
@@ -35,6 +36,9 @@ const nextConfig = {
       // SAMEORIGIN, and a subdomain would not have helped, since that check
       // is origin-based and a subdomain is a different origin.
       { source: "/website", destination: "/archive/smithkipnis/index.html" },
+      // The archived case studies mirror the original's paths, so links
+      // between them read the way they did on the live site.
+      { source: "/website/:path*", destination: "/archive/smithkipnis/:path*/index.html" },
     ];
   },
   async redirects() {
