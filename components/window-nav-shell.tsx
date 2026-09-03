@@ -31,6 +31,9 @@ export function WindowNavShell({
         className
       )}
       onMouseDown={onMouseDown}
+      // Marks this as window chrome, so a background window activates and
+      // moves in one gesture instead of swallowing the first mousedown.
+      data-window-drag-handle={onMouseDown ? "true" : undefined}
     >
       <div className="shrink-0">{left}</div>
       {center ? (

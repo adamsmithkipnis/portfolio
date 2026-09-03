@@ -102,6 +102,7 @@ export function Toolbar({
   return (
     <div
       onMouseDown={nav.onDragStart}
+      data-window-drag-handle="true"
       className={cn(
         "shrink-0 flex items-center gap-2 px-4 h-14 select-none",
         "border-b border-muted-foreground/20",
