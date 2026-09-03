@@ -132,3 +132,38 @@ test("every page offers a way into the case studies", () => {
     );
   }
 });
+
+/**
+ * The embeds have been lost twice: once because the fetched markup stores them
+ * as escaped HTML in an attribute rather than an iframe, and once because a
+ * video was hosted on Squarespace rather than YouTube. Pin the expected set.
+ */
+const EXPECTED_VIDEOS: Record<string, string[]> = {
+  "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08"],
+  "casestudies/project-one-f5w4d-3fh8d/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
+  "casestudies/project-six-sz8wl-rlpf8/index.html": ["bC2qMDS8g9Q"],
+};
+
+test("each case study embeds exactly the videos it should", () => {
+  for (const [name, want] of Object.entries(EXPECTED_VIDEOS)) {
+    const page = pages.find((p) => p.name === name);
+    assert.ok(page, `missing page ${name}`);
+    const found = [...page.html.matchAll(/youtube-nocookie\.com\/embed\/([A-Za-z0-9_-]+)/g)].map(
+      (m) => m[1]
+    );
+    assert.deepEqual(found, want, `${name} embeds the wrong videos`);
+  }
+});
+
+test("embeds use the privacy-preserving host and reserve their space", () => {
+  for (const page of pages) {
+    for (const frame of page.html.match(/<iframe[^>]*youtube[^>]*>/g) ?? []) {
+      assert.match(frame, /youtube-nocookie\.com/, `${page.name}: not the nocookie host`);
+      assert.match(frame, /allowfullscreen/, `${page.name}: embed cannot go fullscreen`);
+      assert.match(frame, /allow="[^"]*encrypted-media/, `${page.name}: incomplete allow list`);
+    }
+    const embeds = (page.html.match(/youtube-nocookie/g) ?? []).length;
+    const boxes = (page.html.match(/class="cs-video/g) ?? []).length;
+    assert.equal(boxes, embeds, `${page.name}: every embed needs a sized container`);
+  }
+});
