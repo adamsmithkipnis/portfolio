@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,13 @@ import { BookAudio, ListMusic, Play } from "lucide-react";
 
 /** Spotify shows eight quick-access tiles on Home. */
 const QUICK_ACCESS_COUNT = 8;
+
+/**
+ * Above this pane width Spotify lays the eight tiles out as two rows of four
+ * instead of four rows of two. Measured on the pane rather than the viewport,
+ * since the window resizes independently of the screen.
+ */
+const FOUR_COLUMN_MIN_WIDTH = 1000;
 
 interface HomeViewProps {
   playlists: SpotifyPlaylist[];
@@ -34,6 +42,22 @@ export function HomeView({
   onAudiobookSelect,
   isMobileView,
 }: HomeViewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [paneWidth, setPaneWidth] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setPaneWidth(entry.contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const quickAccessColumns =
+    !isMobileView && paneWidth >= FOUR_COLUMN_MIN_WIDTH ? 4 : 2;
+
   if (playlists.length === 0) {
     return (
       <div className="h-full flex items-center justify-center px-6">
@@ -50,6 +74,7 @@ export function HomeView({
   }
 
   return (
+    <div ref={containerRef} className="h-full">
     <ScrollArea className="h-full">
       <div className={cn("px-6 py-6", isMobileView && "px-4")}>
         <h1 className="text-3xl font-extrabold tracking-tight mb-5 text-[var(--spotify-text)]">
@@ -61,10 +86,12 @@ export function HomeView({
             tile on hover instead of reserving width, which is what lets the
             tiles stay this narrow. */}
         <div
-          className={cn(
-            "grid gap-2 mb-8",
-            isMobileView ? "grid-cols-1" : "grid-cols-2"
-          )}
+          className="grid gap-2 mb-8"
+          style={{
+            gridTemplateColumns: isMobileView
+              ? "minmax(0, 1fr)"
+              : `repeat(${quickAccessColumns}, minmax(0, 1fr))`,
+          }}
         >
           {playlists.slice(0, QUICK_ACCESS_COUNT).map((playlist) => (
             <div
@@ -213,5 +240,6 @@ export function HomeView({
         )}
       </div>
     </ScrollArea>
+    </div>
   );
 }
