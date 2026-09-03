@@ -144,16 +144,26 @@ export function TopBar({
       {/* Fixed width balances the traffic lights and arrows on the left, so
           the search pill stays optically centred. */}
       {!isMobileView && (
-        <div className="w-[104px] shrink-0 flex justify-end">
-          <span className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
-            <Image
-              src="/headshot.jpg"
-              alt="Adam Smith-Kipnis"
-              title="Adam Smith-Kipnis"
-              fill
-              className="object-cover"
-              sizes="32px"
-            />
+        <div className="relative group w-[104px] shrink-0 flex justify-end">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--spotify-surface-raised)] transition-colors can-hover:group-hover:bg-[var(--spotify-surface-hover)]">
+            <span className="relative w-8 h-8 rounded-full overflow-hidden">
+              <Image
+                src="/headshot.jpg"
+                alt="Adam Smith-Kipnis"
+                fill
+                className="object-cover"
+                sizes="32px"
+              />
+            </span>
+          </span>
+
+          {/* The dock has its own tooltip, but it lives in the shell layer and
+              apps must not reach upward into it, so this is a local one. */}
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute right-0 top-full z-20 mt-2 whitespace-nowrap rounded-md bg-[var(--spotify-surface-hover)] px-3 py-1.5 text-[13px] font-medium text-[var(--spotify-text)] shadow-lg opacity-0 transition-opacity can-hover:group-hover:opacity-100"
+          >
+            Adam Smith-Kipnis
           </span>
         </div>
       )}
