@@ -78,3 +78,22 @@ export const BOOKMARK_SECTIONS: BookmarkSection[] = [
 export const ALL_BOOKMARKS: Bookmark[] = BOOKMARK_SECTIONS.flatMap(
   (section) => section.bookmarks
 );
+
+/**
+ * Pages of the archived site itself, shown at the head of the Favorites Bar.
+ *
+ * These are separate from the bookmarks above because they behave differently:
+ * they navigate inside Safari's frame rather than opening a tab. They also
+ * fill a real gap — the original site links to its case studies from nowhere,
+ * so without these the archive would only be reachable by typing a URL.
+ */
+export interface SitePage {
+  title: string;
+  /** Path under /website, loaded into the frame. */
+  path: string;
+}
+
+export const SITE_PAGES: SitePage[] = [
+  { title: "Home", path: "/website" },
+  { title: "Case Studies", path: "/website/casestudies" },
+];

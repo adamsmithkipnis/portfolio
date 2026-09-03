@@ -1,49 +1,112 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
 /**
- * The archived site is displayed inside Safari's frame, so a link without
- * target="_blank" loads its destination into that small box instead of leaving
- * the desktop — which defeats the point of the app. The page is hand-edited
- * HTML with no build step to catch this, so it is asserted here.
+ * The archived site is displayed inside Safari's frame, and its links come in
+ * two kinds that must not be confused:
+ *
+ *   - Anything leaving the archive needs target="_blank", or the destination
+ *     loads into the small box instead of a real browser tab.
+ *   - Links between archived pages must NOT have it, or browsing the archive
+ *     would spawn a tab per click and Safari's back button would never mean
+ *     anything.
+ *
+ * These are hand-edited and generated HTML with no build step to catch a
+ * mistake, so both directions are asserted here.
  */
 
-const PAGE = path.join(process.cwd(), "public/archive/smithkipnis/index.html");
-const html = readFileSync(PAGE, "utf8");
+const ROOT = path.join(process.cwd(), "public/archive/smithkipnis");
 
-const anchors = html.match(/<a\s[^>]*>/g) ?? [];
+function htmlFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) return htmlFiles(full);
+    return entry.endsWith(".html") ? [full] : [];
+  });
+}
 
-test("the archived page actually has links", () => {
-  // Guards against the regex silently matching nothing if the markup changes.
-  assert.ok(anchors.length > 15, `expected many anchors, found ${anchors.length}`);
+const pages = htmlFiles(ROOT).map((file) => ({
+  name: path.relative(ROOT, file),
+  html: readFileSync(file, "utf8"),
+}));
+
+const anchorsOf = (html: string) => html.match(/<a\s[^>]*>/g) ?? [];
+const hrefOf = (a: string) => a.match(/href="([^"]*)"/)?.[1] ?? "";
+
+test("every archived page is present", () => {
+  const names = pages.map((p) => p.name).sort();
+  assert.deepEqual(names, [
+    "casestudies/index.html",
+    "casestudies/invoca-workflow-agent/index.html",
+    "casestudies/project-one-f5w4d-3fh8d/index.html",
+    "casestudies/project-six-sz8wl-rlpf8/index.html",
+    "index.html",
+  ]);
 });
 
-test("every anchor opens in a new tab", () => {
-  const offenders = anchors.filter((a) => !a.includes('target="_blank"'));
+test("links that leave the archive open in a new tab", () => {
+  const offenders: string[] = [];
+  for (const page of pages) {
+    for (const a of anchorsOf(page.html)) {
+      const href = hrefOf(a);
+      const leaves = /^(https?:|mailto:)/.test(href);
+      if (leaves && !a.includes('target="_blank"')) offenders.push(`${page.name}: ${a}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `these would load inside the frame:\n${offenders.join("\n")}`);
+});
+
+test("links between archived pages stay in the frame", () => {
+  const offenders: string[] = [];
+  for (const page of pages) {
+    for (const a of anchorsOf(page.html)) {
+      const href = hrefOf(a);
+      if (href.startsWith("/website") && a.includes('target="_blank"')) {
+        offenders.push(`${page.name}: ${a}`);
+      }
+    }
+  }
   assert.deepEqual(
     offenders,
     [],
-    `these would load inside the frame:\n${offenders.join("\n")}`
+    `these would spawn a tab instead of browsing:\n${offenders.join("\n")}`
   );
 });
 
-test("every external anchor carries rel=noopener", () => {
-  const offenders = anchors.filter(
-    (a) => /href="https?:/.test(a) && !a.includes("noopener")
+test("external links carry rel=noopener", () => {
+  const offenders: string[] = [];
+  for (const page of pages) {
+    for (const a of anchorsOf(page.html)) {
+      if (/href="https?:/.test(a) && !a.includes("noopener")) offenders.push(`${page.name}: ${a}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `missing rel=noopener:\n${offenders.join("\n")}`);
+});
+
+test("internal hrefs point at pages that exist", () => {
+  const known = new Set(
+    pages.map((p) => "/website/" + p.name.replace(/\/?index\.html$/, "")).map((u) => u.replace(/\/$/, ""))
   );
-    assert.deepEqual(offenders, [], `missing rel=noopener:\n${offenders.join("\n")}`);
+  const broken: string[] = [];
+  for (const page of pages) {
+    for (const a of anchorsOf(page.html)) {
+      const href = hrefOf(a);
+      if (href.startsWith("/website") && !known.has(href.replace(/\/$/, ""))) {
+        broken.push(`${page.name} -> ${href}`);
+      }
+    }
+  }
+  assert.deepEqual(broken, [], `dead internal links:\n${broken.join("\n")}`);
 });
 
-test("a base target backs up the explicit attributes", () => {
-  // Catches a link added later that forgets the attribute.
-  assert.match(html, /<base\s+target="_blank"/);
-});
-
-test("assets resolve absolutely, since the page is served at /website", () => {
-  // A relative src would resolve against "/" under the rewrite and 404.
-  const srcs = html.match(/src="([^"]+)"/g) ?? [];
-  const relative = srcs.filter((s) => !/src="(\/|https?:)/.test(s));
+test("assets resolve absolutely, since pages are served under /website", () => {
+  const relative: string[] = [];
+  for (const page of pages) {
+    for (const s of page.html.match(/src="([^"]+)"/g) ?? []) {
+      if (!/src="(\/|https?:)/.test(s)) relative.push(`${page.name}: ${s}`);
+    }
+  }
   assert.deepEqual(relative, [], `relative asset paths:\n${relative.join("\n")}`);
 });

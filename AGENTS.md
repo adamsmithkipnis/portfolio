@@ -16,6 +16,7 @@ this file captures the patterns and conventions that matter most when working in
 | `lib/app-config.ts` | app registry (all apps defined here) |
 | `lib/content-files.ts` | mounts the build-time case study tree into Finder's paths |
 | `config/bookmarks.ts` | Safari's favorites — the only place external links are defined |
+| `public/archive/smithkipnis/` | the archived squarespace site Safari frames, served at `/website` |
 | `system/content/generated.ts` | **generated** content tree — run `npm run content` |
 | `lib/window-context.tsx` | window state machine (open/close/focus/minimize/drag/resize) |
 | `lib/sidebar-persistence.ts` | view state persistence + `clearAppState()` |
