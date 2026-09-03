@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Adam Smith-Kipnis</title>
+<meta name="description" content="I build and lead teams that turn complex technologies into intuitive experiences." />
+<!--
+  A recreation of the Squarespace smithkipnis.com, kept as a standalone page.
+
+  It lives outside the design system on purpose. This is meant to read as a
+  different website — the whole point of showing it inside a browser — so it
+  carries its own palette and type rather than the macOS tokens, and it is
+  framed rather than composed into the app so those styles cannot leak either
+  way. Same-origin, so no X-Frame-Options to fight.
+
+  Every outbound link sets target="_blank", or it would load inside the frame.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #e0e0db;
+    --ink: #253551;
+    --footer: #2d3b4f;
+    --measure: 1180px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+
+  .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 6vw; }
+
+  /* ---------- header ---------- */
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--paper);
+    padding: 22px 0;
+  }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .wordmark {
+    font-family: Poppins, Manrope, sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .contact-link {
+    font-size: 15px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid currentColor;
+    text-decoration: none;
+  }
+
+  /* ---------- type ---------- */
+
+  h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
+
+  .hero {
+    font-size: clamp(34px, 5.2vw, 62px);
+    line-height: 1.08;
+    margin: 8vh 0 0;
+    max-width: 15ch;
+  }
+  .hero strong { font-weight: 600; }
+
+  .hero-sub {
+    font-size: clamp(30px, 4.4vw, 52px);
+    line-height: 1.1;
+    margin: 0.55em 0 0;
+    max-width: 16ch;
+  }
+  .hero-sub strong { font-weight: 600; }
+
+  .lede {
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.16;
+    margin: 14vh 0 0;
+    max-width: 30ch;
+  }
+
+  .patents {
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.16;
+    margin: 0.9em 0 0;
+  }
+
+  /* ---------- collage ----------
+     Free-form scatter, not a grid: each tile is placed by percentage inside a
+     fixed-aspect box, so the whole arrangement scales with the container the
+     way the original does. Percentages were measured off the live page at a
+     1280px viewport. */
+
+  .collage {
+    position: relative;
+    width: 100%;
+    padding-bottom: 86.7%; /* 1110 / 1280 */
+    margin: 6vh 0 2vh;
+  }
+  .collage img {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .collage a { display: contents; }
+
+  /* ---------- speaking ---------- */
+
+  .speaking { margin: 12vh 0 0; }
+  .speaking h3 {
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.16;
+    max-width: 26ch;
+  }
+  .speaking .label { margin: 1.6em 0 0.9em; font-size: clamp(17px, 1.6vw, 20px); }
+  .speaking ul { list-style: none; margin: 0; padding: 0; }
+  .speaking li {
+    font-size: clamp(15px, 1.35vw, 18px);
+    line-height: 1.45;
+    margin: 0 0 1.1em;
+    max-width: 62ch;
+  }
+
+  .cta {
+    display: inline-block;
+    font-size: clamp(20px, 2.2vw, 27px);
+    margin: 9vh 0 0;
+  }
+
+  .presenting {
+    display: block;
+    width: min(320px, 60%);
+    height: auto;
+    margin: 8vh auto 10vh;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer { background: var(--footer); padding: 34px 0; }
+  footer .wrap { display: flex; justify-content: center; gap: 26px; }
+  footer a { color: #fff; opacity: 0.92; display: inline-flex; }
+  footer a:hover { opacity: 1; }
+  footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
+
+  /* ---------- narrow ----------
+     The scatter collapses below the original's breakpoint: absolute placement
+     at phone widths turns the tiles into confetti. A staggered two-column
+     flow keeps the loose feel and stays legible. */
+
+  @media (max-width: 700px) {
+    .collage {
+      padding-bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 14px;
+      align-items: center;
+    }
+    .collage img { position: static; }
+    .collage img:nth-child(even) { transform: translateY(26px); }
+    .hero, .hero-sub, .lede { max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    a { transition: text-decoration-thickness 120ms ease; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="wordmark" href="/website">Adam Smith-Kipnis</a>
+    <a class="contact-link" href="mailto:adam@smithkipnis.com">Contact</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <h1 class="hero">
+    I build and lead teams that turn <strong>complex technologies</strong> into
+    <strong>intuitive experiences</strong>.
+  </h1>
+
+  <h2 class="hero-sub">
+    <strong>Together</strong>, we make what seems impossible, inevitable.
+  </h2>
+
+  <h3 class="lede">
+    I&rsquo;ve helped some of the most ambitious companies create hardware and
+    software products across industries, including,
+    <a href="https://staris.tech/" target="_blank" rel="noopener noreferrer">cybersecurity</a>,
+    <a href="https://blog.providence.org/blog/digital-in-action-improving-patient-navigation-with-grace" target="_blank" rel="noopener noreferrer">healthcare</a>,
+    <a href="https://sites.wf.com/fargo/" target="_blank" rel="noopener noreferrer">fintech</a>,
+    <a href="https://news.samsung.com/global/interview-how-the-gear-iconx-got-its-fitting-design" target="_blank" rel="noopener noreferrer">hearables</a>,
+    <a href="https://news.samsung.com/us/samsungs-new-enhanced-wearables-gear-sport-gear-fit2-pro-gear-icon-x-combine-best-smart-fitness-health" target="_blank" rel="noopener noreferrer">fitness</a>,
+    <a href="https://www.engadget.com/2014-04-05-wilson-smart-basketball.html" target="_blank" rel="noopener noreferrer">sports</a>,
+    <a href="https://news.samsung.com/us/samsung-reinvents-refrigerator/" target="_blank" rel="noopener noreferrer">IoT</a>,
+    <a href="https://www.youtube.com/watch?v=Hf9qkURqtbM&amp;t=1s&amp;ab_channel=MicrosoftHoloLens" target="_blank" rel="noopener noreferrer">AR</a>, and
+    <a href="https://www.imdb.com/name/nm2224145/" target="_blank" rel="noopener noreferrer">games</a>.
+  </h3>
+
+  <h3 class="patents">
+    Many of my inventions have been
+    <a href="https://patents.google.com/?inventor=smith-kipnis&amp;patents=false" target="_blank" rel="noopener noreferrer">patented</a>.
+  </h3>
+
+  <div class="collage">
+    <img src="/archive/smithkipnis/hololens.webp"              alt="Microsoft HoloLens headset"            style="left:11.74%; top:0.00%;  width:33.96%" />
+    <img src="/archive/smithkipnis/grace-in-cep.webp"          alt="Grace patient navigation on a phone"   style="left:38.55%; top:9.42%;  width:42.24%" />
+    <img src="/archive/smithkipnis/fargo-splash.webp"          alt="Wells Fargo Fargo assistant"           style="left:62.03%; top:4.21%;  width:22.36%" />
+    <img src="/archive/smithkipnis/family-hub.webp"            alt="Samsung Family Hub refrigerator"       style="left:13.03%; top:15.95%; width:27.50%" />
+    <img src="/archive/smithkipnis/gear-fit2-pro.webp"         alt="Samsung Gear Fit2 Pro"                 style="left:73.34%; top:25.76%; width:15.22%" />
+    <img src="/archive/smithkipnis/icon-x.webp"                alt="Samsung Gear IconX earbuds"            style="left:11.74%; top:35.79%; width:30.10%" />
+    <img src="/archive/smithkipnis/wilson-x.webp"              alt="Wilson X connected basketball"         style="left:55.06%; top:38.83%; width:24.69%" />
+    <img src="/archive/smithkipnis/kinect-adventures.webp"     alt="Kinect Adventures cover"               style="left:31.85%; top:51.94%; width:24.69%" />
+    <img src="/archive/smithkipnis/kinect-fun-labs.webp"       alt="Kinect Fun Labs"                       style="left:11.74%; top:59.57%; width:18.49%" />
+    <img src="/archive/smithkipnis/kinect-star-wars.webp"      alt="Kinect Star Wars"                      style="left:58.16%; top:60.38%; width:18.49%" />
+    <img src="/archive/smithkipnis/evil-dead-regeneration.webp" alt="Evil Dead Regeneration cover"         style="left:14.83%; top:78.08%; width:16.17%" />
+    <img src="/archive/smithkipnis/mag.webp"                   alt="MAG cover art"                         style="left:46.84%; top:78.08%; width:17.93%" />
+    <img src="/archive/smithkipnis/destroy-all-humans.webp"    alt="Destroy All Humans! Path of the Furon" style="left:69.00%; top:78.08%; width:16.17%" />
+    <img src="/archive/smithkipnis/guild-wars-2.webp"          alt="Guild Wars 2 logo"                     style="left:29.48%; top:84.64%; width:17.81%" />
+  </div>
+
+  <section class="speaking">
+    <h3>I enjoy speaking about technology and its potential.</h3>
+    <p class="label">Selected engagements:</p>
+    <ul>
+      <li>
+        <a href="https://www.astcweb.org/" target="_blank" rel="noopener noreferrer">American Society of Trial Consultants</a>
+        &ndash; AI and Prompt Engineering for Trial Consultants
+      </li>
+      <li>
+        <a href="https://www.astcweb.org/" target="_blank" rel="noopener noreferrer">American Society of Trial Consultants</a>
+        &ndash; Emergent AI &amp; Ethics for Trial Consulting
+      </li>
+      <li>
+        <a href="https://www.facebook.com/share/g/1C9r9kF3JX/" target="_blank" rel="noopener noreferrer">Puget Sound SigChi</a>
+        &ndash; UX in Healthcare
+      </li>
+      <li>
+        <a href="https://hushcon.com/" target="_blank" rel="noopener noreferrer">HushCon</a>
+        &ndash; Hypertargeting an individual through Facebook Ads
+      </li>
+    </ul>
+  </section>
+
+  <a class="cta" href="mailto:adam@smithkipnis.com">Interested in working together? Let&rsquo;s connect.</a>
+
+  <img class="presenting" src="/archive/smithkipnis/adam-presenting.webp" alt="Adam presenting at a conference" />
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="https://linkedin.com/in/adamsmithkipnis" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95 4.02 0 4.76 2.5 4.76 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.19 1.42-2.19 2.9V21H9z"/></svg>
+    </a>
+    <a href="https://adamsmithkipnis.medium.com/" target="_blank" rel="noopener noreferrer" aria-label="Medium">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 7.2c0-.3-.1-.5-.3-.7L1 4.8v-.3h4.9l3.8 8.4 3.3-8.4h4.7v.3l-1.3 1.2c-.1.1-.2.2-.2.4v9.2c0 .2.1.3.2.4l1.2 1.2v.3h-6.2v-.3l1.3-1.3c.1-.1.1-.2.1-.4V7.9l-3.6 9.2h-.5L4.6 7.9v6.2c0 .3.1.5.3.7l1.7 2v.3H1.7v-.3l1.7-2c.2-.2.3-.4.3-.7z"/></svg>
+    </a>
+    <a href="https://x.com/adamsmithkipnis" target="_blank" rel="noopener noreferrer" aria-label="X">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.7L21.8 21h-6.3l-4.9-6.4L4.9 21H1.8l7.3-8.3L1.5 3h6.4l4.4 5.9zm-1.1 16.1h1.7L7.7 4.8H5.9z"/></svg>
+    </a>
+    <a href="https://bsky.app/profile/adamsk.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="Bluesky">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10.8C10.9 8.6 7.9 4.5 5.1 2.6 2.4.7 1.4 1 .8 1.3.1 1.7 0 2.8 0 3.4c0 .6.3 5.2.6 6 .8 2.4 3.4 3.3 5.7 3-3.4.5-6.4 1.8-2.4 6.2 4.3 4.5 5.9-1 6.7-3.7l.4-1.3.4 1.3c.8 2.7 2.4 8.2 6.7 3.7 4-4.4 1-5.7-2.4-6.2 2.3.3 4.9-.6 5.7-3 .3-.8.6-5.4.6-6 0-.6-.1-1.7-.8-2.1-.6-.3-1.6-.6-4.3 1.3C16.1 4.5 13.1 8.6 12 10.8z"/></svg>
+    </a>
+    <a href="https://github.com/adamsmithkipnis/" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.9 10.9c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/></svg>
+    </a>
+    <a href="mailto:adam@smithkipnis.com" aria-label="Email">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20v16H2zm2 2v.4l8 5 8-5V6zm16 12v-9.2l-8 5-8-5V18z"/></svg>
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>

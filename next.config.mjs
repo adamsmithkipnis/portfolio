@@ -9,6 +9,7 @@
  * - /{app}               → shows default desktop with that app focused
  * - /notes/{invalid}     → redirects to /notes/error
  * - /{legacy-slug}       → redirects to /notes/{legacy-slug} (server-side, permanent)
+ * - /website             → archived smithkipnis.com (framed by the Safari app)
  * - /{other}             → 404
  */
 
@@ -28,7 +29,13 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [];
+    return [
+      // The archived Squarespace site, served from our own origin so the
+      // Safari app can frame it — Squarespace sends X-Frame-Options:
+      // SAMEORIGIN, and a subdomain would not have helped, since that check
+      // is origin-based and a subdomain is a different origin.
+      { source: "/website", destination: "/archive/smithkipnis/index.html" },
+    ];
   },
   async redirects() {
     // Legacy note slugs that were publicly shared before /notes/* prefix was added.
