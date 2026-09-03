@@ -17,11 +17,12 @@ interface BrowserFrameProps {
  * so unlike the live Squarespace site — which sends X-Frame-Options: SAMEORIGIN
  * — there is nothing to work around, and we can read back where the frame went.
  *
- * The sandbox keeps the frame from navigating the top window away from the
- * desktop. It is not a security boundary: allow-same-origin and allow-scripts
- * together let same-origin content out of it, and both are needed here — the
- * former to read the current path, the latter for the YouTube embeds in the
- * case studies, which inherit this sandbox.
+ * The sandbox is here for one thing: without allow-top-navigation, the frame
+ * cannot navigate the whole desktop away. It is not a security boundary —
+ * allow-same-origin and allow-scripts together let same-origin content out of
+ * it — but both are needed, the former to read the current path and the latter
+ * for the YouTube embeds, which inherit these flags. Storage access on user
+ * activation is granted for the same reason: the player asks for it on play.
  */
 export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   const ref = useRef<HTMLIFrameElement>(null);
@@ -48,7 +49,7 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
       src={src}
       title="smithkipnis.com"
       className="flex-1 w-full border-0 bg-background"
-      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation allow-storage-access-by-user-activation"
     />
   );
 }
