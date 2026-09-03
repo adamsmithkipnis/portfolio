@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  displayHost,
   monogram,
   monogramTextColor,
   resolveOmniboxTarget,
@@ -52,11 +51,6 @@ test("returns null for empty input", () => {
 test("does not mistake a decimal for a hostname", () => {
   const target = resolveOmniboxTarget("2.5");
   assert.ok(target?.startsWith("https://duckduckgo.com/?q="));
-});
-
-test("displayHost strips www", () => {
-  assert.equal(displayHost("https://www.example.com/a/b"), "example.com");
-  assert.equal(displayHost("https://github.com/adamsmithkipnis"), "github.com");
 });
 
 test("monogram takes the first letter, uppercased", () => {

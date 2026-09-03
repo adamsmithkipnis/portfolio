@@ -60,13 +60,6 @@ function searchFor(query: string): string {
   return `${SEARCH_URL}${encodeURIComponent(query)}`;
 }
 
-/** Hostname without "www.", for display under a bookmark tile. */
-export function displayHost(url: string): string {
-  const parsed = parseAsUrl(url);
-  if (!parsed) return url;
-  return parsed.host.replace(/^www\./, "");
-}
-
 /** First letter of a bookmark title, for the fallback monogram tile. */
 export function monogram(title: string): string {
   const first = title.trim().replace(/^https?:\/\//, "").charAt(0);

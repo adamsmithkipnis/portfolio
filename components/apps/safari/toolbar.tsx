@@ -7,6 +7,9 @@ import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { resolveOmniboxTarget } from "@/lib/safari-url";
 import { cn } from "@/lib/utils";
 
+/** What the start page is showing, displayed as the current address. */
+const CURRENT_SITE = "smithkipnis.com";
+
 interface ToolbarProps {
   isMobileView: boolean;
   isDesktop?: boolean;
@@ -25,15 +28,18 @@ interface ToolbarProps {
 export function Toolbar({ isMobileView, isDesktop = false }: ToolbarProps) {
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
   const inputRef = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(CURRENT_SITE);
 
-  // Escape leaves the field so the shell's single-key shortcuts work again.
+  // Escape reverts to the current page and leaves the field, the way Safari
+  // does — and the blur matters beyond fidelity, since it hands single-key
+  // shortcuts back to the shell.
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
+        setQuery(CURRENT_SITE);
         el.blur();
       }
     };
@@ -96,6 +102,7 @@ export function Toolbar({ isMobileView, isDesktop = false }: ToolbarProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={(e) => e.currentTarget.select()}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
