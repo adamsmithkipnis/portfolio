@@ -28,4 +28,25 @@ export interface SpotifyPlaylist {
   tracks: SpotifyTrack[];
 }
 
-export type SpotifyView = "home" | "playlist";
+/**
+ * Audiobooks are Spotify "shows". Only the show itself embeds — individual
+ * chapter (episode) URIs return "Page not available" — and logged-out visitors
+ * get a sample rather than the book, so no chapter list is stored: listing
+ * chapters nobody can play would be dead UI.
+ */
+export interface SpotifyAudiobook {
+  id: string;
+  uri: string; // spotify:show:…
+  name: string;
+  author: string;
+  narrator: string;
+  description: string;
+  coverArt: string;
+  totalChapters: number;
+  explicit: boolean;
+  externalUrl: string;
+}
+
+export type SpotifyView = "home" | "playlist" | "audiobook";
+
+export type LibraryFilter = "all" | "playlists" | "audiobooks";

@@ -8,7 +8,7 @@ import {
   totalPlaylistDuration,
   findPlaylistById,
 } from "../lib/spotify/format";
-import { SPOTIFY_PLAYLISTS } from "../lib/spotify/data";
+import { SPOTIFY_AUDIOBOOKS, SPOTIFY_PLAYLISTS } from "../lib/spotify/data";
 
 test("formatDuration renders mm:ss with a padded seconds field", () => {
   assert.equal(formatDuration(254453), "4:14");
@@ -82,4 +82,55 @@ test("generated playlist data is well formed", () => {
       );
     }
   }
+});
+
+// Audiobooks are stored at book level: Spotify only embeds the show, so there
+// is deliberately no chapter list to validate.
+test("generated audiobook data is well formed", () => {
+  assert.ok(SPOTIFY_AUDIOBOOKS.length > 0, "expected at least one audiobook");
+
+  for (const book of SPOTIFY_AUDIOBOOKS) {
+    assert.ok(book.id.length > 0, "audiobook id must not be empty");
+    assert.ok(book.name.length > 0, `audiobook ${book.id} needs a name`);
+    assert.match(
+      book.uri,
+      /^spotify:show:[A-Za-z0-9]{22}$/,
+      `${book.name} has a malformed show uri: ${book.uri}`
+    );
+    assert.ok(book.coverArt.length > 0, `${book.name} has no cover art`);
+    assert.ok(book.totalChapters > 0, `${book.name} reports no chapters`);
+    assert.ok(
+      book.externalUrl.startsWith("https://open.spotify.com/"),
+      `${book.name} needs a link back to Spotify`
+    );
+  }
+});
+
+test("audiobook author and narrator are parsed out of the description", () => {
+  // Spotify puts these in the description; the fetch script splits them off, so
+  // a format change on their side should fail loudly here rather than silently
+  // leaving every book unattributed.
+  const missingAuthor = SPOTIFY_AUDIOBOOKS.filter((b) => !b.author);
+  assert.deepEqual(
+    missingAuthor.map((b) => b.name),
+    [],
+    "every audiobook should have an author parsed from its description"
+  );
+
+  for (const book of SPOTIFY_AUDIOBOOKS) {
+    assert.ok(
+      !book.description.includes("Author(s):"),
+      `${book.name} still has the Author(s) prefix in its blurb`
+    );
+  }
+});
+
+test("playlists and audiobooks do not share ids", () => {
+  const playlistIds = new Set(SPOTIFY_PLAYLISTS.map((p) => p.id));
+  const clash = SPOTIFY_AUDIOBOOKS.filter((b) => playlistIds.has(b.id));
+  assert.deepEqual(
+    clash.map((b) => b.name),
+    [],
+    "a shared id would make the selected-item lookup ambiguous"
+  );
 });
