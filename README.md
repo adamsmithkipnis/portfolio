@@ -82,6 +82,16 @@ a macos sierra 10.12 themed desktop with:
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
 
+**safari** - web browser
+- opens at `/safari`
+- start page is the archived smithkipnis.com, framed same-origin from `/website`,
+  which is also directly visitable on its own
+- favorites bar links open in a new tab outside the desktop; add or edit one in
+  `config/bookmarks.ts` — no component changes
+- address bar opens whatever you type; non-urls become a search
+- nothing renders the open web — most sites refuse framing, the archived
+  squarespace site included
+
 **spotify** - macos spotify simulation with real playback at `/spotify`
 - playlist and track metadata is baked into `lib/spotify/data.ts`; regenerate it
   with `npm run spotify:fetch` (dev-time only — no spotify credentials are needed

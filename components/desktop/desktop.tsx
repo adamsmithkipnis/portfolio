@@ -63,6 +63,7 @@ const FinderApp = dynamic(() => import("@/components/apps/finder/finder-app").th
 const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").then(m => ({ default: m.PhotosApp })));
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
+const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
 const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then(m => ({ default: m.MusicApp })));
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
@@ -938,6 +939,10 @@ function DesktopContent({
 
           <Window appId="weather">
             <WeatherApp inShell={true} />
+          </Window>
+
+          <Window appId="safari">
+            <SafariApp inShell={true} />
           </Window>
 
           <Window appId="music">

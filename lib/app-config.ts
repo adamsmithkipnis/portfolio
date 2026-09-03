@@ -115,6 +115,18 @@ export const APPS: AppConfig[] = [
     },
   },
   {
+    id: "safari",
+    name: "Safari",
+    icon: "/safari.png",
+    description: "Web browser",
+    provenance: { agent: "Claude Code", circa: "September 2026" },
+    accentColor: "#0A7CFF",
+    defaultPosition: { x: 190, y: 80 },
+    defaultSize: { width: 1000, height: 700 },
+    minSize: { width: 560, height: 420 },
+    menuBarTitle: "Safari",
+  },
+  {
     id: "iterm",
     name: "Terminal",
     icon: "/terminal.png",

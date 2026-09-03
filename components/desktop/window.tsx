@@ -154,6 +154,12 @@ export function Window({
         "fixed",
         isHiddenMinimized && "invisible pointer-events-none",
         !isFocused && !isMaximized && !isHiddenMinimized && "opacity-95",
+        // Drag and resize listen on `window`, but a hovered iframe consumes
+        // the mouse events before they get there — so the moment the cursor
+        // crossed embedded content mid-drag, the window stopped following it.
+        // Taking iframes out of hit-testing for the duration keeps the stream
+        // unbroken. Applies to every embed: Safari's site, Spotify, PDFs.
+        isInteracting && "[&_iframe]:pointer-events-none",
       )}
       style={windowStyle}
       aria-hidden={isHiddenMinimized || undefined}

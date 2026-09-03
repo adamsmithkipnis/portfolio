@@ -13,6 +13,7 @@ const APP_ROUTE_SEGMENTS = {
   photos: "photos",
   calendar: "calendar",
   weather: "weather",
+  safari: "safari",
   music: "music",
   spotify: "spotify",
   textedit: "textedit",
