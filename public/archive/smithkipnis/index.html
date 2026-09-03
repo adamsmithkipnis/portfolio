@@ -21,9 +21,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --paper: #e0e0db;
+    /* The live site paints bands, not one flat ground: white from the header
+       through the collage, grey behind the speaking section, navy footer. */
+    --paper: #ffffff;
+    --band: #e0e0db;
     --ink: #253551;
-    --footer: #2d3b4f;
+    --footer: #253551;
     /* Sized so the content box (inside the 4vw gutters) lands on the
        original's 1400px at a 1800px viewport, which also puts the left edge
        at 200px exactly as the live site does. */
@@ -123,16 +126,30 @@
     display: block;
     width: 100%;
     height: auto;
+    border-radius: 20px;
   }
-  .collage a { display: contents; }
+  .collage img.cutout { border-radius: 0; }
 
   /* ---------- speaking ---------- */
 
-  .speaking { margin: 12vh 0 0; }
+  .band {
+    background: var(--band);
+    margin-top: 10vh;
+    padding: 82px 0;
+  }
+  .band-inner {
+    display: grid;
+    grid-template-columns: 62% 1fr;
+    gap: 6%;
+    align-items: start;
+  }
+
+  .speaking { margin: 0; }
+  /* The band's first column already carries the 62% measure, so the heading
+     fills it rather than taking the fraction a second time. */
   .speaking h3 {
     font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
     line-height: 1.14;
-    max-width: 62%;
   }
   .speaking .label { margin: 1.6em 0 0.9em; font-size: clamp(17px, 1.6vw, 20px); }
   .speaking ul { list-style: none; margin: 0; padding: 0; }
@@ -149,11 +166,11 @@
     margin: 9vh 0 0;
   }
 
+  /* Sits in the band's second column, top-aligned with the heading. */
   .presenting {
     display: block;
-    width: min(320px, 60%);
+    width: 100%;
     height: auto;
-    margin: 8vh auto 10vh;
   }
 
   /* ---------- footer ---------- */
@@ -182,6 +199,8 @@
     .collage img { position: static; width: 100% !important; }
     .collage img:nth-child(even) { transform: translateY(26px); }
     .hero, .hero-sub, .lede, .patents, .speaking h3 { max-width: none; }
+    .band-inner { grid-template-columns: 1fr; gap: 6vh; }
+    .presenting { width: min(320px, 70%); margin: 0 auto; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -229,13 +248,13 @@
   </h3>
 
   <div class="collage">
-    <img src="/archive/smithkipnis/hololens.webp"              alt="Microsoft HoloLens headset"            style="left:11.74%; top:0.00%;  width:33.96%" />
+    <img class="cutout" src="/archive/smithkipnis/hololens.webp"              alt="Microsoft HoloLens headset"            style="left:11.74%; top:0.00%;  width:33.96%" />
     <img src="/archive/smithkipnis/grace-in-cep.webp"          alt="Grace patient navigation on a phone"   style="left:38.55%; top:9.42%;  width:42.24%" />
     <img src="/archive/smithkipnis/fargo-splash.webp"          alt="Wells Fargo Fargo assistant"           style="left:62.03%; top:4.21%;  width:22.36%" />
-    <img src="/archive/smithkipnis/family-hub.webp"            alt="Samsung Family Hub refrigerator"       style="left:13.03%; top:15.95%; width:27.50%" />
-    <img src="/archive/smithkipnis/gear-fit2-pro.webp"         alt="Samsung Gear Fit2 Pro"                 style="left:73.34%; top:25.76%; width:15.22%" />
-    <img src="/archive/smithkipnis/icon-x.webp"                alt="Samsung Gear IconX earbuds"            style="left:11.74%; top:35.79%; width:30.10%" />
-    <img src="/archive/smithkipnis/wilson-x.webp"              alt="Wilson X connected basketball"         style="left:55.06%; top:38.83%; width:24.69%" />
+    <img class="cutout" src="/archive/smithkipnis/family-hub.webp"            alt="Samsung Family Hub refrigerator"       style="left:13.03%; top:15.95%; width:27.50%" />
+    <img class="cutout" src="/archive/smithkipnis/gear-fit2-pro.webp"         alt="Samsung Gear Fit2 Pro"                 style="left:73.34%; top:25.76%; width:15.22%" />
+    <img class="cutout" src="/archive/smithkipnis/icon-x.webp"                alt="Samsung Gear IconX earbuds"            style="left:11.74%; top:35.79%; width:30.10%" />
+    <img class="cutout" src="/archive/smithkipnis/wilson-x.webp"              alt="Wilson X connected basketball"         style="left:55.06%; top:38.83%; width:24.69%" />
     <img src="/archive/smithkipnis/kinect-adventures.webp"     alt="Kinect Adventures cover"               style="left:31.85%; top:51.94%; width:24.69%" />
     <img src="/archive/smithkipnis/kinect-fun-labs.webp"       alt="Kinect Fun Labs"                       style="left:11.74%; top:59.57%; width:18.49%" />
     <img src="/archive/smithkipnis/kinect-star-wars.webp"      alt="Kinect Star Wars"                      style="left:58.16%; top:60.38%; width:18.49%" />
@@ -245,7 +264,12 @@
     <img src="/archive/smithkipnis/guild-wars-2.webp"          alt="Guild Wars 2 logo"                     style="left:29.48%; top:84.64%; width:17.81%" />
   </div>
 
-  <section class="speaking">
+</main>
+
+<section class="band">
+  <div class="wrap band-inner">
+    <div>
+      <section class="speaking">
     <h3>I enjoy speaking about technology and its potential.</h3>
     <p class="label">Selected engagements:</p>
     <ul>
@@ -268,11 +292,12 @@
     </ul>
   </section>
 
-  <a class="cta" href="mailto:adam@smithkipnis.com">Interested in working together? Let&rsquo;s connect.</a>
+      <a class="cta" href="mailto:adam@smithkipnis.com">Interested in working together? Let&rsquo;s connect.</a>
+    </div>
 
-  <img class="presenting" src="/archive/smithkipnis/adam-presenting.webp" alt="Adam presenting at a conference" />
-
-</main>
+    <img class="presenting" src="/archive/smithkipnis/adam-presenting.webp" alt="Adam presenting at a conference" />
+  </div>
+</section>
 
 <footer>
   <div class="wrap">
