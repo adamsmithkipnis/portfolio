@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { ARCHIVE_PATHS } from "@/lib/archive-site";
 
 /**
  * The archived site is displayed inside Safari's frame, and its links come in
@@ -109,4 +110,25 @@ test("assets resolve absolutely, since pages are served under /website", () => {
     }
   }
   assert.deepEqual(relative, [], `relative asset paths:\n${relative.join("\n")}`);
+});
+
+test("ARCHIVE_PATHS matches the pages actually on disk", () => {
+  // The address bar routes on ARCHIVE_PATHS, so a page added without listing
+  // it there would exist but be unreachable by typing its address.
+  const onDisk = pages
+    .map((p) => "/website/" + p.name.replace(/\/?index\.html$/, ""))
+    .map((u) => u.replace(/\/$/, ""))
+    .sort();
+  assert.deepEqual([...ARCHIVE_PATHS].sort(), onDisk);
+});
+
+test("every page offers a way into the case studies", () => {
+  // The original links to them from nowhere; the archive adds a header link.
+  for (const page of pages) {
+    assert.match(
+      page.html,
+      /href="\/website\/casestudies"/,
+      `${page.name} has no route to the case studies`
+    );
+  }
 });

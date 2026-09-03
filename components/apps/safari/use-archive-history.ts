@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { ARCHIVE_ROOT } from "@/lib/archive-site";
 
 /** Where the browser opens: the archived smithkipnis.com home page. */
-export const START_PAGE_PATH = "/website";
-
-/** The host shown in the address bar. The archive stands in for this site. */
-export const ARCHIVE_HOST = "smithkipnis.com";
+export const START_PAGE_PATH = ARCHIVE_ROOT;
 
 /**
  * Session history for the framed archive.
@@ -81,10 +79,4 @@ export function useArchiveHistory() {
     go,
     visited,
   };
-}
-
-/** "/website" → "smithkipnis.com"; "/website/casestudies" → "smithkipnis.com/casestudies". */
-export function addressFor(path: string): string {
-  const rest = path.replace(/^\/website/, "");
-  return `${ARCHIVE_HOST}${rest}`;
 }

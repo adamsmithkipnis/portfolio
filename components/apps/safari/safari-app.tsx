@@ -35,6 +35,7 @@ export function SafariApp({ isMobile = false, inShell = false }: SafariAppProps)
         canGoForward={history.canGoForward}
         onBack={history.back}
         onForward={history.forward}
+        onNavigate={history.go}
       />
       <FavoritesBar
         isMobileView={isMobileView}

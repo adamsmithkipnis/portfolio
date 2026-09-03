@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { WindowControls } from "@/components/window-controls";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { resolveOmniboxTarget } from "@/lib/safari-url";
-import { addressFor } from "./use-archive-history";
+import { addressFor, archivePathFor } from "@/lib/archive-site";
 import { cn } from "@/lib/utils";
 
 interface ToolbarProps {
@@ -17,6 +17,8 @@ interface ToolbarProps {
   canGoForward: boolean;
   onBack: () => void;
   onForward: () => void;
+  /** Browse to an archived path, in the frame. */
+  onNavigate: (path: string) => void;
 }
 
 /**
@@ -26,8 +28,8 @@ interface ToolbarProps {
  *
  * Back and forward are real now that the archive is several pages, and they
  * disable themselves at the ends of the history the way Safari's do. The
- * address bar shows wherever the frame currently is, and typing in it opens
- * the result in a new tab, since the frame only ever holds the archive.
+ * address bar shows wherever the frame currently is. Typing an address the
+ * archive holds browses there; anything else opens in a real tab.
  */
 export function Toolbar({
   isMobileView,
@@ -37,6 +39,7 @@ export function Toolbar({
   canGoForward,
   onBack,
   onForward,
+  onNavigate,
 }: ToolbarProps) {
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,12 +73,29 @@ export function Toolbar({
   const stopDrag = (e: React.MouseEvent) => e.stopPropagation();
 
   const submit = () => {
-    const target = resolveOmniboxTarget(query);
     setEditing(false);
-    if (!target) return;
+
+    // An address the archive actually holds browses in place, the way it would
+    // on the real site. Anything else has to leave — the frame can only serve
+    // what was archived.
+    const archived = archivePathFor(query);
+    if (archived) {
+      onNavigate(archived);
+      inputRef.current?.blur();
+      return;
+    }
+
+    const target = resolveOmniboxTarget(query);
+    if (!target) {
+      setQuery(address);
+      return;
+    }
     // Opened from a keydown, so this counts as a user gesture and isn't
     // blocked. noopener keeps the new tab from reaching back via window.opener.
     window.open(target, "_blank", "noopener,noreferrer");
+    // The frame stayed where it was, so the bar has to say so rather than
+    // keep showing an address this window never went to.
+    setQuery(address);
     inputRef.current?.blur();
   };
 
