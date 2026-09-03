@@ -15,6 +15,7 @@ const APP_ROUTE_SEGMENTS = {
   weather: "weather",
   safari: "safari",
   music: "music",
+  spotify: "spotify",
   textedit: "textedit",
   preview: "preview",
 } as const;

@@ -64,6 +64,26 @@ export const APPS: AppConfig[] = [
     menuBarTitle: "Music",
   },
   {
+    id: "spotify",
+    name: "Spotify",
+    icon: "/spotify.png",
+    description: "Spotify playlists with real playback",
+    provenance: { agent: "Claude Code", circa: "August 2026" },
+    accentColor: "#1DB954",
+    defaultPosition: { x: 180, y: 80 },
+    defaultSize: { width: 1000, height: 700 },
+    minSize: { width: 720, height: 520 },
+    menuBarTitle: "Spotify",
+    // Spotify only grants full-length embed playback in desktop browsers, and
+    // the embed is cramped at phone widths.
+    mobile: {
+      supported: false,
+      shellFallbackAppId: "notes",
+      directRouteRedirectTo: "/",
+      showInFinderApplications: false,
+    },
+  },
+  {
     id: "calendar",
     name: "Calendar",
     icon: "/calendar.png",

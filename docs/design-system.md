@@ -527,6 +527,24 @@ When adding persistence to a new app:
 2. Add a `case "your-app-id"` to the `clearAppState()` switch in `sidebar-persistence.ts`.
 3. That's it — `closeWindow` and `closeApp` in `window-context.tsx` already call `clearAppState(appId)` automatically. No manual clearing needed in nav bars or menu bar.
 
+## App-Specific Palettes
+
+Apps that simulate a real product may pin their own palette when the shared
+tokens would undermine the simulation. Declare the palette **once**, as CSS
+variables scoped to the app's root class in `app/globals.css`, and reference
+only those variables from components — never raw hex in JSX. This keeps the
+"never hardcode a color" rule in `AGENTS.md` intact at the component level.
+
+Current exceptions:
+
+- **Spotify** (`.spotify-app`) — `--spotify-base`, `--spotify-surface`,
+  `--spotify-surface-raised`, `--spotify-surface-hover`, `--spotify-green`,
+  `--spotify-text`, `--spotify-text-subdued`, `--spotify-divider`. It also sets
+  `color-scheme: dark` and renders dark in both themes, because the real
+  Spotify desktop client has no light mode.
+
+Everything else follows the shared tokens and the `#0A7CFF` accent below.
+
 ## Checklist for New Apps
 
 When creating a new app, ensure:

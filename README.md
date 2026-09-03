@@ -84,10 +84,22 @@ a macos sierra 10.12 themed desktop with:
 
 **safari** - web browser
 - opens at `/safari`
-- favorites grid of real external links, each opening in a new tab outside the desktop
-- add or edit a link in `config/bookmarks.ts` — no component changes
+- start page is the archived smithkipnis.com, framed same-origin from `/website`,
+  which is also directly visitable on its own
+- favorites bar links open in a new tab outside the desktop; add or edit one in
+  `config/bookmarks.ts` — no component changes
 - address bar opens whatever you type; non-urls become a search
-- no page rendering, no iframes: the browser only ever shows its start page
+- nothing renders the open web — most sites refuse framing, the archived
+  squarespace site included
+
+**spotify** - macos spotify simulation with real playback at `/spotify`
+- playlist and track metadata is baked into `lib/spotify/data.ts`; regenerate it
+  with `npm run spotify:fetch` (dev-time only — no spotify credentials are needed
+  in production)
+- audio comes from spotify's own embed, driven through their iframe api. full-length
+  playback requires a desktop browser signed into spotify premium; everyone else
+  gets ~30 second previews
+- desktop only
 
 ### mobile
 
