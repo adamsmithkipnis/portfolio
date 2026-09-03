@@ -80,22 +80,25 @@
 
   h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 
-  /* Type and measure are fitted to the live site, sampled at 940px, 1200px
-     and 1800px. Measures are percentages of the container because the
-     original's columns hold a constant fraction of it (headline 41%, body
-     66%) rather than a fixed character count — a fixed ch cap held the
-     measure still while the type kept growing, which wrapped three lines
-     into six on a wide window.
-
-     The type ramp is piecewise: steep below 1200px, flat above, and the two
-     lines intersect exactly at 1200px. min() of the pair reproduces that
+  /* The type ramp is fitted to the live site, sampled at 940px, 1200px and
+     1800px: piecewise, steep below 1200px and flat above, with the two lines
+     intersecting exactly at 1200px, so min() of the pair reproduces it
      without a media query. Headline: 36.30px @940 -> 41.92 @1200 -> 46.24
-     @1800. Body: 29.54 -> 33.28 -> 36.16. */
+     @1800. Body: 29.54 -> 33.28 -> 36.16.
+
+     Measures are em, not a fraction of the container. The original uses
+     fractional columns, and they misbehave: its headline column collapses
+     from 88% at 600px to 37.5% at 800px, so widening the window takes the
+     headline from three lines to six. An em measure is tied to the type
+     instead, so the line count holds as the window grows and can only
+     improve. min() with 100% keeps it inside the container when narrow.
+
+     This is a deliberate departure from the original, and the only one. */
 
   .hero, .hero-sub {
     font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
     line-height: 1.11;
-    max-width: 41%;
+    max-width: min(100%, 12.5em);
   }
   .hero { margin: 8vh 0 0; }
   .hero-sub { margin: 0.55em 0 0; }
@@ -104,7 +107,7 @@
   .lede, .patents {
     font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
     line-height: 1.14;
-    max-width: 66%;
+    max-width: min(100%, 26em);
   }
   .lede { margin: 14vh 0 0; }
   .patents { margin: 0.9em 0 0; }
@@ -186,6 +189,13 @@
      at phone widths turns the tiles into confetti. A staggered two-column
      flow keeps the loose feel and stays legible. */
 
+  /* The band's two columns get cramped before the collage does, so they
+     stack at a wider breakpoint than the tiles. */
+  @media (max-width: 900px) {
+    .band-inner { grid-template-columns: 1fr; gap: 6vh; }
+    .presenting { width: min(320px, 70%); margin: 0 auto; }
+  }
+
   @media (max-width: 700px) {
     .collage {
       padding-bottom: 0;
@@ -198,9 +208,6 @@
        to beat those inline widths — hence the !important. */
     .collage img { position: static; width: 100% !important; }
     .collage img:nth-child(even) { transform: translateY(26px); }
-    .hero, .hero-sub, .lede, .patents, .speaking h3 { max-width: none; }
-    .band-inner { grid-template-columns: 1fr; gap: 6vh; }
-    .presenting { width: min(320px, 70%); margin: 0 auto; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
