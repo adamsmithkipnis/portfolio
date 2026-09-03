@@ -174,7 +174,9 @@
       gap: 18px 14px;
       align-items: center;
     }
-    .collage img { position: static; }
+    /* Placement is inline (left/top/width per tile), so the stacked layout has
+       to beat those inline widths — hence the !important. */
+    .collage img { position: static; width: 100% !important; }
     .collage img:nth-child(even) { transform: translateY(26px); }
     .hero, .hero-sub, .lede { max-width: none; }
   }
