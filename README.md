@@ -82,6 +82,13 @@ a macos sierra 10.12 themed desktop with:
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
 
+**safari** - web browser
+- opens at `/safari`
+- favorites grid of real external links, each opening in a new tab outside the desktop
+- add or edit a link in `config/bookmarks.ts` — no component changes
+- address bar opens whatever you type; non-urls become a search
+- no page rendering, no iframes: the browser only ever shows its start page
+
 ### mobile
 
 responsive mobile interface with:
