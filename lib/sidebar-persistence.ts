@@ -466,10 +466,11 @@ export function clearMusicState(): void {
 // Spotify
 // ============================================================================
 
-const SPOTIFY_VIEWS: readonly SpotifyView[] = ["home", "playlist"];
+const SPOTIFY_VIEWS: readonly SpotifyView[] = ["home", "playlist", "audiobook"];
 
 interface SpotifyState {
   view: SpotifyView;
+  /** Id of the selected playlist or audiobook, depending on `view`. */
   playlistId: string | null;
 }
 

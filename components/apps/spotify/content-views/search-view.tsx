@@ -5,31 +5,44 @@ import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/spotify/format";
-import type { SpotifyPlaylist } from "@/lib/spotify/types";
-import { ListMusic, Pause, Play } from "lucide-react";
+import type { SpotifyAudiobook, SpotifyPlaylist } from "@/lib/spotify/types";
+import { BookAudio, ListMusic, Pause, Play } from "lucide-react";
 
 const MAX_TRACK_RESULTS = 60;
 
 interface SearchViewProps {
   playlists: SpotifyPlaylist[];
+  audiobooks: SpotifyAudiobook[];
   query: string;
   playingUri: string | null;
   isPaused: boolean;
   onTrackPlay: (uri: string, index: number) => void;
   onPlaylistSelect: (id: string) => void;
+  onAudiobookSelect: (id: string) => void;
   isMobileView: boolean;
 }
 
 export function SearchView({
   playlists,
+  audiobooks,
   query,
   playingUri,
   isPaused,
   onTrackPlay,
   onPlaylistSelect,
+  onAudiobookSelect,
   isMobileView,
 }: SearchViewProps) {
   const needle = query.trim().toLowerCase();
+
+  const matchedBooks = useMemo(() => {
+    if (!needle) return [];
+    return audiobooks.filter(
+      (book) =>
+        book.name.toLowerCase().includes(needle) ||
+        book.author.toLowerCase().includes(needle)
+    );
+  }, [needle, audiobooks]);
 
   const { matchedPlaylists, matchedTracks, totalTrackMatches } = useMemo(() => {
     if (!needle) {
@@ -80,7 +93,10 @@ export function SearchView({
     };
   }, [needle, playlists]);
 
-  const hasResults = matchedPlaylists.length > 0 || matchedTracks.length > 0;
+  const hasResults =
+    matchedPlaylists.length > 0 ||
+    matchedTracks.length > 0 ||
+    matchedBooks.length > 0;
 
   return (
     <ScrollArea className="h-full">
@@ -135,6 +151,52 @@ export function SearchView({
                       </p>
                       <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
                         {playlist.tracks.length} songs
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {matchedBooks.length > 0 && (
+              <section className="mb-8">
+                <h2 className="text-2xl font-extrabold tracking-tight mb-4 text-[var(--spotify-text)]">
+                  Audiobooks
+                </h2>
+                <div
+                  className={cn(
+                    "grid gap-4",
+                    isMobileView
+                      ? "grid-cols-2"
+                      : "grid-cols-[repeat(auto-fill,minmax(160px,1fr))]"
+                  )}
+                >
+                  {matchedBooks.map((book) => (
+                    <button
+                      key={book.id}
+                      onClick={() => onAudiobookSelect(book.id)}
+                      className="text-left group rounded-lg p-3 transition-colors bg-[var(--spotify-surface-raised)] can-hover:hover:bg-[var(--spotify-surface-hover)]"
+                    >
+                      <div className="relative aspect-square w-full rounded-[4px] overflow-hidden bg-[var(--spotify-surface)] mb-3 shadow-lg">
+                        {book.coverArt ? (
+                          <Image
+                            src={book.coverArt}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BookAudio className="w-8 h-8 text-[var(--spotify-text-subdued)]" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[15px] font-semibold truncate text-[var(--spotify-text)]">
+                        {book.name}
+                      </p>
+                      <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
+                        {book.author || "Audiobook"}
                       </p>
                     </button>
                   ))}

@@ -30,14 +30,39 @@ import { join } from "node:path";
 // Accepts a bare id, a spotify: URI, or an open.spotify.com URL.
 // ---------------------------------------------------------------------------
 const PLAYLISTS = [
-  "https://open.spotify.com/playlist/3Xx6Rw0wnsBkXLOApUNWM9",
-  "https://open.spotify.com/playlist/0NG9SPYqcqLDqNgESCJhLs",
-  "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1",
-  "https://open.spotify.com/playlist/5P7T0iKh7qO4Fdvh6ko0sW",
-  "https://open.spotify.com/playlist/4bScjAZD4W2UGaNVbNHgdQ",
-  "https://open.spotify.com/playlist/3cai0SGQQ03gcvaEB4VMYw",
-  "https://open.spotify.com/playlist/1cKu6eH7jmqwlKjW1Nxcdf",
-  "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU",
+  "https://open.spotify.com/playlist/3Xx6Rw0wnsBkXLOApUNWM9", // Sunrise
+  "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1", // Disco Francais
+  "https://open.spotify.com/playlist/5P7T0iKh7qO4Fdvh6ko0sW", // Dogs
+  "https://open.spotify.com/playlist/5gReAQknu34R5xsvBnrtyq", // Food — follows Dogs on purpose
+  "https://open.spotify.com/playlist/4bScjAZD4W2UGaNVbNHgdQ", // Bumpin'
+  "https://open.spotify.com/playlist/3cai0SGQQ03gcvaEB4VMYw", // Hot Funk Disco Skate
+  "https://open.spotify.com/playlist/1cKu6eH7jmqwlKjW1Nxcdf", // Jumping
+  "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU", // Nominative Determinism
+  "https://open.spotify.com/playlist/667Y4GSLr8QcczrEhtOQQH", // Bells
+  "https://open.spotify.com/playlist/5XTvRczV7HhehCMrWtduyn", // Opera
+];
+
+// Audiobooks are Spotify "shows". Only the show embeds — individual chapters
+// return "Page not available" — and logged-out visitors get a sample, so these
+// are stored at book level with no chapter list.
+const AUDIOBOOKS = [
+  "https://open.spotify.com/show/4MqJHZpUueLfSvlALXB260", // The Creative Act
+  "https://open.spotify.com/show/2qpr16mVIzRlEZiKDbgeHd", // The Goal
+  "https://open.spotify.com/show/6rGg9IaTolPhU2eWp8krLW", // The Death of Expertise
+  "https://open.spotify.com/show/65GNILqYUcQBuiQMxOKCrg", // Predictably Irrational
+  "https://open.spotify.com/show/0hFA5I7G0GIoq72ZoMpDpt", // 2034
+  "https://open.spotify.com/show/5Hs42Q4QmYmpEv8rTFihty", // Antifragile
+  "https://open.spotify.com/show/6qVuMgx4Ob7vUg6GV9H1O6", // Abundance
+  "https://open.spotify.com/show/6xHlbWh4DuGA1O2mELZ3Kk", // Gang Leader for a Day
+  "https://open.spotify.com/show/0OlD0FyDfSyxGANivZ4aTK", // All the Pieces Matter
+  "https://open.spotify.com/show/77apIARjpUH6f74lrQEpE7", // How Google Works
+  "https://open.spotify.com/show/7aigOTIan9sAwHohiGpnCk", // Work Rules!
+  "https://open.spotify.com/show/46uU7MS2a6j2olIb9ZiZaw", // Just My Type
+  "https://open.spotify.com/show/5FofdBZEAUpdW6fHQkf2wN", // The Design of Everyday Things
+  "https://open.spotify.com/show/1FuPnFa66hVHPuFLBiQNIi", // Tools and Weapons
+  "https://open.spotify.com/show/5V1w9Aneai09yOCqdtSAPo", // Sapiens
+  "https://open.spotify.com/show/6F76upFmtM9h8aL3IVNCyv", // Radical Candor
+  "https://open.spotify.com/show/2x1VOtgXzIyN736HHvdDH5", // There Is No Antimemetics Division
 ];
 
 const ROOT = process.cwd();
@@ -204,6 +229,53 @@ async function api(path, token) {
   return res.json();
 }
 
+function parseShowId(input) {
+  const trimmed = input.trim();
+  const uriMatch = trimmed.match(/^spotify:show:([A-Za-z0-9]+)$/);
+  if (uriMatch) return uriMatch[1];
+  const urlMatch = trimmed.match(/show\/([A-Za-z0-9]+)/);
+  if (urlMatch) return urlMatch[1];
+  return trimmed;
+}
+
+/**
+ * Spotify puts the author and narrator at the top of an audiobook show's
+ * description, as "Author(s): …" / "Narrator(s): …" lines. There is no
+ * publisher field on these, so parse them out and keep the rest as the blurb.
+ */
+function splitAudiobookDescription(description) {
+  const text = description ?? "";
+  const author = text.match(/Author\(s\):\s*(.+)/)?.[1]?.trim() ?? "";
+  const narrator = text.match(/Narrator\(s\):\s*(.+)/)?.[1]?.trim() ?? "";
+  const blurb = text
+    .replace(/Author\(s\):.*/g, "")
+    .replace(/Narrator\(s\):.*/g, "")
+    .trim();
+  return { author, narrator, blurb };
+}
+
+async function fetchAudiobook(rawId, token) {
+  const id = parseShowId(rawId);
+  const show = await api(`/shows/${id}?market=US`, token);
+  const { author, narrator, blurb } = splitAudiobookDescription(show.description);
+
+  console.log(`  ${show.name} — ${show.total_episodes} chapters`);
+
+  return {
+    id: show.id,
+    uri: show.uri ?? `spotify:show:${show.id}`,
+    name: show.name ?? "",
+    author,
+    narrator,
+    description: blurb,
+    coverArt: show.images?.[0]?.url ?? "",
+    totalChapters: show.total_episodes ?? 0,
+    explicit: Boolean(show.explicit),
+    externalUrl:
+      show.external_urls?.spotify ?? `https://open.spotify.com/show/${show.id}`,
+  };
+}
+
 function parsePlaylistId(input) {
   const trimmed = input.trim();
   const uriMatch = trimmed.match(/^spotify:playlist:([A-Za-z0-9]+)$/);
@@ -317,17 +389,21 @@ async function resolveToken() {
   }
 }
 
-function renderDataFile(playlists) {
+function renderDataFile(playlists, audiobooks) {
   return `// GENERATED FILE — do not edit by hand.
 // Regenerate with: npm run spotify:fetch
 //
 // Text metadata only. Audio is streamed by Spotify's embed at runtime; nothing
 // here is or contains a media file.
 
-import type { SpotifyPlaylist } from "./types";
+import type { SpotifyAudiobook, SpotifyPlaylist } from "./types";
 
 export const SPOTIFY_PLAYLISTS: SpotifyPlaylist[] = [
 ${playlists.map((p) => "  " + JSON.stringify(p)).join(",\n")}
+];
+
+export const SPOTIFY_AUDIOBOOKS: SpotifyAudiobook[] = [
+${audiobooks.map((a) => "  " + JSON.stringify(a)).join(",\n")}
 ];
 `;
 }
@@ -348,9 +424,18 @@ async function main() {
     playlists.push(await fetchPlaylist(raw, token));
   }
 
-  writeFileSync(OUT_PATH, renderDataFile(playlists));
+  console.log("\nFetching audiobooks:");
+  const audiobooks = [];
+  for (const raw of AUDIOBOOKS) {
+    audiobooks.push(await fetchAudiobook(raw, token));
+  }
+
+  writeFileSync(OUT_PATH, renderDataFile(playlists, audiobooks));
   const trackCount = playlists.reduce((n, p) => n + p.tracks.length, 0);
-  console.log(`\nWrote ${OUT_PATH} — ${playlists.length} playlists, ${trackCount} tracks.`);
+  console.log(
+    `\nWrote ${OUT_PATH} — ${playlists.length} playlists, ${trackCount} tracks, ` +
+      `${audiobooks.length} audiobooks.`
+  );
 }
 
 main().catch((error) => {
