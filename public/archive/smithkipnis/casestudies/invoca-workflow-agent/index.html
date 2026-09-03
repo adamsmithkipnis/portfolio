@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Invoca Workflow Agent — Adam Smith-Kipnis</title>
+<meta name="description" content="Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works.." />
+<!--
+  Generated archive page. See index.html for why these pages exist and why they
+  sit outside the design system.
+
+  Links to other archived pages carry no target, so they browse inside Safari's
+  frame the way a real site does. Every link that leaves the archive is
+  explicitly target="_blank".
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/archive/smithkipnis/site.css" />
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="wordmark" href="/website">Adam Smith-Kipnis</a>
+    <a class="contact-link" href="mailto:adam@smithkipnis.com" target="_blank" rel="noopener">Contact</a>
+  </div>
+</header>
+
+<main class="wrap cs">
+    <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/OLVHsXg_M8M" title="Video" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"></iframe></div>
+    <h2 class="cs-h2">Invoca Workflow Agent</h2>
+    <p class="cs-p"><em>Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works..</em></p>
+    <img class="cs-img" src="/archive/smithkipnis/img/step-0-1.webp" alt="" loading="lazy" />
+    <p class="cs-p"><strong>Role</strong><br>Senior User Experience Designer</p>
+    <p class="cs-p"><strong>Client</strong><br>Invoca</p>
+    <p class="cs-p"><strong>Year</strong><br>2026</p>
+    <h2 class="cs-h2">Situation</h2>
+    <p class="cs-p">Invoca is a conversation intelligence platform used by Marketers for attribution of ads and websites that drive inbound phone calls.&nbsp; Invoca routes those calls, handles them via SMS and voice agents, and analyzes what is said during calls.&nbsp; It’s used daily by performance marketers, agencies, and customer success managers for monitoring and reporting.</p>
+    <p class="cs-p">In early 2026, Invoca was focused on driving AI adoption at scale. However, there was a problem within our platform. Users wanted to analyze call transcripts with AI, so they’d open a new browser tab, copy transcripts from Invoca, paste them into ChatGPT, and get insights there because it was a better experience. That copying and pasting was a leak, and that friction was a tax. Our users were already using AI, and I believed they shouldn't have to leave Invoca to do it.</p>
+    <h2 class="cs-h2">Task</h2>
+    <p class="cs-p">Nobody assigned this to me. I’d been thinking about this concept for a few months and started building it as a passion project during our quarterly “passion week” because I thought a working demo would move the conversation further than a deck would.</p>
+    <p class="cs-p">I originated the concept and made the case for it by pitching it to colleagues and then co-presenting it to the organization. I designed the interaction model and the agent's context architecture: what it knows, where that knowledge comes from, and how it is retrieved. I worked very closely with a talented engineer, Gabriel Zurita, on the implementation and live demo.&nbsp;</p>
+    <p class="cs-p">Invoca's documentation was scattered across several knowledge base repositories, each managed by a different group, each with its own user interface. None of them were integrated into the platform in a way that allowed users to get contextual answers to their questions. I aggregated all the documentation into Markdown using manual downloads, web crawlers, and instructional video transcripts. When building the agent's knowledge base, I experimented with chunking strategies to ensure the answers felt natural and included URL citations as appropriate.&nbsp;</p>
+    <p class="cs-p">We built the agent using Polaris, an internally modified version of <a href="https://github.com/flowiseai/flowise" target="_blank" rel="noopener noreferrer">Flowise</a>, and measured performance and conducted evaluations with <a href="https://www.braintrust.dev/" target="_blank" rel="noopener noreferrer">Braintrust</a>. Gabriel and I were the primary creators. My colleague Brittany Choi also contributed forward-looking interaction-pattern concepts outside the chat window.</p>
+    <h2 class="cs-h2">Actions</h2>
+    <h3 class="cs-h3">Framing the problem</h3>
+    <p class="cs-p">What I saw were three problems that could be tackled.</p>
+    <ul class="cs-list">
+      <li><strong>Unintuitive UI: </strong>The platform was unintuitive, with learning resources scattered across several sites.  This meant that customers would rely on Invoca employees to implement their solutions pro bono rather than use self-serve, which was costly for Invoca.</li>
+      <li><strong>Data Leakage: </strong>Users were copying and pasting platform transcripts into ChatGPT and Gemini for analytics because the experience was better, resulting in data leakage.</li>
+      <li><strong>Telemetry: </strong>The platform lacked telemetry on its own user experience and user intent.</li>
+    </ul>
+    <p class="cs-p">I created the pitch deck to illustrate the problem and a roadmap for how the Agent’s capabilities and access could be expanded over time.&nbsp; What surprised me was how quickly we built that expansion.&nbsp; While preventing data leakage was one problem to solve, user research was another foundational motivator. We were creating a system to get real-time user insights from chat transcripts on how people wanted to use the Invoca platform, which was something the company didn’t yet have.</p>
+    <h3 class="cs-h3">One agent, many forms</h3>
+    <p class="cs-p">My core design principle was <em>Omnipresence</em>. The agent is always there, on every page, and can be called up from wherever you are. It is not a destination you navigate to. That produced three states: a persistent pill in the platform chrome, built onto Invoca's frontend shell so it rides along on every route; a popover that floats over the current page for a quick question; and an embedded drawer that docks beside the content for longer sessions.</p>
+    <img class="cs-img" src="/archive/smithkipnis/img/screenshot-2026-08-21-at-11-09-00-pm.webp" alt="" loading="lazy" />
+    <p class="cs-p"><em>Agent embodiment designs</em></p>
+    <h3 class="cs-h3">Context Engineering</h3>
+    <p class="cs-p">An agent's usefulness is a function of its context, so deciding what it should know is a set of design decisions about what users will ask and what a good answer requires. I specified four pillars of context.</p>
+    <ul class="cs-list">
+      <li><strong>Who I am: </strong>The agent knows who you are: name, role, and organization type are passed in, so responses are personalized and permission-aware. A Network user and a Publisher user asking the same question are not asking the same question.&nbsp;</li>
+      <li><strong>Where I am: </strong>It knows where you are: it receives the current URL, and on top of that, I built a navigation map of the site, its routes, views and structures. Without it, an agent can tell you that a setting exists; with it, it can tell you where to click.&nbsp;</li>
+      <li><strong>What I see: </strong>It knows what you are looking at by scraping the current page, but asking what the payout column means while looking at the payout column only works if the agent can see the column.&nbsp;</li>
+      <li><strong>How Invoca works: </strong>It knows what Invoca knows by retrieving contextualized information from our documentation, with citations, so it doesn't guess, and accuracy is easily verified.</li>
+    </ul>
+    <p class="cs-p">Conversation history persists across navigation, so a thread started on Manage Campaigns continues on Manage Dashboards.</p>
+    <h3 class="cs-h3">Building the knowledge base</h3>
+    <p class="cs-p">Retrieval is only as good as its corpus, so I built the corpus myself. I crawled data from every Invoca learning resource that existed. The Invoca Academy course library, transcripts of training videos, developer documentation, platform docs, and the full support center knowledge base, which contains several hundred articles. I wrote the navigation map from the platform's own route structure. I authored a technology-selector corpus, based on my prior work, covering the choices our support team fields constantly and that our docs only address indirectly: Semantic Signal versus Rule-Based Signal, Lookup Table versus Formula Field.</p>
+    <p class="cs-p">I formatted all of the documents so a retriever could use them reliably. On top of the raw corpus, I built a synthesized wiki with concept pages, source summaries, and a maintained index.</p>
+    <p class="cs-p">I prototyped this organizational style in Obsidian as a side project, drawing on Andrej Karpathy's "personal knowledge base" architecture. The agent itself we assembled in Polaris as a sequential agent graph: a state object and conversation memory feeding a start node, an agent node with a retriever tool over the document vector store, and an end node.</p>
+    <img class="cs-img" src="/archive/smithkipnis/img/obsidian-personalknowledgebase.webp" alt="" loading="lazy" />
+    <p class="cs-p"><em>Prototyping ‘personal knowledge base’ RAG architecture with Obsidian &amp; aggregated Invoca documentation in markdown format</em></p>
+    <h3 class="cs-h3">Logging every interaction</h3>
+    <p class="cs-p">Every interaction was logged to Braintrust: the system prompt, the assembled user context, the scraped page content, and the conversation. When anyone asked how the agent knew something, the answer included a link to one of our published knowledge bases. During our live demo, we refreshed Braintrust in real time and read the trace of the conversation we had just had.</p>
+    <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/enlXyoJ2T08" title="Video" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"></iframe></div>
+    <h3 class="cs-h3">Knowledge &gt; Documentation</h3>
+    <p class="cs-p">There was real anxiety in the organization that a retrieval agent would devalue the support and Academy teams' work. I made the opposite argument publicly, because the project would have failed politically otherwise. Content from <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">support.invoca.com</a> and <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">academy.invoca.com</a> doesn't become less valuable because an agent can retrieve it. It gets a new channel. What is changing is that agents are becoming a bigger consumer of documentation than humans are, which argues for investing in documentation.</p>
+    <p class="cs-p">I got that point about agents consuming documentation from Hahnbee Lee, a founder of Mintlify, at Braintrust’s 2026 Trace conference in San Francisco, where <a target="_blank" href="https://www.mintlify.com/blog/state-of-ai" rel="noopener noreferrer">she said close to 50% of their usage was already from agents and was trending toward 90%</a>.</p>
+    <h3 class="cs-h3">Roadmap</h3>
+    <p class="cs-p">I closed the presentation with four roadmap goals, each building on growing trust within the platform.&nbsp;</p>
+    <ul class="cs-list">
+      <li><strong>See everything: </strong>Platform-wide read access so that you can ask about your data from any page.&nbsp;</li>
+      <li><strong>Act locally: </strong>Actions on the current page, so the agent can sort and filter what is in front of you.&nbsp;</li>
+      <li><strong>Act globally: </strong>Platform-wide actions so that the agent can complete a workflow end to end: "create an SMS agent for me," using an agent to create an agent.&nbsp;</li>
+      <li><strong>Collaborate with anyone: </strong>External orchestration, connecting out to Salesforce, CRMs, and other systems' MCP servers.&nbsp;</li>
+    </ul>
+    <p class="cs-p">Sequencing it this way felt like it would blend trust and intuitive interactions with growing technical capability.</p>
+    <h2 class="cs-h2">Result</h2>
+    <p class="cs-p">Gabriel and I built the majority of this in only three days. The Workflow Agent ran on localhost and was deployed to our internal QA platform so everyone in the company could access it.</p>
+    <ul class="cs-list">
+      <li><strong>Over 100 unique sessions per day:</strong> usage climbed immediately after we rolled it out to colleagues, reaching hundreds of unique sessions in the first couple of days and outperforming our SMS and Voice Agents. The number continued to grow every day before it was shut down.</li>
+      <li><strong>Fully functional proof of concept:</strong> We conducted a live demonstration of page awareness, URL awareness, user awareness, retrieval from Invoca's documentation, and conversation persistence across navigation, using real platform screens.</li>
+      <li><strong>Roadmap influence:</strong> The concept and its framing shaped how the organization approached in-platform AI afterward, particularly the HubSpot integration, as <a href="https://www.invoca.com/press-release/invoca-introduces-nico-ai-revenue-conversion-agent" target="_blank" rel="noopener noreferrer"><u>announced during the rollout of "Nico."</u></a></li>
+    </ul>
+
+  <nav class="cs-pager">
+      <a class="cs-next-link" href="/website/casestudies/project-one-f5w4d-3fh8d"><span>Next</span>Grace - Product Design Manager</a>
+  </nav>
+</main>
+
+<section class="band">
+  <div class="wrap band-inner">
+    <div>
+      <section class="speaking">
+    <h3>I enjoy speaking about technology and its potential.</h3>
+    <p class="label">Selected engagements:</p>
+    <ul>
+      <li>
+        <a href="https://www.astcweb.org/" target="_blank" rel="noopener noreferrer">American Society of Trial Consultants</a>
+        &ndash; AI and Prompt Engineering for Trial Consultants
+      </li>
+      <li>
+        <a href="https://www.astcweb.org/" target="_blank" rel="noopener noreferrer">American Society of Trial Consultants</a>
+        &ndash; Emergent AI &amp; Ethics for Trial Consulting
+      </li>
+      <li>
+        <a href="https://www.facebook.com/share/g/1C9r9kF3JX/" target="_blank" rel="noopener noreferrer">Puget Sound SigChi</a>
+        &ndash; UX in Healthcare
+      </li>
+      <li>
+        <a href="https://hushcon.com/" target="_blank" rel="noopener noreferrer">HushCon</a>
+        &ndash; Hypertargeting an individual through Facebook Ads
+      </li>
+    </ul>
+  </section>
+
+<footer>
+  <div class="wrap">
+    <a href="https://linkedin.com/in/adamsmithkipnis" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95 4.02 0 4.76 2.5 4.76 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.19 1.42-2.19 2.9V21H9z"/></svg>
+    </a>
+    <a href="https://adamsmithkipnis.medium.com/" target="_blank" rel="noopener noreferrer" aria-label="Medium">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 7.2c0-.3-.1-.5-.3-.7L1 4.8v-.3h4.9l3.8 8.4 3.3-8.4h4.7v.3l-1.3 1.2c-.1.1-.2.2-.2.4v9.2c0 .2.1.3.2.4l1.2 1.2v.3h-6.2v-.3l1.3-1.3c.1-.1.1-.2.1-.4V7.9l-3.6 9.2h-.5L4.6 7.9v6.2c0 .3.1.5.3.7l1.7 2v.3H1.7v-.3l1.7-2c.2-.2.3-.4.3-.7z"/></svg>
+    </a>
+    <a href="https://x.com/adamsmithkipnis" target="_blank" rel="noopener noreferrer" aria-label="X">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.7L21.8 21h-6.3l-4.9-6.4L4.9 21H1.8l7.3-8.3L1.5 3h6.4l4.4 5.9zm-1.1 16.1h1.7L7.7 4.8H5.9z"/></svg>
+    </a>
+    <a href="https://bsky.app/profile/adamsk.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="Bluesky">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10.8C10.9 8.6 7.9 4.5 5.1 2.6 2.4.7 1.4 1 .8 1.3.1 1.7 0 2.8 0 3.4c0 .6.3 5.2.6 6 .8 2.4 3.4 3.3 5.7 3-3.4.5-6.4 1.8-2.4 6.2 4.3 4.5 5.9-1 6.7-3.7l.4-1.3.4 1.3c.8 2.7 2.4 8.2 6.7 3.7 4-4.4 1-5.7-2.4-6.2 2.3.3 4.9-.6 5.7-3 .3-.8.6-5.4.6-6 0-.6-.1-1.7-.8-2.1-.6-.3-1.6-.6-4.3 1.3C16.1 4.5 13.1 8.6 12 10.8z"/></svg>
+    </a>
+    <a href="https://github.com/adamsmithkipnis/" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.9 10.9c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/></svg>
+    </a>
+    <a href="mailto:adam@smithkipnis.com" target="_blank" rel="noopener" aria-label="Email">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h20v16H2zm2 2v.4l8 5 8-5V6zm16 12v-9.2l-8 5-8-5V18z"/></svg>
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>

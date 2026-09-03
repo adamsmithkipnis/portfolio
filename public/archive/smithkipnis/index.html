@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Adam Smith-Kipnis</title>
 <meta name="description" content="I build and lead teams that turn complex technologies into intuitive experiences." />
-<base target="_blank" />
 <!--
   A recreation of the Squarespace smithkipnis.com, kept as a standalone page.
 
@@ -15,218 +14,23 @@
   framed rather than composed into the app so those styles cannot leak either
   way. Same-origin, so no X-Frame-Options to fight.
 
-  Links must leave the frame, not navigate inside it — a link without a
-  target would load the destination into this little box.
+  Two kinds of link, deliberately:
 
-  Every anchor therefore carries target="_blank" explicitly, and
-  <base target="_blank"> backs that up as the document default so a link added
-  later cannot silently open in-frame. Belt and braces on purpose: the explicit
-  attribute is the thing under test, the base tag only catches omissions.
+  Anything leaving the archive carries target="_blank" so it escapes the frame
+  into a real browser tab. Links to other archived pages carry no target, so
+  they browse inside the frame — that is what makes Safari's back button, and
+  the address bar, mean anything.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    /* The live site paints bands, not one flat ground: white from the header
-       through the collage, grey behind the speaking section, navy footer. */
-    --paper: #ffffff;
-    --band: #e0e0db;
-    --ink: #253551;
-    --footer: #253551;
-    /* Sized so the content box (inside the 4vw gutters) lands on the
-       original's 1400px at a 1800px viewport, which also puts the left edge
-       at 200px exactly as the live site does. */
-    --measure: 1544px;
-  }
-
-  * { box-sizing: border-box; }
-
-  html { -webkit-text-size-adjust: 100%; }
-
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-  a:hover { text-decoration-thickness: 2px; }
-
-  .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 4vw; }
-
-  /* ---------- header ---------- */
-
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--paper);
-    padding: 22px 0;
-  }
-  header .wrap { display: flex; align-items: center; justify-content: space-between; }
-  .wordmark {
-    font-family: Poppins, Manrope, sans-serif;
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
-  .contact-link {
-    font-size: 15px;
-    padding-bottom: 3px;
-    border-bottom: 1px solid currentColor;
-    text-decoration: none;
-  }
-
-  /* ---------- type ---------- */
-
-  h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
-
-  /* The type ramp is fitted to the live site, sampled at 940px, 1200px and
-     1800px: piecewise, steep below 1200px and flat above, with the two lines
-     intersecting exactly at 1200px, so min() of the pair reproduces it
-     without a media query. Headline: 36.30px @940 -> 41.92 @1200 -> 46.24
-     @1800. Body: 29.54 -> 33.28 -> 36.16.
-
-     Measures are em, not a fraction of the container. The original uses
-     fractional columns, and they misbehave: its headline column collapses
-     from 88% at 600px to 37.5% at 800px, so widening the window takes the
-     headline from three lines to six. An em measure is tied to the type
-     instead, so the line count holds as the window grows and can only
-     improve. min() with 100% keeps it inside the container when narrow.
-
-     This is a deliberate departure from the original, and the only one. */
-
-  .hero, .hero-sub {
-    font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
-    line-height: 1.11;
-    max-width: min(100%, 12.5em);
-  }
-  .hero { margin: 8vh 0 0; }
-  .hero-sub { margin: 0.55em 0 0; }
-  .hero strong, .hero-sub strong { font-weight: 600; }
-
-  .lede, .patents {
-    font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
-    line-height: 1.14;
-    max-width: min(100%, 26em);
-  }
-  .lede { margin: 14vh 0 0; }
-  .patents { margin: 0.9em 0 0; }
-
-  /* ---------- collage ----------
-     Free-form scatter, not a grid: each tile is placed by percentage inside a
-     fixed-aspect box, so the whole arrangement scales with the container the
-     way the original does. Percentages were measured off the live page at a
-     1280px viewport. */
-
-  .collage {
-    position: relative;
-    width: 100%;
-    padding-bottom: 86.7%; /* 1110 / 1280 */
-    margin: 6vh 0 2vh;
-  }
-  .collage img {
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 20px;
-  }
-  .collage img.cutout { border-radius: 0; }
-
-  /* ---------- speaking ---------- */
-
-  .band {
-    background: var(--band);
-    margin-top: 10vh;
-    padding: 82px 0;
-  }
-  .band-inner {
-    display: grid;
-    grid-template-columns: 62% 1fr;
-    gap: 6%;
-    align-items: start;
-  }
-
-  .speaking { margin: 0; }
-  /* The band's first column already carries the 62% measure, so the heading
-     fills it rather than taking the fraction a second time. */
-  .speaking h3 {
-    font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
-    line-height: 1.14;
-  }
-  .speaking .label { margin: 1.6em 0 0.9em; font-size: clamp(17px, 1.6vw, 20px); }
-  .speaking ul { list-style: none; margin: 0; padding: 0; }
-  .speaking li {
-    font-size: clamp(15px, 1.35vw, 18px);
-    line-height: 1.45;
-    margin: 0 0 1.1em;
-    max-width: 62ch;
-  }
-
-  .cta {
-    display: inline-block;
-    font-size: clamp(20px, 2.2vw, 27px);
-    margin: 9vh 0 0;
-  }
-
-  /* Sits in the band's second column, top-aligned with the heading. */
-  .presenting {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  /* ---------- footer ---------- */
-
-  footer { background: var(--footer); padding: 34px 0; }
-  footer .wrap { display: flex; justify-content: center; gap: 26px; }
-  footer a { color: #fff; opacity: 0.92; display: inline-flex; }
-  footer a:hover { opacity: 1; }
-  footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
-
-  /* ---------- narrow ----------
-     The scatter collapses below the original's breakpoint: absolute placement
-     at phone widths turns the tiles into confetti. A staggered two-column
-     flow keeps the loose feel and stays legible. */
-
-  /* The band's two columns get cramped before the collage does, so they
-     stack at a wider breakpoint than the tiles. */
-  @media (max-width: 900px) {
-    .band-inner { grid-template-columns: 1fr; gap: 6vh; }
-    .presenting { width: min(320px, 70%); margin: 0 auto; }
-  }
-
-  @media (max-width: 700px) {
-    .collage {
-      padding-bottom: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px 14px;
-      align-items: center;
-    }
-    /* Placement is inline (left/top/width per tile), so the stacked layout has
-       to beat those inline widths — hence the !important. */
-    .collage img { position: static; width: 100% !important; }
-    .collage img:nth-child(even) { transform: translateY(26px); }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    a { transition: text-decoration-thickness 120ms ease; }
-  }
-</style>
+<link rel="stylesheet" href="/archive/smithkipnis/site.css" />
 </head>
 <body>
 
 <header>
   <div class="wrap">
-    <a class="wordmark" href="/website" target="_blank" rel="noopener">Adam Smith-Kipnis</a>
+    <a class="wordmark" href="/website">Adam Smith-Kipnis</a>
     <a class="contact-link" href="mailto:adam@smithkipnis.com" target="_blank" rel="noopener">Contact</a>
   </div>
 </header>
