@@ -64,6 +64,7 @@ const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").th
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
 const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then(m => ({ default: m.MusicApp })));
+const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
 
@@ -941,6 +942,12 @@ function DesktopContent({
 
           <Window appId="music">
             <MusicApp />
+          </Window>
+
+          {/* keepMountedWhenMinimized so minimizing does not tear down the
+              Spotify embed and stop playback. */}
+          <Window appId="spotify" keepMountedWhenMinimized={true}>
+            <SpotifyApp />
           </Window>
 
           {visibleFinderWindows.map((windowState) => {

@@ -42,6 +42,7 @@ const STORAGE_KEYS = {
   CALENDAR_DATE: "calendar-date",
   CALENDAR_SCROLL: "calendar-scroll",
   MUSIC_STATE: "music-state",
+  SPOTIFY_STATE: "spotify-state",
   NOTES_SELECTED: "notes-selected-slug",
   MESSAGES_CONVERSATION: "messages-conversation",
   WEATHER_SELECTED_CITY: "weather-selected-city",
@@ -394,6 +395,7 @@ export function clearCalendarState(): void {
 // ============================================================================
 
 import type { MusicView } from "@/components/apps/music/types";
+import type { SpotifyView } from "@/lib/spotify/types";
 import { clearItermStorage } from "@/components/apps/iterm/terminal";
 import { clearNotesDisplayPreferences } from "@/lib/notes/display-preferences";
 import { clearNotesSelectedSlugMemory } from "@/lib/notes/selection-state";
@@ -455,6 +457,65 @@ export function clearMusicState(): void {
   if (typeof window === "undefined") return;
   try {
     sessionStorage.removeItem(STORAGE_KEYS.MUSIC_STATE);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+// ============================================================================
+// Spotify
+// ============================================================================
+
+const SPOTIFY_VIEWS: readonly SpotifyView[] = ["home", "playlist"];
+
+interface SpotifyState {
+  view: SpotifyView;
+  playlistId: string | null;
+}
+
+export function loadSpotifyState(): SpotifyState {
+  const defaultState: SpotifyState = { view: "home", playlistId: null };
+
+  if (typeof window === "undefined") return defaultState;
+
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEYS.SPOTIFY_STATE);
+    if (!saved) return defaultState;
+
+    const parsed = JSON.parse(saved);
+
+    const view: SpotifyView = SPOTIFY_VIEWS.includes(parsed.view)
+      ? parsed.view
+      : "home";
+
+    const playlistId: string | null =
+      typeof parsed.playlistId === "string" ? parsed.playlistId : null;
+
+    return { view, playlistId };
+  } catch {
+    return defaultState;
+  }
+}
+
+export function saveSpotifyState(
+  view: SpotifyView,
+  playlistId: string | null
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(
+      STORAGE_KEYS.SPOTIFY_STATE,
+      JSON.stringify({ view, playlistId })
+    );
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export function clearSpotifyState(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(STORAGE_KEYS.SPOTIFY_STATE);
   } catch {
     // Ignore storage errors
   }
@@ -769,6 +830,9 @@ export function clearAppState(appId: string): void {
     case "music":
       clearMusicState();
       break;
+    case "spotify":
+      clearSpotifyState();
+      break;
     case "notes":
       clearNotesState();
       break;
@@ -790,6 +854,7 @@ export function clearAllAppState(): void {
   clearSettingsState();
   clearCalendarState();
   clearMusicState();
+  clearSpotifyState();
   clearNotesState();
   clearMessagesState();
   clearWeatherState();
