@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { displayHost, monogram, resolveOmniboxTarget } from "@/lib/safari-url";
+import {
+  displayHost,
+  monogram,
+  monogramTextColor,
+  resolveOmniboxTarget,
+} from "@/lib/safari-url";
 
 test("passes through absolute http(s) URLs", () => {
   assert.equal(resolveOmniboxTarget("https://example.com/"), "https://example.com/");
@@ -58,4 +63,41 @@ test("monogram takes the first letter, uppercased", () => {
   assert.equal(monogram("GitHub"), "G");
   assert.equal(monogram("smithkipnis.com"), "S");
   assert.equal(monogram(""), "?");
+});
+
+test("monogram text flips to black on light tints", () => {
+  // The real reason this exists: IMDb yellow with white text is unreadable.
+  assert.equal(monogramTextColor("#F5C518"), "#000000");
+  assert.equal(monogramTextColor("#C0C0C0"), "#000000");
+  assert.equal(monogramTextColor("#FFFFFF"), "#000000");
+});
+
+test("monogram text stays white on dark tints", () => {
+  assert.equal(monogramTextColor("#24292F"), "#FFFFFF");
+  assert.equal(monogramTextColor("#000000"), "#FFFFFF");
+  assert.equal(monogramTextColor("#0A66C2"), "#FFFFFF");
+  assert.equal(monogramTextColor("#1D4ED8"), "#FFFFFF");
+});
+
+test("monogram text handles shorthand hex and bad input", () => {
+  assert.equal(monogramTextColor("#fff"), "#000000");
+  assert.equal(monogramTextColor("#000"), "#FFFFFF");
+  // No tint, or something that isn't a hex color, falls back to white on the
+  // component's default blue.
+  assert.equal(monogramTextColor(undefined), "#FFFFFF");
+  assert.equal(monogramTextColor("rebeccapurple"), "#FFFFFF");
+});
+
+test("every configured bookmark is an https url with a legible monogram", async () => {
+  const { BOOKMARK_SECTIONS } = await import("@/config/bookmarks");
+  for (const section of BOOKMARK_SECTIONS) {
+    for (const bookmark of section.bookmarks) {
+      assert.ok(
+        bookmark.url.startsWith("https://"),
+        `${bookmark.title} should be https, got ${bookmark.url}`
+      );
+      assert.doesNotThrow(() => new URL(bookmark.url), `${bookmark.title} should parse`);
+      assert.ok(monogram(bookmark.title) !== "?", `${bookmark.title} should yield a monogram`);
+    }
+  }
 });

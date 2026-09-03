@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BOOKMARK_SECTIONS, type Bookmark } from "@/config/bookmarks";
-import { displayHost, monogram } from "@/lib/safari-url";
+import { displayHost, monogram, monogramTextColor } from "@/lib/safari-url";
 import { cn } from "@/lib/utils";
 
 interface StartPageProps {
@@ -51,6 +51,9 @@ function BookmarkTile({ bookmark }: { bookmark: Bookmark }) {
       href={bookmark.url}
       target="_blank"
       rel="noopener noreferrer"
+      // Labels truncate to one line the way Safari's do, so keep the full
+      // text reachable on hover.
+      title={bookmark.title}
       className="group flex flex-col items-center gap-2 text-center focus:outline-none"
     >
       <div
@@ -71,7 +74,12 @@ function BookmarkTile({ bookmark }: { bookmark: Bookmark }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-2xl font-semibold text-white">{monogram(bookmark.title)}</span>
+          <span
+            className="text-2xl font-semibold"
+            style={{ color: monogramTextColor(bookmark.tint) }}
+          >
+            {monogram(bookmark.title)}
+          </span>
         )}
       </div>
       <div className="w-full min-w-0">

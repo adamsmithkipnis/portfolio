@@ -1,5 +1,6 @@
 /**
- * Address-bar input handling for the Safari app.
+ * Pure helpers for the Safari app: address-bar input, and the bits of a
+ * bookmark tile derived from its data.
  *
  * The address bar is real: whatever a visitor types is turned into an
  * off-site URL and opened in a new tab. That makes this a trust boundary —
@@ -70,4 +71,48 @@ export function displayHost(url: string): string {
 export function monogram(title: string): string {
   const first = title.trim().replace(/^https?:\/\//, "").charAt(0);
   return first ? first.toUpperCase() : "?";
+}
+
+/**
+ * Black or white monogram text, whichever is legible on `tint`.
+ *
+ * Brand colors are picked for the brand, not for us — IMDb's yellow needs
+ * dark text where GitHub's near-black needs light. Choosing per tile keeps a
+ * bookmark from going unreadable just because someone set a pale tint.
+ *
+ * Uses WCAG relative luminance against the 0.179 crossover, the point where
+ * contrast with black and with white is equal.
+ */
+export function monogramTextColor(tint: string | undefined): "#000000" | "#FFFFFF" {
+  const rgb = parseHexColor(tint);
+  if (!rgb) return "#FFFFFF";
+
+  const [r, g, b] = rgb.map((channel) => {
+    const c = channel / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 0.179 ? "#000000" : "#FFFFFF";
+}
+
+/** #rgb or #rrggbb to [r, g, b], or null when it isn't a hex color. */
+function parseHexColor(value: string | undefined): [number, number, number] | null {
+  if (!value) return null;
+  const hex = value.trim().replace(/^#/, "");
+
+  if (/^[0-9a-f]{3}$/i.test(hex)) {
+    const [r, g, b] = hex.split("").map((c) => parseInt(c + c, 16));
+    return [r, g, b];
+  }
+
+  if (/^[0-9a-f]{6}$/i.test(hex)) {
+    return [
+      parseInt(hex.slice(0, 2), 16),
+      parseInt(hex.slice(2, 4), 16),
+      parseInt(hex.slice(4, 6), 16),
+    ];
+  }
+
+  return null;
 }

@@ -31,19 +31,44 @@ export const BOOKMARK_SECTIONS: BookmarkSection[] = [
     title: "Favorites",
     bookmarks: [
       {
-        title: "smithkipnis.com",
-        url: "https://smithkipnis.com",
-        tint: "#0A7CFF",
-      },
-      {
         title: "GitHub",
         url: "https://github.com/adamsmithkipnis",
         tint: "#24292F",
       },
       {
-        title: "X",
+        title: "Bluesky",
+        url: "https://bsky.app/profile/adamsk.bsky.social",
+        tint: "#0085FF",
+      },
+      {
+        title: "Twitter",
         url: "https://x.com/AdamSmithKipnis",
         tint: "#000000",
+      },
+      {
+        title: "LinkedIn",
+        url: "https://www.linkedin.com/in/adamsmithkipnis",
+        tint: "#0A66C2",
+      },
+      {
+        title: "Patents",
+        url: "https://patents.google.com/?inventor=smith-kipnis&num=100&patents=false",
+        tint: "#4285F4",
+      },
+      {
+        title: "Credits",
+        url: "https://www.imdb.com/name/nm2224145/",
+        tint: "#F5C518",
+      },
+      {
+        title: "Minesweeper",
+        url: "https://bsky.app/profile/playminesweeper.bsky.social",
+        tint: "#C0C0C0",
+      },
+      {
+        title: "Battleship Team Blue",
+        url: "https://bsky.app/profile/battleshipblue.bsky.social",
+        tint: "#1D4ED8",
       },
     ],
   },
