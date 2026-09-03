@@ -54,8 +54,15 @@ export function HomeView({
         {/* Quick-access tiles, the grid Spotify puts at the top of Home. */}
         <div
           className={cn(
+            // auto-fill responds to this grid's own width; a viewport
+            // breakpoint would not, and the window resizes independently of
+            // the viewport. A tile needs ~144px for art, gaps and the play
+            // affordance, so anything under ~260px leaves the title too little
+            // room and it wraps a character at a time.
             "grid gap-2 mb-8",
-            isMobileView ? "grid-cols-1" : "grid-cols-2 xl:grid-cols-4"
+            isMobileView
+              ? "grid-cols-1"
+              : "grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
           )}
         >
           {playlists.map((playlist) => (
