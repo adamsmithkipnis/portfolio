@@ -5,13 +5,13 @@ import { cn } from "@/lib/utils";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { loadSpotifyState, saveSpotifyState } from "@/lib/sidebar-persistence";
 import { useSpotifyEmbed } from "@/lib/spotify/use-spotify-embed";
-import { SPOTIFY_PLAYLISTS } from "@/lib/spotify/data";
-import { findPlaylistById } from "@/lib/spotify/format";
-import type { SpotifyView } from "@/lib/spotify/types";
+import { SPOTIFY_AUDIOBOOKS, SPOTIFY_PLAYLISTS } from "@/lib/spotify/data";
+import { findAudiobookById, findPlaylistById } from "@/lib/spotify/format";
+import type { LibraryFilter, SpotifyView } from "@/lib/spotify/types";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
 import { NowPlayingEmbed } from "./now-playing-embed";
-import { HomeView, PlaylistView, SearchView } from "./content-views";
+import { AudiobookView, HomeView, PlaylistView, SearchView } from "./content-views";
 
 interface AppProps {
   isDesktop?: boolean;
@@ -20,14 +20,15 @@ interface AppProps {
 /** One entry in the back/forward stack. */
 interface SpotifyLocation {
   view: SpotifyView;
-  playlistId: string | null;
+  /** Playlist or audiobook id, depending on `view`. */
+  itemId: string | null;
 }
 
 // Load once outside the component so the initial render already has the
 // restored view rather than flashing the default.
 const getInitialLocation = (): SpotifyLocation => {
   const saved = loadSpotifyState();
-  return { view: saved.view, playlistId: saved.playlistId };
+  return { view: saved.view, itemId: saved.playlistId };
 };
 
 export default function App({ isDesktop = false }: AppProps) {
@@ -35,6 +36,7 @@ export default function App({ isDesktop = false }: AppProps) {
   const [history, setHistory] = useState<SpotifyLocation[]>([initialLocation]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<LibraryFilter>("all");
 
   const [isMobileView, setIsMobileView] = useState(false);
   const [isLayoutInitialized, setIsLayoutInitialized] = useState(false);
@@ -46,11 +48,12 @@ export default function App({ isDesktop = false }: AppProps) {
   const windowFocus = useWindowFocus();
   const inShell = !!(isDesktop && windowFocus);
 
-  const { hostRef, state, failed, playTrack, togglePlay } = useSpotifyEmbed();
+  const { hostRef, state, requestedUri, failed, playTrack, togglePlay } =
+    useSpotifyEmbed();
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
   const location = history[historyIndex] ?? initialLocation;
-  const { view: activeView, playlistId: selectedPlaylistId } = location;
+  const { view: activeView, itemId: selectedItemId } = location;
 
   const handleTrackPlay = useCallback(
     (uri: string, index: number) => {
@@ -67,8 +70,8 @@ export default function App({ isDesktop = false }: AppProps) {
   }, [isDesktop]);
 
   useEffect(() => {
-    saveSpotifyState(activeView, selectedPlaylistId);
-  }, [activeView, selectedPlaylistId]);
+    saveSpotifyState(activeView, selectedItemId);
+  }, [activeView, selectedItemId]);
 
   /** Pushes a location, discarding anything ahead of the current entry. */
   const navigate = useCallback(
@@ -76,14 +79,14 @@ export default function App({ isDesktop = false }: AppProps) {
       setHistory((current) => {
         const trimmed = current.slice(0, historyIndex + 1);
         const last = trimmed[trimmed.length - 1];
-        if (last && last.view === next.view && last.playlistId === next.playlistId) {
+        if (last && last.view === next.view && last.itemId === next.itemId) {
           return trimmed;
         }
         return [...trimmed, next];
       });
       setHistoryIndex((current) => {
         const last = history[current];
-        if (last && last.view === next.view && last.playlistId === next.playlistId) {
+        if (last && last.view === next.view && last.itemId === next.itemId) {
           return current;
         }
         return current + 1;
@@ -94,12 +97,9 @@ export default function App({ isDesktop = false }: AppProps) {
   );
 
   const handleViewSelect = useCallback(
-    (view: SpotifyView, playlistId?: string) => {
+    (view: SpotifyView, itemId?: string) => {
       setQuery("");
-      navigate({
-        view,
-        playlistId: view === "playlist" && playlistId ? playlistId : null,
-      });
+      navigate({ view, itemId: view === "home" ? null : (itemId ?? null) });
     },
     [navigate]
   );
@@ -136,8 +136,12 @@ export default function App({ isDesktop = false }: AppProps) {
   }, [inShell, windowFocus, togglePlay]);
 
   const selectedPlaylist = useMemo(
-    () => findPlaylistById(SPOTIFY_PLAYLISTS, selectedPlaylistId),
-    [selectedPlaylistId]
+    () => findPlaylistById(SPOTIFY_PLAYLISTS, selectedItemId),
+    [selectedItemId]
+  );
+  const selectedAudiobook = useMemo(
+    () => findAudiobookById(SPOTIFY_AUDIOBOOKS, selectedItemId),
+    [selectedItemId]
   );
 
   const isSearching = query.trim().length > 0;
@@ -154,11 +158,25 @@ export default function App({ isDesktop = false }: AppProps) {
       return (
         <SearchView
           playlists={SPOTIFY_PLAYLISTS}
+          audiobooks={SPOTIFY_AUDIOBOOKS}
           query={query}
           playingUri={state.playingUri}
           isPaused={state.isPaused}
           onTrackPlay={handleTrackPlay}
           onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
+          onAudiobookSelect={(id) => handleViewSelect("audiobook", id)}
+          isMobileView={isMobileView}
+        />
+      );
+    }
+
+    if (activeView === "audiobook" && selectedAudiobook) {
+      return (
+        <AudiobookView
+          audiobook={selectedAudiobook}
+          playingUri={requestedUri}
+          isPaused={state.isPaused}
+          onPlay={(uri) => handleTrackPlay(uri, -1)}
           isMobileView={isMobileView}
         />
       );
@@ -180,7 +198,9 @@ export default function App({ isDesktop = false }: AppProps) {
     return (
       <HomeView
         playlists={SPOTIFY_PLAYLISTS}
+        audiobooks={SPOTIFY_AUDIOBOOKS}
         onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
+        onAudiobookSelect={(id) => handleViewSelect("audiobook", id)}
         isMobileView={isMobileView}
       />
     );
@@ -227,8 +247,11 @@ export default function App({ isDesktop = false }: AppProps) {
         >
           <Sidebar
             playlists={SPOTIFY_PLAYLISTS}
+            audiobooks={SPOTIFY_AUDIOBOOKS}
             activeView={isSearching ? "home" : activeView}
-            selectedPlaylistId={isSearching ? null : selectedPlaylistId}
+            selectedItemId={isSearching ? null : selectedItemId}
+            filter={filter}
+            onFilterChange={setFilter}
             onViewSelect={handleViewSelect}
             isMobileView={isMobileView}
           />

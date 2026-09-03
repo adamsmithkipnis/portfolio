@@ -69,6 +69,12 @@ export interface UseSpotifyEmbedResult {
   /** Attach to the element the controller replaces with its iframe. */
   hostRef: React.RefObject<HTMLDivElement>;
   state: SpotifyEmbedState;
+  /**
+   * The URI we last asked the embed to load. Playing a show reports back the
+   * *episode* it started on, not the show, so `state.playingUri` never matches
+   * an audiobook's URI — compare against this instead for show-level playback.
+   */
+  requestedUri: string | null;
   isReady: boolean;
   failed: boolean;
   playTrack: (uri: string) => void;
@@ -86,6 +92,7 @@ export function useSpotifyEmbed({
   const queuedUriRef = useRef<string | null>(null);
 
   const [state, setState] = useState<SpotifyEmbedState>(INITIAL_STATE);
+  const [requestedUri, setRequestedUri] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -152,6 +159,7 @@ export function useSpotifyEmbed({
   const playTrack = useCallback(
     (uri: string) => {
       const controller = controllerRef.current;
+      setRequestedUri(uri);
       if (!controller) {
         queuedUriRef.current = uri;
         return;
@@ -175,5 +183,5 @@ export function useSpotifyEmbed({
     controllerRef.current?.seek(seconds);
   }, []);
 
-  return { hostRef, state, isReady, failed, playTrack, togglePlay, seek };
+  return { hostRef, state, requestedUri, isReady, failed, playTrack, togglePlay, seek };
 }

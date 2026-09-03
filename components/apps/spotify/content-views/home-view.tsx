@@ -4,12 +4,14 @@ import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { formatTotalDuration, totalPlaylistDuration } from "@/lib/spotify/format";
-import type { SpotifyPlaylist } from "@/lib/spotify/types";
-import { ListMusic, Play } from "lucide-react";
+import type { SpotifyAudiobook, SpotifyPlaylist } from "@/lib/spotify/types";
+import { BookAudio, ListMusic, Play } from "lucide-react";
 
 interface HomeViewProps {
   playlists: SpotifyPlaylist[];
+  audiobooks: SpotifyAudiobook[];
   onPlaylistSelect: (id: string) => void;
+  onAudiobookSelect: (id: string) => void;
   isMobileView: boolean;
 }
 
@@ -22,7 +24,9 @@ function greeting(): string {
 
 export function HomeView({
   playlists,
+  audiobooks,
   onPlaylistSelect,
+  onAudiobookSelect,
   isMobileView,
 }: HomeViewProps) {
   if (playlists.length === 0) {
@@ -136,6 +140,58 @@ export function HomeView({
             </button>
           ))}
         </div>
+
+        {audiobooks.length > 0 && (
+          <>
+            <div className="flex items-baseline justify-between mt-8 mb-4">
+              <h2 className="text-2xl font-extrabold tracking-tight text-[var(--spotify-text)]">
+                Audiobooks
+              </h2>
+              <span className="text-[13px] text-[var(--spotify-text-subdued)]">
+                {audiobooks.length} books
+              </span>
+            </div>
+
+            <div
+              className={cn(
+                "grid gap-4",
+                isMobileView
+                  ? "grid-cols-2"
+                  : "grid-cols-[repeat(auto-fill,minmax(160px,1fr))]"
+              )}
+            >
+              {audiobooks.map((book) => (
+                <button
+                  key={book.id}
+                  onClick={() => onAudiobookSelect(book.id)}
+                  className="text-left group rounded-lg p-3 transition-colors bg-[var(--spotify-surface-raised)] can-hover:hover:bg-[var(--spotify-surface-hover)]"
+                >
+                  <div className="relative aspect-square w-full rounded-[4px] overflow-hidden bg-[var(--spotify-surface)] mb-3 shadow-lg">
+                    {book.coverArt ? (
+                      <Image
+                        src={book.coverArt}
+                        alt={book.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookAudio className="w-8 h-8 text-[var(--spotify-text-subdued)]" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[15px] font-semibold truncate text-[var(--spotify-text)]">
+                    {book.name}
+                  </p>
+                  <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
+                    {book.author || "Audiobook"}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </ScrollArea>
   );

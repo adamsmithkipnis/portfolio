@@ -1,4 +1,4 @@
-import type { SpotifyPlaylist, SpotifyTrack } from "./types";
+import type { SpotifyAudiobook, SpotifyPlaylist, SpotifyTrack } from "./types";
 
 const TRACK_URI_PATTERN = /^spotify:track:[A-Za-z0-9]{22}$/;
 
@@ -72,4 +72,12 @@ export function formatAddedDate(iso: string): string {
     month: "short",
     day: "numeric",
   });
+}
+
+export function findAudiobookById(
+  audiobooks: readonly SpotifyAudiobook[],
+  id: string | null
+): SpotifyAudiobook | null {
+  if (!id) return null;
+  return audiobooks.find((book) => book.id === id) ?? null;
 }
