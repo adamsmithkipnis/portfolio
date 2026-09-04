@@ -282,6 +282,31 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 }
 .cs-video iframe { width: 100%; height: 100%; border: 0; border-radius: 20px; display: block; }
 
+/* A still beside a clip, as the live page lays them out. The video is the
+   narrower column because these are phone-shot verticals. */
+.cs-pair {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 2.6em 0;
+}
+/* Inside a pair the flex tracks decide the widths. The standalone rule caps
+   height and leaves width auto, which makes a tall image size from its own
+   aspect and crush the clip beside it down to a sliver. */
+.cs-pair .cs-img {
+  flex: 2 1 0;
+  min-width: 0;
+  width: 100%;
+  max-height: none;
+  margin: 0;
+}
+.cs-pair .cs-video { flex: 1 1 0; min-width: 0; max-height: none; margin: 0; }
+
+@media (max-width: 640px) {
+  .cs-pair { flex-direction: column; align-items: center; }
+  .cs-pair .cs-video { width: min(260px, 70%); }
+}
+
 /* Portrait clips would otherwise run taller than the window. */
 .cs-video.portrait {
   --ratio: 9 / 16;

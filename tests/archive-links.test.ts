@@ -141,7 +141,7 @@ test("every page offers a way into the case studies", () => {
 const EXPECTED_VIDEOS: Record<string, string[]> = {
   "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08"],
   "casestudies/project-one-f5w4d-3fh8d/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
-  "casestudies/project-six-sz8wl-rlpf8/index.html": ["bC2qMDS8g9Q"],
+  "casestudies/project-six-sz8wl-rlpf8/index.html": ["bC2qMDS8g9Q", "F-Abz-lDYFU"],
 };
 
 test("each case study embeds exactly the videos it should", () => {
