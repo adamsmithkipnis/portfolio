@@ -20,9 +20,18 @@ const getNote = cache(async (slug: string) => {
 
 // Dynamically determine if this is a user note
 export async function generateStaticParams() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Without credentials there is nothing to pre-render, and the build should not
+  // need database access to succeed. dynamicParams is true, so every note still
+  // renders on demand — this only skips the build-time prepass, which is what
+  // lets CI and a fresh clone build at all.
+  if (!supabaseUrl || !supabaseAnonKey) return [];
+
   const supabase = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       auth: {
         persistSession: false,

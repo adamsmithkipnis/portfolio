@@ -1,0 +1,48 @@
+name: Check
+
+# Runs the same gate as `npm run check` locally: lint, tests, typecheck, build.
+#
+# Nothing enforced this before, and it showed. Dependency vulnerabilities were
+# patched from 42 down to 16 in #3, then drifted back to 43 across the eight PRs
+# that followed, because every check was somebody remembering to run one.
+#
+# The build deliberately runs without Supabase credentials. generateStaticParams
+# returns an empty list when they are absent and dynamicParams is true, so notes
+# render on demand instead of being pre-rendered. That keeps CI from needing
+# database access, and keeps a fresh clone buildable.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint, test, typecheck, build
+        run: npm run check
+
+      - name: Report known vulnerabilities
+        # Advisory only. A new advisory landing overnight should not block a PR
+        # that has nothing to do with it, but the count belongs in the log so the
+        # drift above stays visible.
+        continue-on-error: true
+        run: npm audit --omit=dev
