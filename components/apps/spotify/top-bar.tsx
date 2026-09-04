@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { WindowControls } from "@/components/window-controls";
 import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
@@ -27,8 +28,10 @@ interface TopBarProps {
  * that, clicking a button would start dragging the window.
  *
  * Only controls that actually do something live here. Spotify also shows
- * notifications, friends and an avatar; those would be dead chrome, so they
- * are deliberately omitted.
+ * notifications and a friends button; those would be dead chrome, so they are
+ * omitted. The avatar stays because it is identity, not a control — it is
+ * rendered as a plain image rather than a button so it never suggests a menu
+ * that does not exist.
  */
 export function TopBar({
   isMobileView,
@@ -138,8 +141,32 @@ export function TopBar({
         </div>
       </div>
 
-      {/* Balances the traffic lights so the search pill stays centred. */}
-      {!isMobileView && <div className="w-[104px] shrink-0" />}
+      {/* Fixed width balances the traffic lights and arrows on the left, so
+          the search pill stays optically centred. */}
+      {!isMobileView && (
+        <div className="relative group w-[104px] shrink-0 flex justify-end">
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--spotify-surface-raised)] transition-colors can-hover:group-hover:bg-[var(--spotify-surface-hover)]">
+            <span className="relative w-8 h-8 rounded-full overflow-hidden">
+              <Image
+                src="/headshot.jpg"
+                alt="Adam Smith-Kipnis"
+                fill
+                className="object-cover"
+                sizes="32px"
+              />
+            </span>
+          </span>
+
+          {/* The dock has its own tooltip, but it lives in the shell layer and
+              apps must not reach upward into it, so this is a local one. */}
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute right-0 top-full z-20 mt-2 whitespace-nowrap rounded-md bg-[var(--spotify-surface-hover)] px-3 py-1.5 text-[13px] font-medium text-[var(--spotify-text)] shadow-lg opacity-0 transition-opacity can-hover:group-hover:opacity-100"
+          >
+            Adam Smith-Kipnis
+          </span>
+        </div>
+      )}
     </div>
   );
 }

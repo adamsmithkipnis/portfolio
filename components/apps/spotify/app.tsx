@@ -63,6 +63,18 @@ export default function App({ isDesktop = false }: AppProps) {
     [playTrack]
   );
 
+  /** Starts a playlist from its first track, without navigating to it. */
+  const handlePlaylistPlay = useCallback(
+    (playlistId: string) => {
+      const playlist = findPlaylistById(SPOTIFY_PLAYLISTS, playlistId);
+      const firstUri = playlist?.tracks[0]?.uri;
+      if (!firstUri) return;
+      setPlayingIndex(0);
+      playTrack(firstUri);
+    },
+    [playTrack]
+  );
+
   // Mobile layout is determined by shell context, not viewport width
   useEffect(() => {
     setIsMobileView(!isDesktop);
@@ -200,6 +212,7 @@ export default function App({ isDesktop = false }: AppProps) {
         playlists={SPOTIFY_PLAYLISTS}
         audiobooks={SPOTIFY_AUDIOBOOKS}
         onPlaylistSelect={(id) => handleViewSelect("playlist", id)}
+        onPlaylistPlay={handlePlaylistPlay}
         onAudiobookSelect={(id) => handleViewSelect("audiobook", id)}
         isMobileView={isMobileView}
       />
