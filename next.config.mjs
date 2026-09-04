@@ -8,7 +8,7 @@
  * - /notes/{slug}        → shows the note (notes focused)
  * - /{app}               → shows default desktop with that app focused
  * - /notes/{invalid}     → redirects to /notes/error
- * - /{legacy-slug}       → redirects to /notes/{legacy-slug} (server-side, permanent)
+ * - /{note-slug}         → redirects to /notes/{note-slug} (server-side, permanent)
  * - /website             → archived smithkipnis.com (framed by the Safari app)
  * - /website/casestudies → archived case studies, same paths as the original
  * - /{other}             → 404
@@ -42,27 +42,25 @@ const nextConfig = {
     ];
   },
   async redirects() {
-    // Legacy note slugs that were publicly shared before /notes/* prefix was added.
-    // These are permanent (308) redirects so browsers cache them.
-    const legacyNoteSlugs = [
-      'quick-links',
-      'principles',
-      'on-repeat',
-      'fav-blogs',
-      'bookmarks',
+    // Bare-slug URLs for the public notes, e.g. /listening -> /notes/listening.
+    // Upstream shipped its own slugs here from before the /notes/* prefix existed;
+    // these are ours. A slug belongs in this list when a note with that slug exists
+    // in supabase/seed/public-notes.sql — add one here when you add one there.
+    // Permanent (308) redirects, so browsers cache them.
+    const noteSlugs = [
       'about-me',
-      'cool-websites',
-      'groceries',
-      'fav-spots',
-      'inspo',
+      'quick-links',
+      'shipped-products',
+      'what-i-stand-for',
+      'how-i-hire',
+      'listening',
+      'reverse-engineering-food',
       'how-this-works',
-      'reading-list',
-      'fav-products',
     ];
 
     return [
-      // Legacy note slugs redirect to /notes/*
-      ...legacyNoteSlugs.map((slug) => ({
+      // Bare slugs redirect to their note
+      ...noteSlugs.map((slug) => ({
         source: `/${slug}`,
         destination: `/notes/${slug}`,
         permanent: true,
