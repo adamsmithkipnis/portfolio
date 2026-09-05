@@ -15,7 +15,7 @@ export const SITE_MODE = "management";
 
 export const FRAMING = {
   management:
-    "Fifteen years building and leading design teams on products where the technology is genuinely hard. Three projects: one I managed, one I led, one I started myself, the most recent as an IC by circumstance rather than choice.",
+    "Three projects: one I managed, one I led, one I started myself, the most recent as an IC by circumstance rather than choice.",
   ic:
     "Fifteen years designing products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Three projects, hands on the work in all three.",
 };
