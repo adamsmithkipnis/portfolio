@@ -235,7 +235,20 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
    content at a 1800px viewport, with headings on the same ramps as the home
    page and body copy at a flat 16px. */
 
-.wrap.cs { max-width: calc(812px + 8vw); padding-top: 4vh; padding-bottom: 8vh; }
+/* The live column is a percentage of the viewport with a hard cap, not a fixed
+   gutter: 88% up to the tablet breakpoint, then 53.2% until it reaches 812px
+   and stops. Matching only the cap left every width between 768px and roughly
+   1500px far too wide here, so a paragraph running eight lines on the real
+   site ran four. */
+.wrap.cs:not(.cs-index) {
+  width: min(53.2%, 812px);
+  max-width: none;
+  padding: 4vh 0 8vh;
+}
+
+@media (max-width: 767px) {
+  .wrap.cs:not(.cs-index) { width: 88%; }
+}
 
 .cs-h2 {
   font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
@@ -252,6 +265,16 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 /* Body copy is 16px on the original — deliberately small against the
    headings — and regular weight where the rest of the site runs medium. */
+/* Body copy on the case studies is Poppins with normal tracking, while the
+   headings stay Manrope. Setting it in Manrope at -0.02em, as the body rule
+   does, fitted about 13% more text per line, so wrapping never matched the
+   real page at any width no matter how exact the column was. */
+.cs-p,
+.cs-list li {
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+}
+
 .cs-p { font-size: 16px; line-height: 1.5; font-weight: 400; margin: 1.1em 0 0; }
 .cs-p em { color: rgb(37 53 81 / 0.72); }
 
@@ -336,6 +359,7 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 34px 30px;
   padding-top: 9vh;
+  padding-bottom: 8vh;
 }
 .cs-card { text-decoration: none; display: block; }
 .cs-card img {
