@@ -24,9 +24,19 @@ export const ARCHIVE_PATHS = [
   ARCHIVE_ROOT,
   `${ARCHIVE_ROOT}/casestudies`,
   `${ARCHIVE_ROOT}/casestudies/invoca-workflow-agent`,
-  `${ARCHIVE_ROOT}/casestudies/project-one-f5w4d-3fh8d`,
-  `${ARCHIVE_ROOT}/casestudies/project-six-sz8wl-rlpf8`,
+  `${ARCHIVE_ROOT}/casestudies/grace-providence`,
+  `${ARCHIVE_ROOT}/casestudies/wilson-x`,
 ] as const;
+
+/**
+ * Case study addresses that were published before the slugs were readable.
+ * They are the ones already out in the world, so typing one in the address bar
+ * lands on the page it became, the same way `next.config.mjs` redirects them.
+ */
+export const LEGACY_ARCHIVE_PATHS: Readonly<Record<string, string>> = {
+  [`${ARCHIVE_ROOT}/casestudies/project-one-f5w4d-3fh8d`]: `${ARCHIVE_ROOT}/casestudies/grace-providence`,
+  [`${ARCHIVE_ROOT}/casestudies/project-six-sz8wl-rlpf8`]: `${ARCHIVE_ROOT}/casestudies/wilson-x`,
+};
 
 const KNOWN = new Set<string>(ARCHIVE_PATHS);
 
@@ -68,5 +78,6 @@ export function archivePathFor(input: string): string | null {
   // Typed paths are relative to the site, not to our mount point, so accept
   // both "/casestudies" and the "/website/casestudies" the address bar shows.
   const candidate = path.startsWith(ARCHIVE_ROOT) ? path : `${ARCHIVE_ROOT}${path}`;
-  return KNOWN.has(candidate) ? candidate : null;
+  if (KNOWN.has(candidate)) return candidate;
+  return LEGACY_ARCHIVE_PATHS[candidate] ?? null;
 }
