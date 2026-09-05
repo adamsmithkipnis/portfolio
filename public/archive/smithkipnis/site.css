@@ -255,7 +255,9 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 .cs-p { font-size: 16px; line-height: 1.5; font-weight: 400; margin: 1.1em 0 0; }
 .cs-p em { color: rgb(37 53 81 / 0.72); }
 
-.cs-list { margin: 1.1em 0 0; padding-left: 40px; }
+/* The live pages indent their lists but suppress the markers, so a list reads
+   as a run of indented paragraphs rather than a bulleted block. */
+.cs-list { margin: 1.1em 0 0; padding-left: 40px; list-style: none; }
 .cs-list li { font-size: 16px; line-height: 1.5; font-weight: 400; margin: 0 0 0.9em; }
 .cs-list li:last-child { margin-bottom: 0; }
 
@@ -271,6 +273,15 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   height: auto;
   margin: 2.6em auto;
   border-radius: 20px;
+}
+
+/* Not every still is set to the full text column. The "what we built" and
+   roadmap sequences step up in width as they go — the author's own sizing —
+   so the width is carried per image and the height follows the aspect ratio.
+   Bounding the height as well would fight the explicit width and squash it. */
+.cs-img.cs-scaled {
+  width: var(--w);
+  max-height: none;
 }
 
 /* Reserves the embed's space before it loads. Ratio is overridable, since not
@@ -383,4 +394,6 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 @media (max-width: 700px) {
   .cs-list { padding-left: 22px; }
+  /* Too narrow to give up any width to the margins. */
+  .cs-img.cs-scaled { width: 100%; }
 }
