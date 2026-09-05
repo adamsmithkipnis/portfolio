@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Invoca Workflow Agent — Adam Smith-Kipnis</title>
-<meta name="description" content="Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works.." />
+<title>Invoca Workflow Agent - Senior UX Designer — Adam Smith-Kipnis</title>
+<meta name="description" content="Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works." />
 <!--
   Generated archive page. See index.html for why these pages exist and why they
   sit outside the design system.
@@ -33,7 +33,7 @@
 <main class="wrap cs">
     <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/OLVHsXg_M8M" title="Video" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>
     <h2 class="cs-h2">Invoca Workflow Agent</h2>
-    <p class="cs-p"><em>Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works..</em></p>
+    <p class="cs-p"><em>Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works.</em></p>
     <div class="cs-row">
       <div class="cs-col" style="flex:180">
   <p class="cs-p"><strong>Role</strong><br>Senior User Experience Designer</p>
@@ -44,8 +44,12 @@
         <img class="cs-img" src="/archive/smithkipnis/img/step-0-1.webp" alt="" loading="lazy" />
       </div>
     </div>
+    <p class="cs-p"><strong>At a glance</strong></p>
+    <p class="cs-p"><strong>Problem:</strong> Users were copying platform data into ChatGPT because Invoca couldn't answer questions about itself.</p>
+    <p class="cs-p"><strong>What I did:</strong> Originated the concept, designed the interaction model, built the agent's context architecture and knowledge base, and pitched it through the organization.</p>
+    <p class="cs-p"><strong>Outcome:</strong> Over 100 unique sessions a day on the internal QA platform, outperforming our shipped SMS and Voice Agents. Never reached production.</p>
     <h2 class="cs-h2">Situation</h2>
-    <p class="cs-p">Invoca is a conversation intelligence platform used by Marketers for attribution of ads and websites that drive inbound phone calls.&nbsp; Invoca routes those calls, handles them via SMS and voice agents, and analyzes what is said during calls.&nbsp; It’s used daily by performance marketers, agencies, and customer success managers for monitoring and reporting.</p>
+    <p class="cs-p">Invoca is a conversation intelligence platform used by Marketers to attribute ads and websites that drive inbound phone calls.&nbsp; Invoca routes those calls, handles them via SMS and voice agents, and analyzes what is said during calls.&nbsp; It’s used daily by performance marketers, agencies, and customer success managers for monitoring and reporting.</p>
     <p class="cs-p">In early 2026, Invoca was focused on driving AI adoption at scale. However, there was a problem within our platform. Users wanted to analyze call transcripts with AI, so they’d open a new browser tab, copy transcripts from Invoca, paste them into ChatGPT, and get insights there because it was a better experience. That copying and pasting was a leak, and that friction was a tax. Our users were already using AI, and I believed they shouldn't have to leave Invoca to do it.</p>
     <h2 class="cs-h2">Task</h2>
     <p class="cs-p">Nobody assigned this to me. I’d been thinking about this concept for a few months and started building it as a passion project during our quarterly “passion week” because I thought a working demo would move the conversation further than a deck would.</p>
@@ -74,6 +78,27 @@
       <li><strong>How Invoca works: </strong>It knows what Invoca knows by retrieving contextualized information from our documentation, with citations, so it doesn't guess, and accuracy is easily verified.</li>
     </ul>
     <p class="cs-p">Conversation history persists across navigation, so a thread started on Manage Campaigns continues on Manage Dashboards.</p>
+    <h2 class="cs-h2">What we built</h2>
+    <img class="cs-img cs-scaled" style="--w:76%" src="/archive/smithkipnis/img/web-01-current-ai-workflow-experience.webp" alt="" loading="lazy" />
+    <p class="cs-p">There was too much transport waste and friction for users who wanted to analyze transcripts at scale. To gain efficiency, they manually copied and pasted transcripts from the Invoca platform into Gemini or ChatGPT. That was leaking interactions and data from our platform and frustrating our users.</p>
+    <img class="cs-img cs-scaled" style="--w:76%" src="/archive/smithkipnis/img/web-02-qa-agent.webp" alt="" loading="lazy" />
+    <p class="cs-p">A ubiquitous Q&amp;A agent, preloaded with Q&amp;A pairs and documents via RAG, to help people onboard quickly and get just-in-time information without searching for it. Click and ask.</p>
+    <p class="cs-p"><em>Example: "How do I search for a call record by a caller's phone number?"</em></p>
+    <img class="cs-img cs-scaled" style="--w:76%" src="/archive/smithkipnis/img/web-03-context-by-url.webp" alt="" loading="lazy" />
+    <p class="cs-p">The agent infers context from the URL and user. Because it knows which page a user is on, and who the user is, it curates personalized recommendations and suggestions for that page. A map of the entire platform,&nbsp; routes, views and structure, guides users to the right place, referring to them by name.&nbsp;</p>
+    <p class="cs-p"><em>Example: quick-reply shortcuts for the questions that page tends to raise.</em></p>
+    <img class="cs-img cs-scaled" style="--w:82%" src="/archive/smithkipnis/img/web-04-context-aware.webp" alt="" loading="lazy" />
+    <p class="cs-p">The agent knows the page content, the user's location on the platform, navigation paths, permissions, user ID, and Invoca's product documentation. Responses are context-aware.</p>
+    <h2 class="cs-h2">The roadmap &amp; vision I shared</h2>
+    <img class="cs-img cs-scaled" style="--w:82%" src="/archive/smithkipnis/img/web-05-platform-wide-read-access.webp" alt="" loading="lazy" />
+    <p class="cs-p">On-demand read access to everything the user already has access to, so they can ask about their data and campaigns from any page, and the agent can pull that data from across the platform. <em>Example: from the call transcript page, ask about average sales conversion rates in Santa Barbara without leaving the page.</em></p>
+    <img class="cs-img cs-scaled" style="--w:82%" src="/archive/smithkipnis/img/web-06-current-page-actions.webp" alt="" loading="lazy" />
+    <p class="cs-p">Taking inspiration from Braintrust's Loop, the agent gains read and write actions on the page the user is on, using natural language to orchestrate them. Page-based actions can also navigate the user elsewhere.</p>
+    <p class="cs-p"><em>Example: on the reports page, "show me all call records from (555) 867-5309."</em></p>
+    <img class="cs-img cs-scaled" style="--w:88%" src="/archive/smithkipnis/img/web-07-workflow-orchestration.webp" alt="" loading="lazy" />
+    <p class="cs-p">Actions on data and functions that cross multiple pages — read and write, remote — plus navigation. <em>Example: "create an SMS agent for me" — using an agent to create an agent.</em></p>
+    <img class="cs-img cs-scaled" style="--w:88%" src="/archive/smithkipnis/img/web-08-external-integrations.webp" alt="" loading="lazy" />
+    <p class="cs-p">Users connect their own external services and CRM systems for orchestration beyond the platform: Salesforce, HubSpot, and other systems' MCP servers.</p>
     <h3 class="cs-h3">Building the knowledge base</h3>
     <p class="cs-p">Retrieval is only as good as its corpus, so I built the corpus myself. I crawled data from every Invoca learning resource that existed. The Invoca Academy course library, transcripts of training videos, developer documentation, platform docs, and the full support center knowledge base, which contains several hundred articles. I wrote the navigation map from the platform's own route structure. I authored a technology-selector corpus, based on my prior work, covering the choices our support team fields constantly and that our docs only address indirectly: Semantic Signal versus Rule-Based Signal, Lookup Table versus Formula Field.</p>
     <p class="cs-p">I formatted all of the documents so a retriever could use them reliably. On top of the raw corpus, I built a synthesized wiki with concept pages, source summaries, and a maintained index.</p>
@@ -86,20 +111,11 @@
     <h3 class="cs-h3">Knowledge &gt; Documentation</h3>
     <p class="cs-p">There was real anxiety in the organization that a retrieval agent would devalue the support and Academy teams' work. I made the opposite argument publicly, because the project would have failed politically otherwise. Content from <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">support.invoca.com</a> and <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">academy.invoca.com</a> doesn't become less valuable because an agent can retrieve it. It gets a new channel. What is changing is that agents are becoming a bigger consumer of documentation than humans are, which argues for investing in documentation.</p>
     <p class="cs-p">I got that point about agents consuming documentation from Hahnbee Lee, a founder of Mintlify, at Braintrust’s 2026 Trace conference in San Francisco, where <a target="_blank" href="https://www.mintlify.com/blog/state-of-ai" rel="noopener noreferrer">she said close to 50% of their usage was already from agents and was trending toward 90%</a>.</p>
-    <h3 class="cs-h3">Roadmap</h3>
-    <p class="cs-p">I closed the presentation with four roadmap goals, each building on growing trust within the platform.&nbsp;</p>
-    <ul class="cs-list">
-      <li><strong>See everything: </strong>Platform-wide read access so that you can ask about your data from any page.&nbsp;</li>
-      <li><strong>Act locally: </strong>Actions on the current page, so the agent can sort and filter what is in front of you.&nbsp;</li>
-      <li><strong>Act globally: </strong>Platform-wide actions so that the agent can complete a workflow end to end: "create an SMS agent for me," using an agent to create an agent.&nbsp;</li>
-      <li><strong>Collaborate with anyone: </strong>External orchestration, connecting out to Salesforce, CRMs, and other systems' MCP servers.&nbsp;</li>
-    </ul>
-    <p class="cs-p">Sequencing it this way felt like it would blend trust and intuitive interactions with growing technical capability.</p>
     <h2 class="cs-h2">Result</h2>
     <p class="cs-p">Gabriel and I built the majority of this in only three days. The Workflow Agent ran on localhost and was deployed to our internal QA platform so everyone in the company could access it.</p>
     <ul class="cs-list">
       <li><strong>Over 100 unique sessions per day:</strong> usage climbed immediately after we rolled it out to colleagues, reaching hundreds of unique sessions in the first couple of days and outperforming our SMS and Voice Agents. The number continued to grow every day before it was shut down.</li>
-      <li><strong>Fully functional proof of concept:</strong> We conducted a live demonstration of page awareness, URL awareness, user awareness, retrieval from Invoca's documentation, and conversation persistence across navigation, using real platform screens.</li>
+      <li><strong>Working proof of concept:</strong> We conducted a live demonstration of page awareness, URL awareness, user awareness, retrieval from Invoca's documentation, and conversation persistence across navigation, using real platform screens.</li>
       <li><strong>Roadmap influence:</strong> The concept and its framing shaped how the organization approached in-platform AI afterward, particularly the HubSpot integration, as <a href="https://www.invoca.com/press-release/invoca-introduces-nico-ai-revenue-conversion-agent" target="_blank" rel="noopener noreferrer"><u>announced during the rollout of "Nico."</u></a></li>
     </ul>
   <nav class="cs-pager">
