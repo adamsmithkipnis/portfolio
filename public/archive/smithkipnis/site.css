@@ -355,12 +355,37 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 .wrap.cs-index {
   max-width: calc(960px + 8vw);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 34px 30px;
   padding-top: 9vh;
   padding-bottom: 8vh;
 }
+
+.cs-index-h1 {
+  font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
+  line-height: 1.11;
+  margin: 0 0 1em;
+}
+
+/* One sentence saying how to read the three. It is switched with the running
+   order from config/case-studies.mjs, because the same projects make a
+   different case depending on the role being applied for. */
+.cs-index-framing {
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 44em;
+  margin: 0 0 3.2em;
+}
+
+/* Cards carry a problem statement now, so they need room to be read rather
+   than counted. Three across on a wide screen, one below the breakpoint. */
+.cs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 44px 30px;
+}
+
 .cs-card { text-decoration: none; display: block; }
 .cs-card img {
   display: block;
@@ -371,14 +396,55 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   transition: transform 140ms ease;
 }
 .cs-card:hover img { transform: scale(1.02); }
-/* The original leaves these unlabelled. A caption makes the archive
-   browsable, which matters more here than matching that omission. */
-.cs-card span {
-  display: block;
-  margin-top: 0.9em;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.35;
+
+.cs-card-title {
+  margin: 0.9em 0 0;
+  font-size: 20px;
+  line-height: 1.25;
+}
+.cs-card:hover .cs-card-title { text-decoration: underline; text-underline-offset: 4px; }
+
+.cs-card-meta {
+  margin: 0.35em 0 0;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.62;
+}
+
+/* The reason to open this one, in a sentence. Someone skimming reads only
+   these three. */
+.cs-card-summary {
+  margin: 0.85em 0 0;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Tags let a reader self-select on their own criteria instead of hunting for
+   the signal in prose. Not links: there is nothing to filter yet. */
+.cs-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 1em 0 0;
+  padding: 0;
+}
+.cs-tags li {
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  padding: 6px 10px;
+  border: 1px solid rgb(37 53 81 / 0.18);
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 /* ---------- previous / next ---------- */

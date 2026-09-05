@@ -10,7 +10,8 @@
  * - /notes/{invalid}     → redirects to /notes/error
  * - /{note-slug}         → redirects to /notes/{note-slug} (server-side, permanent)
  * - /website             → archived smithkipnis.com (framed by the Safari app)
- * - /website/casestudies → archived case studies, same paths as the original
+ * - /website/casestudies → archived case studies
+ * - old Squarespace case study slugs → 308 to the readable ones
  * - /{other}             → 404
  */
 
@@ -58,11 +59,24 @@ const nextConfig = {
       'how-this-works',
     ];
 
+    // The case studies were published on Squarespace's generated slugs. They
+    // now have readable ones, and the old addresses are the ones already out
+    // in the world, so they keep working.
+    const legacyCaseStudySlugs = {
+      'project-one-f5w4d-3fh8d': 'grace-providence',
+      'project-six-sz8wl-rlpf8': 'wilson-x',
+    };
+
     return [
       // Bare slugs redirect to their note
       ...noteSlugs.map((slug) => ({
         source: `/${slug}`,
         destination: `/notes/${slug}`,
+        permanent: true,
+      })),
+      ...Object.entries(legacyCaseStudySlugs).map(([from, to]) => ({
+        source: `/website/casestudies/${from}`,
+        destination: `/website/casestudies/${to}`,
         permanent: true,
       })),
     ];
