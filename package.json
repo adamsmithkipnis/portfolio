@@ -6,9 +6,9 @@
     "content": "node scripts/build-content.mjs",
     "spotify:fetch": "node scripts/fetch-spotify-playlists.mjs",
     "pdf-worker": "node scripts/copy-pdf-worker.mjs",
-    "predev": "npm run content && npm run pdf-worker",
+    "predev": "npm run content && npm run archive && npm run pdf-worker",
     "dev": "next dev",
-    "prebuild": "npm run content && npm run pdf-worker",
+    "prebuild": "npm run content && npm run archive && npm run pdf-worker",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
@@ -16,7 +16,8 @@
     "eval:chat": "sucrase-node evals/chat.eval.ts",
     "test": "node --import tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run test && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run test && npm run typecheck && npm run build",
+    "archive": "node scripts/build-archive.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.4",
