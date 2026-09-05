@@ -20,31 +20,34 @@ import {
   loadWindowState,
   saveWindowStatePayload,
 } from "./window-state-storage";
-import { DOCK_HEIGHT, MENU_BAR_HEIGHT } from "./use-window-behavior";
+import { fitToDesktop, repairSquashedHeight } from "./window-fit";
 
 const WINDOW_STATE_PERSIST_DEBOUNCE_MS = 1000;
-const DEFAULT_WINDOW_DOCK_GAP = 12;
 
 function fitWindowPresetToDesktop(
   position: Position,
-  size: Size
+  size: Size,
+  minSize?: Size
 ): { position: Position; size: Size } {
   if (typeof window === "undefined") {
     return { position, size };
   }
+  return fitToDesktop(position, size, window.innerHeight, minSize);
+}
 
-  const availableBottom = window.innerHeight - DOCK_HEIGHT - DEFAULT_WINDOW_DOCK_GAP;
-  const availableHeight = Math.max(1, availableBottom - MENU_BAR_HEIGHT);
-  const height = Math.min(size.height, availableHeight);
-  const y = Math.min(
-    Math.max(position.y, MENU_BAR_HEIGHT),
-    availableBottom - height
+function repairSquashedWindow(windowState: WindowState): WindowState {
+  const app = getAppById(windowState.appId);
+  if (!app || typeof window === "undefined") return windowState;
+
+  const repaired = repairSquashedHeight(
+    windowState.position,
+    windowState.size,
+    window.innerHeight,
+    app.defaultSize,
+    app.minSize
   );
 
-  return {
-    position: { ...position, y },
-    size: { ...size, height },
-  };
+  return { ...windowState, ...repaired };
 }
 
 // =============================================================================
@@ -82,7 +85,11 @@ function getDefaultWindowState(appId: string): WindowState {
   if (!app) {
     throw new Error(`Unknown app: ${appId}`);
   }
-  const preset = fitWindowPresetToDesktop(app.defaultPosition, app.defaultSize);
+  const preset = fitWindowPresetToDesktop(
+    app.defaultPosition,
+    app.defaultSize,
+    app.minSize
+  );
   return {
     id: appId,
     appId,
@@ -148,7 +155,8 @@ function getDesktopDefaultState(): WindowManagerState {
     const currentWindow = state.windows[config.appId];
     const preset = fitWindowPresetToDesktop(
       config.position,
-      "size" in config && config.size ? config.size : currentWindow.size
+      "size" in config && config.size ? config.size : currentWindow.size,
+      getAppById(config.appId)?.minSize
     );
 
     currentWindow.isOpen = true;
@@ -227,7 +235,12 @@ function deserializeWindowState(serializedState: string): WindowManagerState | n
     if (!parsed.windows || typeof parsed.nextZIndex !== "number") return null;
 
     // Merge with current APPS config to pick up any new single-window apps.
-    const mergedWindows: Record<string, WindowState> = { ...parsed.windows };
+    const mergedWindows: Record<string, WindowState> = {};
+    Object.entries(
+      parsed.windows as Record<string, WindowState>
+    ).forEach(([windowId, windowState]) => {
+      mergedWindows[windowId] = repairSquashedWindow(windowState);
+    });
     APPS.forEach((app) => {
       if (!app.multiWindow && !mergedWindows[app.id]) {
         mergedWindows[app.id] = getDefaultWindowState(app.id);
@@ -549,7 +562,8 @@ function windowReducer(
       };
       const preset = fitWindowPresetToDesktop(
         customPosition ?? newPosition,
-        customSize ?? app.defaultSize
+        customSize ?? app.defaultSize,
+        app.minSize
       );
 
       // Get next instance number for this app
