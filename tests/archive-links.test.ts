@@ -39,10 +39,10 @@ const hrefOf = (a: string) => a.match(/href="([^"]*)"/)?.[1] ?? "";
 test("every archived page is present", () => {
   const names = pages.map((p) => p.name).sort();
   assert.deepEqual(names, [
+    "casestudies/grace-providence/index.html",
     "casestudies/index.html",
     "casestudies/invoca-workflow-agent/index.html",
-    "casestudies/project-one-f5w4d-3fh8d/index.html",
-    "casestudies/project-six-sz8wl-rlpf8/index.html",
+    "casestudies/wilson-x/index.html",
     "index.html",
   ]);
 });
@@ -140,8 +140,8 @@ test("every page offers a way into the case studies", () => {
  */
 const EXPECTED_VIDEOS: Record<string, string[]> = {
   "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08"],
-  "casestudies/project-one-f5w4d-3fh8d/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
-  "casestudies/project-six-sz8wl-rlpf8/index.html": ["bC2qMDS8g9Q", "F-Abz-lDYFU"],
+  "casestudies/grace-providence/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
+  "casestudies/wilson-x/index.html": ["bC2qMDS8g9Q", "F-Abz-lDYFU"],
 };
 
 test("each case study embeds exactly the videos it should", () => {

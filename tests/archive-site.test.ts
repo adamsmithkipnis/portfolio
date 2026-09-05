@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ARCHIVE_PATHS, ARCHIVE_ROOT, addressFor, archivePathFor } from "@/lib/archive-site";
+import {
+  ARCHIVE_PATHS,
+  ARCHIVE_ROOT,
+  LEGACY_ARCHIVE_PATHS,
+  addressFor,
+  archivePathFor,
+} from "@/lib/archive-site";
 
 /**
  * The address bar routes on this: a match browses inside the frame, a null
@@ -84,4 +90,23 @@ test("refuses empty input", () => {
 test("addressFor drops the mount point", () => {
   assert.equal(addressFor(ARCHIVE_ROOT), "smithkipnis.com");
   assert.equal(addressFor(`${ARCHIVE_ROOT}/casestudies`), "smithkipnis.com/casestudies");
+});
+
+test("a legacy case study address resolves to the page it became", () => {
+  assert.equal(
+    archivePathFor("smithkipnis.com/casestudies/project-one-f5w4d-3fh8d"),
+    "/website/casestudies/grace-providence"
+  );
+  assert.equal(
+    archivePathFor("https://www.smithkipnis.com/casestudies/project-six-sz8wl-rlpf8/"),
+    "/website/casestudies/wilson-x"
+  );
+});
+
+test("every legacy alias points at a page the archive actually holds", () => {
+  const known = new Set<string>(ARCHIVE_PATHS);
+  for (const [from, to] of Object.entries(LEGACY_ARCHIVE_PATHS)) {
+    assert.ok(known.has(to), `${from} redirects to ${to}, which is not archived`);
+    assert.ok(!known.has(from), `${from} is both archived and redirected`);
+  }
 });
