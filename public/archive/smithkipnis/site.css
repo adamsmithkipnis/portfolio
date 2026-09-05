@@ -120,19 +120,6 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 .hero-sub { margin: 0.55em 0 0; }
 .hero strong, .hero-sub strong { font-weight: 600; }
 
-/* The title trajectory reads backwards without this: manager, then senior IC.
-   It sits under the hero statement so it is read with it rather than found
-   later, and stays at body size so it reads as a note, not a third headline. */
-.hero-positioning {
-  font-family: Poppins, Manrope, sans-serif;
-  letter-spacing: normal;
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.5;
-  max-width: min(100%, 34em);
-  margin: 1.6em 0 0;
-}
-
 .lede, .patents {
   font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
   line-height: 1.14;
