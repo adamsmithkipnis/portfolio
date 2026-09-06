@@ -56,7 +56,9 @@ Three layers. **Dependencies point downward only** — never up, never sideways.
   imports another app.
 - **`shell/`** consumes both. Reads the app registry; knows no app's internals.
 
-Enforced with `eslint-plugin-boundaries`.
+Intended to be enforced with `eslint-plugin-boundaries`, which is **not installed** —
+the boundary is a convention reviewers uphold, not a rule the linter checks. See the
+unchecked item in Step 5.
 
 ### App manifest
 
@@ -111,10 +113,10 @@ export const notesApp: AppManifest = {
 `BRAINTRUST_API_KEY` (Messages AI won't reply until it's set — Step 4).
 
 ### Step 2b — Dependency audit ← only after the baseline is confirmed green
-Inherited from the fork, not introduced here: **42 vulnerabilities
-(11 low, 14 moderate, 16 high, 1 critical)**. Mostly transitive; the two
-direct ones are `lodash` and **`next` itself** — the latter is what matters,
-since it serves every request on a public site.
+Inherited from the fork, not introduced here. #3 patched this from **42 down to
+16**, clearing the critical and all but one high — then it drifted back to **43**
+across the eight PRs that followed, which is what motivated CI. The remaining set
+needs major bumps: the Vercel AI SDK, Braintrust, and `@supabase/ssr`.
 
 - [ ] `npm audit fix` (plain) first, then re-run the baseline
 - [ ] Review what's left individually. **Do not run `npm audit fix --force`
@@ -130,12 +132,14 @@ state to diff against.
 - [ ] Rebrand iTerm → native macOS Terminal (icon, chrome, prompt, route)
 - [ ] Keep: Notes, Messages, Finder, Terminal
 
-### Step 4 — Guardrails on `/api/chat` ⛔ before any public deploy
-- [ ] Rate limit per IP (Upstash)
-- [ ] Cap conversation history (~10 turns)
-- [ ] Cap `max_tokens` (~300)
-- [ ] Hard spend cap in the Anthropic console
-- [ ] Point Braintrust at Haiku 4.5
+### Step 4 — Guardrails on `/api/chat` ✅
+- [x] Rate limit per session and per IP — `CHAT_RATE_LIMIT_SESSION` (30/min) and
+      `CHAT_RATE_LIMIT_IP` (120/min) in `app/api/chat/route.ts`. In-process counters,
+      **not Upstash**; nothing in the tree references Upstash despite the cost table
+- [x] Cap conversation history — `CHAT_MAX_MESSAGES = 60`, rejected with a 400
+- [x] Cap `max_tokens` — 300
+- [x] Point Braintrust at Haiku — `GROUP_CHAT_MODEL`
+- [ ] Hard spend cap in the Anthropic console — the one item still genuinely open
 
 ### Step 5 — Layer restructure
 - [ ] Reorganize into `system/` `apps/` `shell/`
@@ -151,7 +155,8 @@ state to diff against.
 ### Step 7 — Content
 - [x] Case study pipeline into Finder — `content/` walk, Work sidebar, column-view
       reading surface, Get Info metadata, click-to-load video embeds
-- [ ] The two real case studies (currently one placeholder folder to delete)
+- [x] The real case studies — archived under `public/archive/smithkipnis/casestudies`
+      and browsable in Safari. `content/work` is now empty, so Finder hides Work
 - [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
 - [ ] Essays into Notes
 - [ ] Messages personas
