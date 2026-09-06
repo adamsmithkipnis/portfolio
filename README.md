@@ -30,7 +30,7 @@ a macos sierra 10.12 themed desktop with:
 - command menu (⌘K) with keyboard shortcuts
 - focus mode integration (mutes notifications)
 
-**iterm** - terminal emulator
+**terminal** - terminal emulator
 - real file system navigation
 - github integration (browse your repos)
 - basic shell commands (ls, cd, cat, pwd, clear, etc.)
