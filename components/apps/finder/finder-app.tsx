@@ -17,6 +17,8 @@ import {
 } from "@/lib/file-route-utils";
 import { getContentNode, isContentPath, WORK_DIR } from "@/lib/content-files";
 import { ContentDetail } from "@/components/content/content-detail";
+import { getWorkLink, WORK_LINKS } from "@/lib/work-links";
+import { WorkLinkDetail } from "@/components/content/work-link-detail";
 import type { PreviewFileType } from "@/components/apps/preview";
 import { getFinderVisibleApps } from "@/lib/app-availability";
 import {
@@ -41,12 +43,20 @@ import { getFinderPathSegments } from "@/lib/finder-path";
 
 const USERNAME = HOME_DIR.split("/").pop() ?? "adamsmithkipnis";
 
+type FileItemType = "file" | "dir" | "app" | "webloc";
+
 interface FileItem {
   name: string;
-  type: "file" | "dir" | "app";
+  /** `webloc` is a web location: a file that stands for a page and opens in Safari. */
+  type: FileItemType;
   path: string;
   icon?: string;
   displayName?: string;
+}
+
+/** Apps and web locations draw a picture, not a glyph, so selection must not recolor them. */
+function hasImageIcon(type: FileItemType): boolean {
+  return type === "app" || type === "webloc";
 }
 
 // Sidebar items
@@ -59,7 +69,7 @@ const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "desktop", label: "Desktop", icon: "desktop" },
   { id: "documents", label: "Documents", icon: "document" },
   { id: "downloads", label: "Downloads", icon: "download" },
-  { id: "projects", label: "Projects", icon: "code" },
+  { id: "projects", label: "GitHub Projects", icon: "code" },
   { id: "trash", label: "Trash", icon: "trash" },
 ];
 
@@ -79,7 +89,8 @@ interface FinderAppProps {
   onViewModeChange?: (mode: FinderViewMode) => void;
   showStatusBar?: boolean;
   showPathBar?: boolean;
-  onOpenApp?: (appId: string) => void;
+  /** Open an app. `target` is app-specific: for Safari, an archived page path. */
+  onOpenApp?: (appId: string, target?: string) => void;
   onOpenTextFile?: (filePath: string, content: string) => void;
   onOpenPreviewFile?: (filePath: string, fileUrl: string, fileType: PreviewFileType) => void;
   initialPath?: string;
@@ -104,9 +115,22 @@ function isPreviewFile(filename: string): boolean {
   return isImageFile(filename) || isPdfFile(filename);
 }
 // Icon component
-function FileIcon({ type, name, icon, className }: { type: "file" | "dir" | "app"; name: string; icon?: string; className?: string }) {
+function FileIcon({ type, name, icon, className }: { type: FileItemType; name: string; icon?: string; className?: string }) {
   // File type icons based on extension
   const getFileIcon = () => {
+    if (type === "webloc") {
+      // A web location opens in Safari, and wears its icon, as on macOS.
+      const safariIcon = APPS.find((app) => app.id === "safari")?.icon ?? "/safari.png";
+      return (
+        <Image
+          src={safariIcon}
+          alt={name}
+          width={48}
+          height={48}
+          className={className}
+        />
+      );
+    }
     if (type === "dir") {
       return (
         <svg className={cn("text-blue-500", className)} viewBox="0 0 24 24" fill="currentColor">
@@ -410,7 +434,23 @@ export function FinderApp({
         return;
       }
 
-      // Case studies, mounted from the build-time content tree
+      // ~/Work: the published case studies as web locations, then any MDX
+      // case studies from the build-time content tree
+      if (path === WORK_DIR) {
+        setFiles([
+          ...WORK_LINKS.map((link) => ({
+            name: link.name,
+            displayName: link.title,
+            type: "webloc" as const,
+            path: link.path,
+          })),
+          ...getLocalFinderFiles(path),
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      // Case study sections, mounted from the build-time content tree
       if (isContentPath(path)) {
         setFiles(getLocalFinderFiles(path));
         setLoading(false);
@@ -570,9 +610,15 @@ export function FinderApp({
               ? "downloads"
               : item.path.includes("/Projects")
                 ? "projects"
-                : "desktop";
+                : item.path.startsWith(WORK_DIR)
+                  ? "work"
+                  : "desktop";
         entries.push({ ...item, section });
       }
+    }
+
+    for (const link of WORK_LINKS) {
+      entries.push({ name: link.name, type: "webloc", path: link.path, section: "work" });
     }
 
     for (const item of TRASH_FILES) {
@@ -703,6 +749,16 @@ export function FinderApp({
       } else {
         // Fallback to soft navigation (mobile or standalone)
         router.push(file.path);
+      }
+    } else if (file.type === "webloc") {
+      // A case study lives in the archived site: hand Safari the page.
+      const link = getWorkLink(file.path);
+      if (!link) return;
+      setSelectedFile(null);
+      if (onOpenApp) {
+        onOpenApp("safari", link.archivePath);
+      } else {
+        router.push("/safari");
       }
     } else if (file.type === "file") {
       // Don't preview files in trash (they don't exist)
@@ -1090,6 +1146,7 @@ export function FinderApp({
   const getFileKind = (file: FileItem): string => {
     if (file.type === "dir") return "Folder";
     if (file.type === "app") return "Application";
+    if (file.type === "webloc") return "Web Internet Location";
     const ext = file.name.split(".").pop()?.toLowerCase();
     switch (ext) {
       case "md": return "Markdown";
@@ -1228,7 +1285,7 @@ export function FinderApp({
                 type={file.type}
                 name={file.name}
                 icon={file.icon}
-                className={cn("w-4 h-4 flex-shrink-0", selectedFile === file.path && file.type !== "app" && "brightness-0 invert")}
+                className={cn("w-4 h-4 flex-shrink-0", selectedFile === file.path && !hasImageIcon(file.type) && "brightness-0 invert")}
               />
               <span className="truncate">{file.displayName || file.name}</span>
             </div>
@@ -1263,6 +1320,7 @@ export function FinderApp({
   ) => {
     const selectedItem = items.find((file) => file.path === selectedPath) ?? null;
     const selectedContentNode = selectedPath ? getContentNode(selectedPath) : null;
+    const selectedWorkLink = selectedPath ? getWorkLink(selectedPath) : null;
 
     return (
       <div className="flex h-full min-h-0">
@@ -1286,7 +1344,7 @@ export function FinderApp({
                 type={file.type}
                 name={file.name}
                 icon={file.icon}
-                className={cn("h-4 w-4 shrink-0", selectedPath === file.path && file.type !== "app" && "brightness-0 invert")}
+                className={cn("h-4 w-4 shrink-0", selectedPath === file.path && !hasImageIcon(file.type) && "brightness-0 invert")}
               />
               <span className="min-w-0 flex-1 truncate">{file.displayName || file.name}</span>
               {file.type === "dir" && <span className="text-xs opacity-60">›</span>}
@@ -1298,6 +1356,13 @@ export function FinderApp({
           // Case studies read in place rather than launching a document app —
           // column view is the reading surface (see docs/CONTENT-MODEL.md).
           <ContentDetail node={selectedContentNode} className="min-w-0 flex-1" />
+        ) : selectedWorkLink && selectedItem ? (
+          // A published case study shows its card here and reads in Safari.
+          <WorkLinkDetail
+            link={selectedWorkLink}
+            onOpen={() => onOpen(selectedItem)}
+            className="min-w-0 flex-1"
+          />
         ) : (
           <div className="flex min-w-0 flex-1 items-center justify-center p-6">
             {selectedItem ? (
@@ -1391,7 +1456,7 @@ export function FinderApp({
     <div className="px-4 pt-2 pb-8">
       <div className="rounded-xl bg-white dark:bg-zinc-800 overflow-hidden">
         {files.map((file, index) => {
-          const isNavigable = file.type === "dir" || file.type === "app";
+          const isNavigable = file.type === "dir" || file.type === "app" || file.type === "webloc";
           return (
             <button
               key={file.path}
@@ -1413,7 +1478,13 @@ export function FinderApp({
                   {file.displayName || file.name}
                 </div>
                 <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                  {file.type === "dir" ? "Folder" : file.type === "app" ? "Application" : "File"}
+                  {file.type === "dir"
+                    ? "Folder"
+                    : file.type === "app"
+                      ? "Application"
+                      : file.type === "webloc"
+                        ? "Case study"
+                        : "File"}
                 </div>
               </div>
               {isNavigable && (
@@ -1547,7 +1618,7 @@ export function FinderApp({
                     type={file.type}
                     name={file.name}
                     icon={file.icon}
-                    className={cn("w-4 h-4 flex-shrink-0", isSelected && file.type !== "app" && "brightness-0 invert")}
+                    className={cn("w-4 h-4 flex-shrink-0", isSelected && !hasImageIcon(file.type) && "brightness-0 invert")}
                   />
                   <span className="truncate">{file.name}</span>
                 </div>

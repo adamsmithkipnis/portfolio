@@ -4,10 +4,10 @@ import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
   title: siteConfig.title,
+  description: siteConfig.description,
   openGraph: {
-    images: [
-      `/notes/api/og/?title=${encodeURIComponent("about me")}&emoji=${encodeURIComponent("👋🏼")}`,
-    ],
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
   },
 };
 

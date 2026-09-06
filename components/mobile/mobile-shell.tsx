@@ -46,9 +46,11 @@ const SafariApp = dynamic(
   () => import("@/components/apps/safari/safari-app").then((mod) => mod.SafariApp),
   { ssr: false }
 );
-const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then((mod) => mod.MusicApp), {
-  ssr: false,
-});
+import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
+const SpotifyApp = dynamic(
+  () => import("@/components/apps/spotify/spotify-app").then((mod) => mod.SpotifyApp),
+  { ssr: false }
+);
 
 interface MobileShellProps {
   initialApp?: string;
@@ -62,8 +64,13 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
     getShellAppIdForContext(initialApp || SHELL_DEFAULT_APP_ID, "mobile")
   );
   const [activeNoteSlug, setActiveNoteSlug] = useState<string | undefined>(initialNoteSlug);
+  // A page Finder asked Safari to open (a case study in ~/Work)
+  const [safariPage, setSafariPage] = useState<ArchivePageRequest | undefined>(undefined);
 
-  const handleOpenAppFromFinder = useCallback((nextAppId: string) => {
+  const handleOpenAppFromFinder = useCallback((nextAppId: string, target?: string) => {
+    if (nextAppId === "safari" && target) {
+      setSafariPage({ path: target, id: Date.now() });
+    }
     const resolvedAppId = getShellAppIdForContext(nextAppId, "mobile");
     setActiveAppId(resolvedAppId);
     const nextUrl = getShellUrlForApp(resolvedAppId, { context: "mobile" });
@@ -127,8 +134,8 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
         {activeAppId === "photos" && <PhotosApp isMobile={true} inShell={false} />}
         {activeAppId === "calendar" && <CalendarApp isMobile={true} inShell={false} />}
         {activeAppId === "weather" && <WeatherApp isMobile={true} inShell={false} />}
-        {activeAppId === "safari" && <SafariApp isMobile={true} inShell={false} />}
-        {activeAppId === "music" && <MusicApp isMobile={true} />}
+        {activeAppId === "safari" && <SafariApp isMobile={true} inShell={false} page={safariPage} />}
+        {activeAppId === "spotify" && <SpotifyApp isMobile={true} />}
       </div>
     </RecentsProvider>
   );

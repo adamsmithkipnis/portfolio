@@ -200,10 +200,12 @@ export function Window({
           const isWindowControl = (e.target as HTMLElement).closest(".window-controls");
           const isResizeHandle = (e.target as HTMLElement).closest("[data-window-resize-handle='true']");
           const isDragHandle = (e.target as HTMLElement).closest("[data-window-drag-handle='true']");
+          // Either way the gesture is an activation, not a zoom: a second
+          // press on the drag handle right after must not toggle maximize.
+          suppressDoubleClickUntil.current = performance.now() + 500;
           if (!isWindowControl && !isResizeHandle && !isDragHandle) {
             e.stopPropagation();
             e.preventDefault();
-            suppressDoubleClickUntil.current = performance.now() + 500;
           }
         }
       }}

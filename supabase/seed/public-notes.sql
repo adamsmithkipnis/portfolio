@@ -41,11 +41,11 @@ values (
   $md$My name is Adam Smith-Kipnis and I'm an AI-native product design leader based
 in Seattle. I build and manage teams creating products and experiences for
 emerging technologies. I'm currently seeking product design management or IC
-roles where I can own 0-1 AI product development end-to-end, from research and
+roles where I can own zero-to-one AI product development end-to-end, from research and
 strategy to shipped experience.
 
 My work spans healthcare chatbots reaching 2.6 million patients, Fortune 1000
-voice and SMS agents, and 0-1 AI product development across agentic workflows
+voice and SMS agents, and zero-to-one AI product development across agentic workflows
 and conversational interfaces in heavily regulated industries.
 
 I thrive on solving hard problems: designing systems where the technology is
@@ -103,9 +103,8 @@ values (
   true,
   null,
   '2026-09-02T18:00:00Z',
-  $md$Throughout my career I've worked on more products that haven't shipped, or only
-shipped internally, than products that have shipped publicly. Thankfully, I'm
-proud of my contributions to these.
+  $md$Products I've contributed to, shipped publicly or internally. I'm proud of
+every one of these.
 
 - Invoca Voice Agent system (and agents)
 - Invoca SMS Agent system (and agents)
@@ -199,22 +198,18 @@ values (
 energy, and I was inspired by his live collaboration with Thomas Bangalter of
 Daft Punk.
 
-The UNKLESounds project by James Lavelle, Richard File, and DJ Shadow still
-remains my favorite DJ set of all time. The variety of music, sounds, and mixing
-styles blows my mind to this day.
+[The UNKLESounds project](https://www.youtube.com/watch?v=6XIxBmaeJAY) by James
+Lavelle, Richard File, and DJ Shadow still remains my favorite DJ set of all
+time. The variety of music, sounds, and mixing styles blows my mind to this day.
 
-Nicolas Jaar's essential mix on the BBC was unlike any other essential mix. It
-really pushed the boundaries of creating an emotional journey through electronic
-music and sounds from around the world.
+[Nicolas Jaar's essential mix](https://soundcloud.com/otherpeoplerecords/csp06-nicolas-jaar-essential)
+on the BBC was unlike any other essential mix. It really pushed the boundaries of
+creating an emotional journey through electronic music and sounds from around
+the world.
 
-Paul Kalkbrenner is who I listen to to get in the zone and focus. As an artist he
-has also accomplished a great deal, starring in a movie he composed the
-soundtrack for.
-
-### concerts
-
-This year I've gotten to see a couple of amazing shows: YUNGBLUD and Jesse
-Welles. Coincidentally, they both played Ozzy Osbourne covers live.$md$
+[Paul Kalkbrenner](https://soundcloud.com/djsyzygy/sets/paul-kalkbrenner) is who
+I listen to when I need to get in the zone and focus. As an artist he has also accomplished a
+great deal, starring in a movie he composed the soundtrack for.$md$
 )
 on conflict (id) do update set
   slug = excluded.slug, title = excluded.title, emoji = excluded.emoji,

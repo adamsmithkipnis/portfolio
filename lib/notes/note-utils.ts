@@ -137,12 +137,27 @@ export function sortNotes(
   });
 }
 
+/**
+ * The one-line preview under a note's title: the markdown with its syntax
+ * removed. Only syntax goes; a hyphen inside a word ("Smith-Kipnis",
+ * "AI-native", "0-1") is prose and stays, which the old blanket strip of every
+ * `-` and `_` got wrong.
+ */
 export function getNotePreviewText(content: string): string {
   return content
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/\[[ x]\]/g, "")
-    .replace(/[#*_~`>+\-]/g, "")
+    // Line-leading syntax: headings, blockquotes, list markers
+    .replace(/^[ \t]{0,3}#{1,6}[ \t]+/gm, "")
+    .replace(/^[ \t]*>[ \t]?/gm, "")
+    .replace(/^[ \t]*(?:[-*+]|\d+\.)[ \t]+/gm, "")
+    .replace(/^[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*$/gm, "")
+    // Inline syntax: emphasis, strikethrough, code. Underscores only count as
+    // emphasis at a word's edge, so snake_case survives.
+    .replace(/[*~`]/g, "")
+    .replace(/(^|[^\p{L}\p{N}])_+(?=[\p{L}\p{N}])/gu, "$1")
+    .replace(/(?<=[\p{L}\p{N}])_+(?=[^\p{L}\p{N}]|$)/gu, "")
     .replace(/\n+/g, " ")
     .replace(/\s+/g, " ")
     .trim();

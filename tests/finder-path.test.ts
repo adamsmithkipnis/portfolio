@@ -7,7 +7,7 @@ test("builds clickable segments from the Finder section root", () => {
   assert.deepEqual(
     getFinderPathSegments("/Users/adamsmithkipnis/Projects/adamsmithkipnis/components/apps/finder"),
     [
-      { label: "Projects", path: "/Users/adamsmithkipnis/Projects" },
+      { label: "GitHub Projects", path: "/Users/adamsmithkipnis/Projects" },
       { label: "adamsmithkipnis", path: "/Users/adamsmithkipnis/Projects/adamsmithkipnis" },
       { label: "components", path: "/Users/adamsmithkipnis/Projects/adamsmithkipnis/components" },
       { label: "apps", path: "/Users/adamsmithkipnis/Projects/adamsmithkipnis/components/apps" },

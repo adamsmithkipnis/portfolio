@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getUserContacts, addUserContact } from "@/lib/messages/contacts";
 import { ContactDrawer } from "./contact-drawer";
+import { getInitials } from "@/lib/messages/initials";
 
 // Helper to check if we can add more recipients
 const hasReachedMaxRecipients = (recipients: string) => {
@@ -300,10 +301,7 @@ function MobileAvatars({
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#9BA1AA] to-[#7D828A] relative">
               <span className="relative text-white text-base font-medium">
-                {recipient.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {getInitials(recipient.name)}
               </span>
             </div>
           )}

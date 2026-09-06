@@ -481,7 +481,7 @@ const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 | Tier | Storage | Lifetime | Use Case |
 |------|---------|----------|----------|
 | **View/runtime state** | `sessionStorage` | Per-tab, clears on tab close | Desktop window layout, sidebar selection, scroll position, dock scale, recents, terminal history |
-| **Session cache/runtime buffers** | `sessionStorage` | Per-tab, clears on tab close | API/UI caches and in-progress runtime state (e.g., GitHub cache, music playback queue/progress, Notes pinned ordering) |
+| **Session cache/runtime buffers** | `sessionStorage` | Per-tab, clears on tab close | API/UI caches and in-progress runtime state (e.g., GitHub cache, Spotify view state, Notes pinned ordering) |
 | **Durable data + preferences** | `localStorage` | Persistent, shared across tabs | User-created content, user preferences, and anonymous identity (notes/messages data, settings, sound prefs, Notes `session_id`) |
 
 Rule of thumb: if losing it on browser restart is acceptable, use `sessionStorage`. If users expect it to persist (content or preferences), use `localStorage`.

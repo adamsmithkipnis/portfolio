@@ -26,7 +26,7 @@ Forked from [alanagoyal/alanagoyal](https://github.com/alanagoyal/alanagoyal) (M
 | **Hosting** | Vercel | "Low-maintenance" rules out self-managed VPS. Preview deploys per branch are decisive for visual iteration |
 | **Domain** | Stays at DreamHost | Point DNS at Vercel. DreamHost *shared* hosting can't run Node — VPS would be required, and that's the high-maintenance path |
 | **Upstream** | Sync once, then hard-fork | Merging has a shelf life; restructuring + re-skin ends it. Cherry-pick security fixes only |
-| **AI provider** | Braintrust proxy → Claude Haiku 4.5 | Already wired; observability is useful for tuning personas. ~$0.0017/message |
+| **AI provider** | Braintrust proxy → gpt-5.2 (`GROUP_CHAT_MODEL`) | Already wired; observability is useful for tuning personas |
 | **Model for dev** | Claude Opus 5 | Same 1M context as Fable at half the cost; strongest for agentic coding |
 | **Component workbench** | `/dev/gallery` route, **not** Storybook | ~15–20 primitives, one consumer. Storybook's value scales with things we don't have. Revisit if we need a11y auditing or visual regression |
 | **Design tokens** | Extracted from the OS via AppKit | See `design-tokens/README.md`. Screenshots lose semantic alpha and miss version drift |
@@ -126,16 +126,18 @@ dependency churn and an unverified fork at the same time, with no known-good
 state to diff against.
 
 ### Step 3 — Prune & rebrand
-- [ ] Cut Photos (removes the OpenAI dependency entirely), Weather, Music, Preview
+- [x] Music cut (September 2026), along with the Control Center Now Playing tile that ran on its audio engine
+- [x] Photos hidden, not cut (September 2026): off the dock, Finder, and mobile via `lib/app-config.ts`; `app/api/photos/upload` and the OpenAI dependency remain until a curated set exists or the app is removed
+- [ ] Weather stays as a discoverable app; Preview stays (case studies open in it)
 - [ ] Rebrand iTerm → native macOS Terminal (icon, chrome, prompt, route)
 - [ ] Keep: Notes, Messages, Finder, Terminal
 
 ### Step 4 — Guardrails on `/api/chat` ⛔ before any public deploy
 - [ ] Rate limit per IP (Upstash)
-- [ ] Cap conversation history (~10 turns)
+- [x] Sliding history window (last 40 messages / 12k chars, oldest dropped) instead of rejecting long threads
 - [ ] Cap `max_tokens` (~300)
 - [ ] Hard spend cap in the Anthropic console
-- [ ] Point Braintrust at Haiku 4.5
+- [x] Model pinned in `lib/messages/group-chat-model.ts` (gpt-5.2 via the Braintrust proxy)
 
 ### Step 5 — Layer restructure
 - [ ] Reorganize into `system/` `apps/` `shell/`

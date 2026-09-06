@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import {
   Wifi,
   Lock,
@@ -14,17 +13,11 @@ import {
   Moon,
   BedDouble,
   Atom,
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSystemSettings, FocusMode } from "@/lib/system-settings-context";
 import { useClickOutside } from "@/lib/hooks/use-click-outside";
-import { useAudio } from "@/lib/music/audio-context";
-import { DEFAULT_TRACK } from "@/components/apps/music/data";
 
 // AirDrop icon (concentric arcs)
 function AirDropIcon({ className }: { className?: string }) {
@@ -312,18 +305,6 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [showFocusMenu, setShowFocusMenu] = useState(false);
   const { brightness, setBrightness, volume, setVolume, wifiEnabled, setWifiEnabled, bluetoothEnabled, setBluetoothEnabled, airdropMode, setAirdropMode, focusMode, setFocusMode, focusEndsAt } = useSystemSettings();
-  const { playbackState, pause, resume, play, next, previous } = useAudio();
-
-  // Use current track or default track
-  const displayTrack = playbackState.currentTrack || DEFAULT_TRACK;
-  const isPlaying = playbackState.isPlaying;
-  const hasCurrentTrack = !!playbackState.currentTrack;
-
-  // Disable navigation when there's only one track in the queue
-  const canNavigate = playbackState.queue.length > 1;
-  const canGoPrevious = canNavigate && playbackState.queueIndex > 0;
-  const canGoNext = canNavigate && (playbackState.queueIndex < playbackState.queue.length - 1 || playbackState.repeatMode === "all");
-
   useClickOutside(menuRef, onClose, isOpen);
 
   if (!isOpen) return null;
@@ -399,79 +380,10 @@ export function ControlCenterMenu({ isOpen, onClose }: ControlCenterMenuProps) {
           </button>
         </div>
 
-        {/* Right column: Music, Focus */}
-        <div className="space-y-1.5">
-          {/* Now Playing Widget */}
-          <div className="bg-black/5 dark:bg-white/10 rounded-md p-2">
-            <div className="flex items-center gap-2">
-              {/* Album Art */}
-              <div className="relative w-9 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
-                <Image
-                  src={displayTrack.albumArt}
-                  alt={displayTrack.album}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-              {/* Track Info */}
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-medium truncate">{displayTrack.name}</p>
-                <p className="text-[10px] text-muted-foreground truncate">
-                  {displayTrack.artist}
-                </p>
-              </div>
-            </div>
-            {/* Playback Controls */}
-            <div className="flex items-center justify-center gap-3 mt-1.5">
-              <button
-                onClick={previous}
-                disabled={!canGoPrevious}
-                className={cn(
-                  "p-0.5 rounded transition-colors",
-                  canGoPrevious
-                    ? "text-muted-foreground can-hover:hover:text-foreground"
-                    : "text-muted-foreground/30 cursor-not-allowed"
-                )}
-              >
-                <SkipBack className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => {
-                  if (isPlaying) {
-                    pause();
-                  } else if (hasCurrentTrack) {
-                    resume();
-                  } else {
-                    // No current track - play the default track
-                    play(DEFAULT_TRACK, [DEFAULT_TRACK]);
-                  }
-                }}
-                className="p-0.5 rounded text-foreground hover:text-foreground/80 transition-colors"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-              </button>
-              <button
-                onClick={next}
-                disabled={!canGoNext}
-                className={cn(
-                  "p-0.5 rounded transition-colors",
-                  canGoNext
-                    ? "text-muted-foreground can-hover:hover:text-foreground"
-                    : "text-muted-foreground/30 cursor-not-allowed"
-                )}
-              >
-                <SkipForward className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
+        {/* Right column: Focus. It fills the column so the two tiles line up. */}
+        <div className="flex flex-col">
           {/* Focus tile */}
-          <div className="relative">
+          <div className="relative flex-1 flex">
             <button
               onClick={() => setShowFocusMenu(!showFocusMenu)}
               className="flex items-center gap-2 p-2 rounded-md transition-colors bg-black/5 dark:bg-white/10 w-full"

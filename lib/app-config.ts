@@ -50,18 +50,16 @@ export const APPS: AppConfig[] = [
     defaultSize: { width: 900, height: 650 },
     minSize: { width: 600, height: 450 },
     menuBarTitle: "Photos",
-  },
-  {
-    id: "music",
-    name: "Music",
-    icon: "/music.png",
-    description: "Music library",
-    provenance: { agent: "Claude Code", circa: "January 2026" },
-    accentColor: "#FA2D48",
-    defaultPosition: { x: 140, y: 70 },
-    defaultSize: { width: 900, height: 650 },
-    minSize: { width: 600, height: 450 },
-    menuBarTitle: "Music",
+    // Hidden, not removed: there is no curated set yet, and personal photos
+    // read as too intimate for a hiring audience. Flip these to bring it back.
+    showOnDockByDefault: false,
+    showInFinderApplications: false,
+    mobile: {
+      supported: false,
+      shellFallbackAppId: "finder",
+      directRouteRedirectTo: "/",
+      showInFinderApplications: false,
+    },
   },
   {
     id: "spotify",
@@ -74,14 +72,8 @@ export const APPS: AppConfig[] = [
     defaultSize: { width: 1000, height: 700 },
     minSize: { width: 720, height: 520 },
     menuBarTitle: "Spotify",
-    // Spotify only grants full-length embed playback in desktop browsers, and
-    // the embed is cramped at phone widths.
-    mobile: {
-      supported: false,
-      shellFallbackAppId: "notes",
-      directRouteRedirectTo: "/",
-      showInFinderApplications: false,
-    },
+    // Phones get Spotify's 30-second previews rather than full tracks; that is
+    // the embed's rule, not ours, and the app lays out single-pane for them.
   },
   {
     id: "calendar",
