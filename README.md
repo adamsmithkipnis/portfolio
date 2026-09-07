@@ -1,6 +1,6 @@
 # [smithkipnis.com](https://smithkipnis.com)
 
-I found the original version of this inspiring, so I wanted to personalize and extend it.
+I found the original version of this inspiring, so I personalized and extended it.
 
 ## features
 
