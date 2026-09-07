@@ -34,7 +34,14 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, interactive-widget=resizes-content"
         />
       </head>
-      <body className="h-dvh">
+      {/*
+        Extensions add their own attributes to <body> before React hydrates
+        (ColorZilla's cz-shortcut-listen is the common one), and React reports
+        the difference as a hydration error in the visitor's console. This
+        suppresses that one element's attribute check only; children are still
+        compared normally.
+      */}
+      <body className="h-dvh" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

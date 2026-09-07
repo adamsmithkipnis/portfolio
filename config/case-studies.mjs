@@ -38,7 +38,7 @@ export const CASE_STUDIES = {
     image: "/archive/smithkipnis/img/workflowagent.webp",
     alt: "The Invoca campaign management table with the assistant docked beside it, answering a question about what the Payout column means.",
     summary:
-      "Users struggled to understand how to use Invoca and were pasting call transcripts into ChatGPT because our platform couldn't answer questions about itself. I designed and built an in-platform agent that knows who you are, where you are, and what's on your screen, then convinced the company to care.",
+      "Users struggled to understand how to use Invoca and were pasting call transcripts into ChatGPT because our platform couldn't answer questions about itself. I designed and built an in-platform agent that knows who you are, where you are, and what's on your screen, then made the case for it across the organization.",
     tags: ["Agentic AI", "RAG", "Enterprise SaaS", "Self-initiated"],
   },
   "grace-providence": {

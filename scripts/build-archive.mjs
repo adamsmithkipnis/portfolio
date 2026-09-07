@@ -1,8 +1,8 @@
 /**
  * Regenerates the parts of the archived site that follow from
  * `config/case-studies.mjs`: the case study index, the previous/next links on
- * each case study, and the description and link-preview tags in each page's
- * head (the scrape left one of those as a label glued to its value).
+ * each case study, the description and link-preview tags in each page's head
+ * (the scrape left one of those as a label glued to its value).
  *
  * Everything else in those pages is hand-authored and left alone. The
  * generated regions are fenced by comment markers, and only what sits between

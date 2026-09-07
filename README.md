@@ -108,7 +108,9 @@ there is a curated set; the `/photos` route still works)
 
 ### mobile
 
-responsive mobile interface with:
+phones that open `/` are redirected to `/website`, the portfolio itself; the
+simulated desktop is built for a desktop. any app route (`/safari`, `/finder`,
+`/messages`, ...) still opens the mobile shell:
 - swipe gestures for navigation
 - touch-optimized controls
 - full app functionality

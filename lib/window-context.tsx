@@ -108,12 +108,12 @@ function getDefaultWindowState(appId: string): WindowState {
 
 // Desktop default configuration (first visit, and after logout/restart/shutdown)
 // Windows listed in z-index order (first = back, last = front).
-// Safari leads because it shows the portfolio itself; Messages and Spotify sit
-// behind it as the first hint that the desktop is explorable.
+// Safari alone: it shows the portfolio, and nothing competes with it for the
+// first read. The dock, with its Messages badge, is the hint that the desktop
+// is explorable. Closed windows are not mounted, so a first visit's page text
+// is the portfolio's chrome and nothing else.
 const DESKTOP_DEFAULT_CONFIG = {
   windows: [
-    { appId: "spotify", position: { x: 260, y: 90 } },
-    { appId: "messages", position: { x: 520, y: 70 } },
     { appId: "safari", position: { x: 120, y: 40 }, size: { width: 1100, height: 720 } },
   ],
   focusedAppId: "safari",
@@ -148,7 +148,7 @@ function getBaseState(): WindowManagerState {
 /**
  * Desktop default state: multiple apps open in windowed mode
  * Used on first visit and after logout/restart/shutdown to show a "fresh desktop" view
- * Safari in front (left of center), Messages and Spotify behind (right, peeking out)
+ * Safari alone, left of center
  */
 function getDesktopDefaultState(): WindowManagerState {
   const state = getBaseState();

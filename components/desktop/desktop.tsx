@@ -65,6 +65,7 @@ const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-ap
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
 const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
 import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
+import { getStoredUnreadCount } from "@/lib/messages/unread-count";
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
@@ -238,6 +239,15 @@ function DesktopContent({
     !(initialDocumentRouteAppId && !(initialDocumentRouteAppId === "textedit" ? initialTextEditFile : initialPreviewFile))
   );
   const [appBadges, setAppBadges] = useState<Record<string, number>>({});
+  // The Messages badge before the app has run: Safari opens alone on a first
+  // visit, and the badge is what says the desktop has more in it. Once the app
+  // mounts, its own count takes over through handleMessagesUnreadBadgeChange.
+  useEffect(() => {
+    const count = getStoredUnreadCount();
+    if (count > 0) {
+      setAppBadges((prev) => (prev.messages === undefined ? { ...prev, messages: count } : prev));
+    }
+  }, []);
   const [activeNotification, setActiveNotification] = useState<MessagesNotificationPayload | null>(null);
   const [isNotificationHovered, setIsNotificationHovered] = useState(false);
   const [messagesSelectRequest, setMessagesSelectRequest] = useState<MessagesConversationSelectRequest | null>(null);
