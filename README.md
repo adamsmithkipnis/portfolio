@@ -47,7 +47,8 @@ a macos sierra 10.12 themed desktop with:
 - document-app launch behavior is documented in `docs/document-apps.md`
 
 **finder** - file browser
-- sidebar navigation (recents, applications, desktop, documents, downloads, projects)
+- sidebar navigation (recents, applications, work, desktop, documents, downloads, github projects)
+- work lists the case studies as web locations that open in safari
 - browse local files and github repositories
 - multiple Finder windows on desktop
 - launch apps from applications folder
@@ -61,7 +62,8 @@ a macos sierra 10.12 themed desktop with:
 - holidays automatically displayed
 - data persisted in localstorage
 
-**photos** - apple photos clone
+**photos** - apple photos clone (hidden from the dock, finder, and mobile until
+there is a curated set; the `/photos` route still works)
 - photo library with grid view and full-screen viewer
 - collections: flowers, food, friends
 - favorites (per-browser, stored in localstorage)
@@ -101,9 +103,8 @@ a macos sierra 10.12 themed desktop with:
   with `npm run spotify:fetch` (dev-time only — no spotify credentials are needed
   in production)
 - audio comes from spotify's own embed, driven through their iframe api. full-length
-  playback requires a desktop browser signed into spotify premium; everyone else
-  gets ~30 second previews
-- desktop only
+  playback requires a desktop browser signed into spotify premium; everyone else,
+  phones included, gets ~30 second previews
 
 ### mobile
 

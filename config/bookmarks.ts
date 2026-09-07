@@ -1,98 +1,28 @@
 /**
- * Safari's Favorites grid.
+ * Safari's Favorites Bar.
  *
- * This is the whole content model for the browser app: adding a link is
- * editing this file, never a component. Every entry becomes a real anchor
- * pointing off-site, so `url` must be an absolute http(s) URL.
+ * This is the whole content model for the browser app: adding a page is
+ * editing this file, never a component. Every entry is a page of the archived
+ * site, loaded into Safari's frame.
  *
- * `tint` is brand color, not theme color — it colors the monogram tile for a
- * bookmark with no bundled icon, the same way `accentColor` works in
- * `lib/app-config.ts`. Sites whose icon lives in `public/` set `icon` instead.
+ * Off-site links (GitHub, LinkedIn, and the rest) deliberately do not live
+ * here. They used to, and they looked identical to these pages while opening
+ * a real browser tab, which reads as a broken link. The archived site's own
+ * footer carries them instead. Typing an outside address into the toolbar
+ * still opens it in a real tab; that is the visitor's choice, not a peer link.
  */
 
-export interface Bookmark {
-  /** Tile label. Keep it short — it truncates to one line. */
-  title: string;
-  /** Absolute http(s) URL. Opens in a new tab, outside the desktop. */
-  url: string;
-  /** Optional image in `public/` (e.g. "/safari.png"). Falls back to a monogram. */
-  icon?: string;
-  /** Brand color for the monogram tile. Ignored when `icon` is set. */
-  tint?: string;
-}
-
-export interface BookmarkSection {
-  title: string;
-  bookmarks: Bookmark[];
-}
-
-export const BOOKMARK_SECTIONS: BookmarkSection[] = [
-  {
-    title: "Favorites",
-    bookmarks: [
-      {
-        title: "GitHub",
-        url: "https://github.com/adamsmithkipnis",
-        tint: "#24292F",
-      },
-      {
-        title: "Bluesky",
-        url: "https://bsky.app/profile/adamsk.bsky.social",
-        tint: "#0085FF",
-      },
-      {
-        title: "Twitter",
-        url: "https://x.com/AdamSmithKipnis",
-        tint: "#000000",
-      },
-      {
-        title: "LinkedIn",
-        url: "https://www.linkedin.com/in/adamsmithkipnis",
-        tint: "#0A66C2",
-      },
-      {
-        title: "Patents",
-        url: "https://patents.google.com/?inventor=smith-kipnis&num=100&patents=false",
-        tint: "#4285F4",
-      },
-      {
-        title: "Credits",
-        url: "https://www.imdb.com/name/nm2224145/",
-        tint: "#F5C518",
-      },
-      {
-        title: "Minesweeper",
-        url: "https://bsky.app/profile/playminesweeper.bsky.social",
-        tint: "#C0C0C0",
-      },
-      {
-        title: "Battleship Team Blue",
-        url: "https://bsky.app/profile/battleshipblue.bsky.social",
-        tint: "#1D4ED8",
-      },
-    ],
-  },
-];
-
-/** Flat list, for consumers that don't care about grouping. */
-export const ALL_BOOKMARKS: Bookmark[] = BOOKMARK_SECTIONS.flatMap(
-  (section) => section.bookmarks
-);
-
-/**
- * Pages of the archived site itself, shown at the head of the Favorites Bar.
- *
- * These are separate from the bookmarks above because they behave differently:
- * they navigate inside Safari's frame rather than opening a tab. They also
- * fill a real gap — the original site links to its case studies from nowhere,
- * so without these the archive would only be reachable by typing a URL.
- */
 export interface SitePage {
   title: string;
   /** Path under /website, loaded into the frame. */
   path: string;
 }
 
+/**
+ * Pages of the archived site. The original links to its case studies from
+ * nowhere, so without these the archive would only be reachable by typing a
+ * URL.
+ */
 export const SITE_PAGES: SitePage[] = [
   { title: "Home", path: "/website" },
   { title: "Case Studies", path: "/website/casestudies" },

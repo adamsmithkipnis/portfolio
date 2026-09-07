@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import Image from "next/image";
+import { getInitials } from "@/lib/messages/initials";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -70,14 +71,6 @@ export function Sidebar({
       console.error("Error formatting time:", error, timestamp);
       return "Just now";
     }
-  };
-
-  const getInitials = (name: string) => {
-    const names = name.split(" ");
-    if (names.length >= 2) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-    }
-    return name[0].toUpperCase();
   };
 
   const getReactionIconSvg = (reactionType: string) => {

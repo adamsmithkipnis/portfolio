@@ -15,9 +15,9 @@ export const SITE_MODE = "management";
 
 export const FRAMING = {
   management:
-    "Three projects: one I managed, one I led, one I started myself, the most recent as an IC by circumstance rather than choice.",
+    "Three projects across design leadership, production leadership, and self-initiated AI product strategy.",
   ic:
-    "Fifteen years designing products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Three projects, hands on the work in all three.",
+    "Products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Three projects, hands on the work in all three.",
 };
 
 /**
@@ -48,8 +48,8 @@ export const CASE_STUDIES = {
     image: "/archive/smithkipnis/img/gracesplashimage.webp",
     alt: "A hand holding a phone showing the Grace assistant returning a nearby urgent care clinic with its address and wait time.",
     summary:
-      "A 1% open-rate click-bot serving 2.6 million patients, in an industry with almost no appetite for AI risk. I rebuilt it as a real conversational assistant, got clinical sign-off on every flow, and managed a five-person team responsible for multiple mobile apps and an SSO product.",
-    tags: ["Conversational AI", "Healthcare", "Design Systems", "Team leadership"],
+      "Transformed a simple clickbot into a conversational agent serving 2.6 million patients, in an industry with almost no appetite for AI risk. I got clinical sign-off on every flow and managed a five-person team responsible for multiple mobile apps, a core design system, and an SSO product.",
+    tags: ["Conversational AI", "Healthcare", "Design Systems", "Product Design Management", "Team leadership"],
   },
   "wilson-x": {
     title: "Wilson X Connected Basketball",

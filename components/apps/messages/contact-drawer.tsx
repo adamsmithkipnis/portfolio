@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Recipient } from "@/types/messages";
 import { Fragment } from "react";
+import { getInitials } from "@/lib/messages/initials";
 
 interface ContactDrawerProps {
   recipients: Array<Omit<Recipient, "id">>;
@@ -121,10 +122,7 @@ export function ContactDrawer({
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#9BA1AA] to-[#7D828A] relative">
                         <span className="relative text-white text-2xl font-medium">
-                          {recipient.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+                          {getInitials(recipient.name)}
                         </span>
                       </div>
                     )}
@@ -182,10 +180,7 @@ export function ContactDrawer({
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[#9BA1AA] to-[#7D828A]">
                             <span className="text-white text-sm font-medium">
-                              {recipient.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
+                              {getInitials(recipient.name)}
                             </span>
                           </div>
                         )}

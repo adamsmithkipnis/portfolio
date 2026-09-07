@@ -4,11 +4,15 @@ import { useWindowNavBehavior } from "@/lib/use-window-nav-behavior";
 import { Toolbar } from "./toolbar";
 import { FavoritesBar } from "./favorites-bar";
 import { BrowserFrame } from "./browser-frame";
-import { useArchiveHistory } from "./use-archive-history";
+import { useArchiveHistory, type ArchivePageRequest } from "./use-archive-history";
+
+export type { ArchivePageRequest } from "./use-archive-history";
 
 interface SafariAppProps {
   isMobile?: boolean;
   inShell?: boolean;
+  /** A page another app asked for, such as a case study opened from Finder. */
+  page?: ArchivePageRequest;
 }
 
 /**
@@ -19,11 +23,11 @@ interface SafariAppProps {
  * you land. Links that leave the archive open a real browser tab instead —
  * nothing here renders the open web, since most sites refuse framing.
  */
-export function SafariApp({ isMobile = false, inShell = false }: SafariAppProps) {
+export function SafariApp({ isMobile = false, inShell = false, page }: SafariAppProps) {
   const isMobileView = isMobile;
   const isDesktop = inShell && !isMobileView;
   const nav = useWindowNavBehavior({ isDesktop, isMobile: isMobileView });
-  const history = useArchiveHistory();
+  const history = useArchiveHistory(page);
 
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">

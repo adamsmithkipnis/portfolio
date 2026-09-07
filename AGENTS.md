@@ -116,10 +116,12 @@ keep `LICENSE.md` and the attribution in `README.md`.
 
 ## AI chat
 
-messages runs through the braintrust proxy to claude haiku 4.5.
+messages runs through the braintrust proxy to gpt-5.2 (`GROUP_CHAT_MODEL` in
+`lib/messages/group-chat-model.ts`).
 
-`/api/chat` **must** keep: per-IP rate limiting, history cap (~10 turns), and a
-`max_tokens` cap (~300). it's a public endpoint — an unguarded one is the only
+`/api/chat` **must** keep: per-IP rate limiting, the sliding history window (last
+40 messages / 12k chars, `lib/messages/history-window.ts`), and a `max_tokens`
+cap (~300). it's a public endpoint — an unguarded one is the only
 real cost risk in this project.
 
 if a persona speaks as a real person it must be clearly labeled AI. **never

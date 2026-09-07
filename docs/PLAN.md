@@ -26,7 +26,7 @@ Forked from [alanagoyal/alanagoyal](https://github.com/alanagoyal/alanagoyal) (M
 | **Hosting** | Vercel | "Low-maintenance" rules out self-managed VPS. Preview deploys per branch are decisive for visual iteration |
 | **Domain** | Stays at DreamHost | Point DNS at Vercel. DreamHost *shared* hosting can't run Node — VPS would be required, and that's the high-maintenance path |
 | **Upstream** | Sync once, then hard-fork | Merging has a shelf life; restructuring + re-skin ends it. Cherry-pick security fixes only |
-| **AI provider** | Braintrust proxy → Claude Haiku 4.5 | Already wired; observability is useful for tuning personas. ~$0.0017/message |
+| **AI provider** | Braintrust proxy → gpt-5.2 (`GROUP_CHAT_MODEL`) | Already wired; observability is useful for tuning personas |
 | **Model for dev** | Claude Opus 5 | Same 1M context as Fable at half the cost; strongest for agentic coding |
 | **Component workbench** | `/dev/gallery` route, **not** Storybook | ~15–20 primitives, one consumer. Storybook's value scales with things we don't have. Revisit if we need a11y auditing or visual regression |
 | **Design tokens** | Extracted from the OS via AppKit | See `design-tokens/README.md`. Screenshots lose semantic alpha and miss version drift |
@@ -128,7 +128,9 @@ dependency churn and an unverified fork at the same time, with no known-good
 state to diff against.
 
 ### Step 3 — Prune & rebrand
-- [ ] Cut Photos (removes the OpenAI dependency entirely), Weather, Music, Preview
+- [x] Music cut (September 2026), along with the Control Center Now Playing tile that ran on its audio engine
+- [x] Photos hidden, not cut (September 2026): off the dock, Finder, and mobile via `lib/app-config.ts`; `app/api/photos/upload` and the OpenAI dependency remain until a curated set exists or the app is removed
+- [ ] Weather stays as a discoverable app; Preview stays (case studies open in it)
 - [ ] Rebrand iTerm → native macOS Terminal (icon, chrome, prompt, route)
 - [ ] Keep: Notes, Messages, Finder, Terminal
 
@@ -136,9 +138,13 @@ state to diff against.
 - [x] Rate limit per session and per IP — `CHAT_RATE_LIMIT_SESSION` (30/min) and
       `CHAT_RATE_LIMIT_IP` (120/min) in `app/api/chat/route.ts`. In-process counters,
       **not Upstash**; nothing in the tree references Upstash despite the cost table
-- [x] Cap conversation history — `CHAT_MAX_MESSAGES = 60`, rejected with a 400
+- [x] Bound conversation history — a sliding window, last 40 messages / 12k chars,
+      oldest dropped (`lib/messages/history-window.ts`). It used to be a hard 400
+      once a thread passed 60 messages, which killed the conversation rather than
+      forgetting the start of it
 - [x] Cap `max_tokens` — 300
-- [x] Point Braintrust at Haiku — `GROUP_CHAT_MODEL`
+- [x] Model pinned in `lib/messages/group-chat-model.ts` — gpt-5.2 via the
+      Braintrust proxy, not Haiku as the cost table below still assumes
 - [ ] Hard spend cap in the Anthropic console — the one item still genuinely open
 
 ### Step 5 — Layer restructure
@@ -156,7 +162,9 @@ state to diff against.
 - [x] Case study pipeline into Finder — `content/` walk, Work sidebar, column-view
       reading surface, Get Info metadata, click-to-load video embeds
 - [x] The real case studies — archived under `public/archive/smithkipnis/casestudies`
-      and browsable in Safari. `content/work` is now empty, so Finder hides Work
+      and browsable in Safari. `content/work` is empty, and Finder's Work folder
+      lists the archived studies as web locations instead (`lib/work-links.ts`),
+      so a double-click hands Safari the page
 - [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
 - [ ] Essays into Notes
 - [ ] Messages personas

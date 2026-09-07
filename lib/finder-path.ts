@@ -11,7 +11,7 @@ const FINDER_ROOTS = [
   { label: "Desktop", path: `${HOME_DIR}/Desktop` },
   { label: "Documents", path: `${HOME_DIR}/Documents` },
   { label: "Downloads", path: `${HOME_DIR}/Downloads` },
-  { label: "Projects", path: PROJECTS_DIR },
+  { label: "GitHub Projects", path: PROJECTS_DIR },
 ];
 
 export function getFinderPathSegments(path: string): FinderPathSegment[] {

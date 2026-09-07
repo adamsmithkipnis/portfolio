@@ -64,7 +64,7 @@ const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").th
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
 const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
-const MusicApp = dynamic(() => import("@/components/apps/music/music-app").then(m => ({ default: m.MusicApp })));
+import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
@@ -656,8 +656,15 @@ function DesktopContent({
     return null;
   }, [renameRecent, state.windows, updateWindowMetadata]);
 
-  // Handler for opening apps from Finder
-  const handleOpenApp = useCallback((appId: string) => {
+  // A page Finder asked Safari to open (a case study in ~/Work)
+  const [safariPage, setSafariPage] = useState<ArchivePageRequest | undefined>(undefined);
+
+  // Handler for opening apps from Finder. `target` is app-specific: for Safari
+  // it is an archived page path.
+  const handleOpenApp = useCallback((appId: string, target?: string) => {
+    if (appId === "safari" && target) {
+      setSafariPage({ path: target, id: Date.now() });
+    }
     if (appId === "textedit" || appId === "preview") {
       const focusedExistingWindow = focusTopDocumentWindow(documentAppWindows[appId]);
       if (!focusedExistingWindow) {
@@ -942,11 +949,7 @@ function DesktopContent({
           </Window>
 
           <Window appId="safari">
-            <SafariApp inShell={true} />
-          </Window>
-
-          <Window appId="music">
-            <MusicApp />
+            <SafariApp inShell={true} page={safariPage} />
           </Window>
 
           {/* keepMountedWhenMinimized so minimizing does not tear down the

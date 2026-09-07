@@ -1,7 +1,8 @@
 /**
  * Regenerates the parts of the archived site that follow from
- * `config/case-studies.mjs`: the case study index, and the previous/next
- * links on each case study.
+ * `config/case-studies.mjs`: the case study index, the previous/next links on
+ * each case study, and the description and link-preview tags in each page's
+ * head (the scrape left one of those as a label glued to its value).
  *
  * Everything else in those pages is hand-authored and left alone. The
  * generated regions are fenced by comment markers, and only what sits between
@@ -27,6 +28,9 @@ const CASE_STUDY_DIR = path.join(
   "public/archive/smithkipnis/casestudies"
 );
 const BASE = "/website/casestudies";
+/** Absolute origin for link previews; mirrors `siteConfig.url` in config/site.ts. */
+const SITE_URL = "https://smithkipnis.com";
+const SITE_NAME = "Adam Smith-Kipnis";
 
 /** Text into HTML. Card copy carries ampersands and quotes. */
 function escapeHtml(value) {
@@ -102,6 +106,43 @@ ${cards}
 `;
 }
 
+/**
+ * Description and Open Graph tags. The page's own <title> stays hand-authored;
+ * this only adds what a search result or a pasted link needs to look right.
+ */
+function renderHeadTags({ title, description, image, url }) {
+  return `
+<meta name="description" content="${escapeHtml(description)}" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />
+<meta property="og:title" content="${escapeHtml(title)}" />
+<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:image" content="${SITE_URL}${image}" />
+<meta property="og:url" content="${SITE_URL}${url}" />
+<meta name="twitter:card" content="summary_large_image" />
+`;
+}
+
+export function renderIndexHead() {
+  const [first] = orderedSlugs();
+  return renderHeadTags({
+    title: `Case Studies — ${SITE_NAME}`,
+    description: FRAMING[SITE_MODE],
+    image: CASE_STUDIES[first].image,
+    url: BASE,
+  });
+}
+
+export function renderCaseStudyHead(slug) {
+  const study = CASE_STUDIES[slug];
+  return renderHeadTags({
+    title: `${study.title} — ${SITE_NAME}`,
+    description: study.summary,
+    image: study.image,
+    url: `${BASE}/${slug}`,
+  });
+}
+
 export function renderPager(slug) {
   const slugs = orderedSlugs();
   const at = slugs.indexOf(slug);
@@ -128,19 +169,17 @@ export async function buildArchive() {
   const results = [];
 
   const indexPath = path.join(CASE_STUDY_DIR, "index.html");
-  const indexHtml = await readFile(indexPath, "utf8");
-  results.push({
-    file: indexPath,
-    contents: replaceRegion(indexHtml, "generated:index", renderIndex(), indexPath),
-  });
+  let indexHtml = await readFile(indexPath, "utf8");
+  indexHtml = replaceRegion(indexHtml, "generated:head", renderIndexHead(), indexPath);
+  indexHtml = replaceRegion(indexHtml, "generated:index", renderIndex(), indexPath);
+  results.push({ file: indexPath, contents: indexHtml });
 
   for (const slug of Object.keys(CASE_STUDIES)) {
     const pagePath = path.join(CASE_STUDY_DIR, slug, "index.html");
-    const html = await readFile(pagePath, "utf8");
-    results.push({
-      file: pagePath,
-      contents: replaceRegion(html, "generated:pager", renderPager(slug), pagePath),
-    });
+    let html = await readFile(pagePath, "utf8");
+    html = replaceRegion(html, "generated:head", renderCaseStudyHead(slug), pagePath);
+    html = replaceRegion(html, "generated:pager", renderPager(slug), pagePath);
+    results.push({ file: pagePath, contents: html });
   }
 
   return results;

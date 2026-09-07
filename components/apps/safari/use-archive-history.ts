@@ -1,10 +1,26 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { ARCHIVE_ROOT } from "@/lib/archive-site";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ARCHIVE_ROOT, archivePathFor } from "@/lib/archive-site";
 
 /** Where the browser opens: the archived smithkipnis.com home page. */
 export const START_PAGE_PATH = ARCHIVE_ROOT;
+
+/**
+ * A page another app asked Safari to show, such as a case study opened from
+ * Finder. `id` makes each request distinct, so opening the same page twice
+ * still navigates the second time.
+ */
+export interface ArchivePageRequest {
+  path: string;
+  id: number;
+}
+
+/** Only archived pages can load in the frame; anything else opens the start page. */
+function resolveRequest(request: ArchivePageRequest | undefined): string {
+  if (!request) return START_PAGE_PATH;
+  return archivePathFor(request.path) ?? START_PAGE_PATH;
+}
 
 /**
  * Session history for the framed archive.
@@ -18,8 +34,8 @@ export const START_PAGE_PATH = ARCHIVE_ROOT;
  * differs from the current entry can only have come from a link click, so it
  * pushes — and, like a real browser, discards any forward entries.
  */
-export function useArchiveHistory() {
-  const [entries, setEntries] = useState<string[]>([START_PAGE_PATH]);
+export function useArchiveHistory(request?: ArchivePageRequest) {
+  const [entries, setEntries] = useState<string[]>([resolveRequest(request)]);
   const [index, setIndex] = useState(0);
   // Set while we drive the frame ourselves, so the resulting load is not
   // mistaken for the user following a link.
@@ -69,6 +85,16 @@ export function useArchiveHistory() {
     },
     [current, index]
   );
+
+  // A request that arrives while the browser is already open browses to it,
+  // the way a link opened from another app lands in a running Safari. The
+  // first request is consumed by the initial state above.
+  const handledRequestId = useRef(request?.id);
+  useEffect(() => {
+    if (!request || request.id === handledRequestId.current) return;
+    handledRequestId.current = request.id;
+    go(resolveRequest(request));
+  }, [request, go]);
 
   return {
     current,

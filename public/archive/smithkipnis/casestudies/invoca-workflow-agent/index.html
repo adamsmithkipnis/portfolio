@@ -4,7 +4,16 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Invoca Workflow Agent - Senior UX Designer — Adam Smith-Kipnis</title>
-<meta name="description" content="Designing and building an in-platform AI agent assistant that knows who you are, where you are, what you're looking at, and how Invoca works." />
+<!-- generated:head:start -->
+<meta name="description" content="Users struggled to understand how to use Invoca and were pasting call transcripts into ChatGPT because our platform couldn't answer questions about itself. I designed and built an in-platform agent that knows who you are, where you are, and what's on your screen, then convinced the company to care." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Adam Smith-Kipnis" />
+<meta property="og:title" content="Invoca Workflow Agent — Adam Smith-Kipnis" />
+<meta property="og:description" content="Users struggled to understand how to use Invoca and were pasting call transcripts into ChatGPT because our platform couldn't answer questions about itself. I designed and built an in-platform agent that knows who you are, where you are, and what's on your screen, then convinced the company to care." />
+<meta property="og:image" content="https://smithkipnis.com/archive/smithkipnis/img/workflowagent.webp" />
+<meta property="og:url" content="https://smithkipnis.com/website/casestudies/invoca-workflow-agent" />
+<meta name="twitter:card" content="summary_large_image" />
+<!-- generated:head:end -->
 <!--
   Generated archive page. See index.html for why these pages exist and why they
   sit outside the design system.
@@ -47,7 +56,7 @@
     <p class="cs-p"><strong>At a glance</strong></p>
     <p class="cs-p"><strong>Problem:</strong> Users were copying platform data into ChatGPT because Invoca couldn't answer questions about itself.</p>
     <p class="cs-p"><strong>What I did:</strong> Originated the concept, designed the interaction model, built the agent's context architecture and knowledge base, and pitched it through the organization.</p>
-    <p class="cs-p"><strong>Outcome:</strong> Over 100 unique sessions a day on the internal QA platform, outperforming our shipped SMS and Voice Agents. Never reached production.</p>
+    <p class="cs-p"><strong>Outcome:</strong> Over 100 unique sessions a day on the internal QA platform, outperforming our shipped SMS and Voice Agents. The program ended at the QA stage; the architecture and findings are below.</p>
     <h2 class="cs-h2">Situation</h2>
     <p class="cs-p">Invoca is a conversation intelligence platform used by Marketers to attribute ads and websites that drive inbound phone calls.&nbsp; Invoca routes those calls, handles them via SMS and voice agents, and analyzes what is said during calls.&nbsp; It’s used daily by performance marketers, agencies, and customer success managers for monitoring and reporting.</p>
     <p class="cs-p">In early 2026, Invoca was focused on driving AI adoption at scale. However, there was a problem within our platform. Users wanted to analyze call transcripts with AI, so they’d open a new browser tab, copy transcripts from Invoca, paste them into ChatGPT, and get insights there because it was a better experience. That copying and pasting was a leak, and that friction was a tax. Our users were already using AI, and I believed they shouldn't have to leave Invoca to do it.</p>
@@ -76,7 +85,7 @@
     <ul class="cs-list">
       <li><strong>Who I am: </strong>The agent knows who you are: name, role, and organization type are passed in, so responses are personalized and permission-aware. A Network user and a Publisher user asking the same question are not asking the same question.&nbsp;</li>
       <li><strong>Where I am: </strong>It knows where you are: it receives the current URL, and on top of that, I built a navigation map of the site, its routes, views and structures. Without it, an agent can tell you that a setting exists; with it, it can tell you where to click.&nbsp;</li>
-      <li><strong>What I see: </strong>It knows what you are looking at by scraping the current page, but asking what the payout column means while looking at the payout column only works if the agent can see the column.&nbsp;</li>
+      <li><strong>What I see: </strong>It knows what you are looking at by scraping the current page. Asking what the payout column means only works when the agent can see the payout column, so page reading came first.&nbsp;</li>
       <li><strong>How Invoca works: </strong>It knows what Invoca knows by retrieving contextualized information from our documentation, with citations, so it doesn't guess, and accuracy is easily verified.</li>
     </ul>
     <img class="cs-img" src="/archive/smithkipnis/img/web-09-four-pillars-of-context.svg" alt="The four pillars, Who I am, Where I am, What I see and How Invoca works, each feeding a single assembled context that is built per request and handed to the Workflow Agent, which answers using retrieval and tools." loading="lazy" />
@@ -118,12 +127,12 @@
     <p class="cs-p">There was real anxiety in the organization that a retrieval agent would devalue the support and Academy teams' work. I made the opposite argument publicly, because the project would have failed politically otherwise. Content from <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">support.invoca.com</a> and <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">academy.invoca.com</a> doesn't become less valuable because an agent can retrieve it. It gets a new channel. What is changing is that agents are becoming a bigger consumer of documentation than humans are, which argues for investing in documentation.</p>
     <p class="cs-p">I got that point about agents consuming documentation from Hahnbee Lee, a founder of Mintlify, at Braintrust’s 2026 Trace conference in San Francisco, where <a target="_blank" href="https://www.mintlify.com/blog/state-of-ai" rel="noopener noreferrer">she said close to 50% of their usage was already from agents and was trending toward 90%</a>.</p>
     <h2 class="cs-h2">Result</h2>
-    <p class="cs-p">Gabriel and I built the majority of this in only three days. The Workflow Agent ran on localhost and was deployed to our internal QA platform so everyone in the company could access it.</p>
+    <p class="cs-p">Gabriel and I built the majority of this in three days. The Workflow Agent ran on localhost and was deployed to our internal QA platform so everyone in the company could access it.</p>
     <ul class="cs-list">
-      <li><strong>Over 100 unique sessions per day:</strong> usage climbed immediately after we rolled it out to colleagues, reaching hundreds of unique sessions in the first couple of days and outperforming our SMS and Voice Agents. The number continued to grow every day before it was shut down.</li>
+      <li><strong>Over 100 unique sessions per day:</strong> usage climbed immediately after we rolled it out to colleagues, reaching hundreds of unique sessions in the first couple of days and outperforming our SMS and Voice Agents. The number grew every day it ran.</li>
       <li><strong>Working proof of concept:</strong> We conducted a live demonstration of page awareness, URL awareness, user awareness, retrieval from Invoca's documentation, and conversation persistence across navigation, using real platform screens.</li>
+      <li><strong>The open problem:</strong> a data-access problem rather than a design one. The use case that started the project, analyzing a call transcript in place, needed transcript data that staging did not have. So we proved page reading separately, then generated simulated transcripts in the JSON format a user would have, using a prompt from my colleague Tristan Marshall, and analyzed them by pasting them into the agent's chat window. The original workflow still required a copy and paste; a live deployment, with real data, is what closes it.</li>
       <li><strong>Roadmap influence:</strong> The concept and its framing shaped how the organization approached in-platform AI afterward, particularly the HubSpot integration, as <a href="https://www.invoca.com/press-release/invoca-introduces-nico-ai-revenue-conversion-agent" target="_blank" rel="noopener noreferrer"><u>announced during the rollout of "Nico."</u></a></li>
-      <li><strong>What it couldn't do.</strong> The use case that started the project is the one we couldn't close. With no real transcript data in staging, we proved page reading separately, then generated simulated transcripts in the JSON format a user would have, using a prompt from my colleague Tristan Marshall, and analyzed them by pasting them into the agent's chat window. The original workflow still required a copy and paste. That turned out to be a data-access problem rather than a design one, and live deployment would have solved it.</li>
     </ul>
   <nav class="cs-pager"><!-- generated:pager:start -->
     <a class="cs-prev-link" href="/website/casestudies/wilson-x"><span>Previous</span>Wilson X Connected Basketball</a>

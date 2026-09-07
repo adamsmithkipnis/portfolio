@@ -6,7 +6,6 @@ import {
 import {
   getContentChildren,
   getContentDirectoryPaths,
-  hasContent,
   isContentPath,
   WORK_DIR,
 } from "@/lib/content-files";
@@ -62,7 +61,22 @@ const LOCAL_SAMPLE_FILES: LocalSampleFile[] = [
     kind: "preview",
     path: `${HOME_DIR}/Desktop/Adam Smith-Kipnis - Resume.pdf`,
   },
+  {
+    assetUrl: "/documents/Windows%2C%20The%20Next%20Killer%20Application%20on%20the%20Internet.pdf",
+    directoryPath: `${HOME_DIR}/Downloads`,
+    kind: "preview",
+    path: `${HOME_DIR}/Downloads/Windows, The Next Killer Application on the Internet.pdf`,
+  },
 ];
+
+/** Static items for a home folder, from the sample files that live in it. */
+function sampleItemsIn(directoryPath: string): LocalFinderItem[] {
+  return LOCAL_SAMPLE_FILES.filter((file) => file.directoryPath === directoryPath).map((file) => ({
+    name: file.path.split("/").pop() ?? file.path,
+    type: "file" as const,
+    path: file.path,
+  }));
+}
 
 const LOCAL_SAMPLE_FILE_MAP = Object.fromEntries(
   LOCAL_SAMPLE_FILES.map((file) => [file.path, file])
@@ -73,20 +87,16 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     { name: "Desktop", type: "dir", path: `${HOME_DIR}/Desktop` },
     { name: "Documents", type: "dir", path: `${HOME_DIR}/Documents` },
     { name: "Downloads", type: "dir", path: `${HOME_DIR}/Downloads` },
-    { name: "Projects", type: "dir", path: `${HOME_DIR}/Projects` },
-    ...(hasContent() ? [{ name: "Work", type: "dir" as const, path: WORK_DIR }] : []),
+    // The folder is ~/Projects; the label says what it holds. It mirrors
+    // GitHub, and "Projects" alone read as a sibling of Work.
+    { name: "GitHub Projects", type: "dir", path: `${HOME_DIR}/Projects` },
+    // Work always lists: the case studies mount there as web locations
+    // (lib/work-links.ts) even when no MDX content is checked in.
+    { name: "Work", type: "dir", path: WORK_DIR },
   ],
-  [`${HOME_DIR}/Desktop`]: LOCAL_SAMPLE_FILES.filter((file) => file.directoryPath === `${HOME_DIR}/Desktop`).map((file) => ({
-    name: file.path.split("/").pop() ?? file.path,
-    type: "file" as const,
-    path: file.path,
-  })),
-  [`${HOME_DIR}/Documents`]: LOCAL_SAMPLE_FILES.filter((file) => file.directoryPath === `${HOME_DIR}/Documents`).map((file) => ({
-    name: file.path.split("/").pop() ?? file.path,
-    type: "file" as const,
-    path: file.path,
-  })),
-  [`${HOME_DIR}/Downloads`]: [],
+  [`${HOME_DIR}/Desktop`]: sampleItemsIn(`${HOME_DIR}/Desktop`),
+  [`${HOME_DIR}/Documents`]: sampleItemsIn(`${HOME_DIR}/Documents`),
+  [`${HOME_DIR}/Downloads`]: sampleItemsIn(`${HOME_DIR}/Downloads`),
 };
 
 export function getDocumentAppFinderTarget(appId: DocumentAppId): string {

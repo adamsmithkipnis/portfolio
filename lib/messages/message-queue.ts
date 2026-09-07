@@ -1,5 +1,6 @@
 import { Conversation, Message, ReactionType } from "@/types/messages";
 import { soundEffects } from "./sound-effects";
+import { trimConversationHistory } from "@/lib/messages/history-window";
 
 type ConversationState = {
   status: "idle" | "processing";
@@ -455,7 +456,9 @@ export class MessageQueue {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             recipients: conversation.recipients,
-            messages: conversation.messages,
+            // Same window the route applies, so a long thread never grows past
+            // the request body cap on the way there.
+            messages: trimConversationHistory(conversation.messages),
             isOneOnOne,
           }),
           signal,

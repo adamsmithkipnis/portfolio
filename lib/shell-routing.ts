@@ -1,6 +1,6 @@
 import { getMobileShellFallbackAppId } from "@/lib/app-availability";
 
-export const SHELL_DEFAULT_APP_ID = "notes";
+export const SHELL_DEFAULT_APP_ID = "safari";
 export const SHELL_DEFAULT_NOTE_SLUG = "about-me";
 export const SHELL_NOTES_ROOT_PATH = "/notes";
 
@@ -14,7 +14,6 @@ const APP_ROUTE_SEGMENTS = {
   calendar: "calendar",
   weather: "weather",
   safari: "safari",
-  music: "music",
   spotify: "spotify",
   textedit: "textedit",
   preview: "preview",
@@ -45,8 +44,9 @@ interface ParseShellLocationOptions {
 
 const FILE_QUERY_PARAM_APPS = new Set(["textedit", "preview"]);
 
+/** "/" stands for the default app's own route, so both resolve the same way. */
 export function normalizeShellPathname(pathname: string): string {
-  return pathname === "/" ? SHELL_NOTES_ROOT_PATH : pathname;
+  return pathname === "/" ? `/${SHELL_DEFAULT_APP_ID}` : pathname;
 }
 
 export function isNotesDetailPathname(pathname: string): boolean {

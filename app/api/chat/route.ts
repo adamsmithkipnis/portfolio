@@ -16,6 +16,7 @@ import {
   buildGroupPrompt,
   buildGroupTools,
 } from "@/lib/messages/group-chat-model";
+import { trimConversationHistory } from "@/lib/messages/history-window";
 import {
   applyRateLimitHeaders,
   applySessionCookie,
@@ -34,9 +35,9 @@ const CHAT_REQUEST_TIMEOUT_MS = 9000;
 const CHAT_MAX_BODY_BYTES = 128 * 1024;
 const CHAT_MAX_RECIPIENTS = 4;
 const CHAT_MAX_RECIPIENT_NAME_CHARS = 80;
-const CHAT_MAX_MESSAGES = 60;
+// Per-message size is an abuse guard and stays a hard rejection. Thread length
+// is not: older turns fall out of the window (lib/messages/history-window.ts).
 const CHAT_MAX_MESSAGE_CHARS = 1200;
-const CHAT_MAX_TOTAL_MESSAGE_CHARS = 12000;
 const CHAT_RATE_LIMIT_SESSION = { scope: "chat_session", limit: 30, windowMs: 60_000 } as const;
 const CHAT_RATE_LIMIT_IP = { scope: "chat_ip", limit: 120, windowMs: 60_000 } as const;
 
@@ -219,13 +220,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (Array.isArray(messagesRaw) && messagesRaw.length > CHAT_MAX_MESSAGES) {
-      return jsonResponse(
-        { error: `Too many messages (max ${CHAT_MAX_MESSAGES})` },
-        { status: 400 }
-      );
-    }
-
     const isMessageLike = (value: unknown): value is Message => {
       if (!value || typeof value !== "object") return false;
       const v = value as { sender?: unknown; content?: unknown };
@@ -236,19 +230,10 @@ export async function POST(req: NextRequest) {
       );
     };
 
-    const messages = (Array.isArray(messagesRaw) ? messagesRaw : []).filter(
-      isMessageLike
+    // The model sees a sliding window over the thread, newest turns kept.
+    const messages = trimConversationHistory(
+      (Array.isArray(messagesRaw) ? messagesRaw : []).filter(isMessageLike)
     );
-
-    const totalMessageChars = messages.reduce((sum, message) => {
-      return sum + message.content.length;
-    }, 0);
-    if (totalMessageChars > CHAT_MAX_TOTAL_MESSAGE_CHARS) {
-      return jsonResponse(
-        { error: `Message content too large (max ${CHAT_MAX_TOTAL_MESSAGE_CHARS} chars total)` },
-        { status: 400 }
-      );
-    }
 
     const isOneOnOne = isOneOnOneRaw === true && recipients.length === 1;
 

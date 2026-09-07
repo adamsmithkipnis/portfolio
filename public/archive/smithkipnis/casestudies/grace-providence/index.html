@@ -4,7 +4,16 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Grace — Adam Smith-Kipnis</title>
-<meta name="description" content="Leading the design and creation of AI-enabled mobile native and web experiences, helping more than 2.6 million patients navigate access to healthcare." />
+<!-- generated:head:start -->
+<meta name="description" content="Transformed a simple clickbot into a conversational agent serving 2.6 million patients, in an industry with almost no appetite for AI risk. I got clinical sign-off on every flow and managed a five-person team responsible for multiple mobile apps, a core design system, and an SSO product." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Adam Smith-Kipnis" />
+<meta property="og:title" content="Grace &amp; Providence Apps — Adam Smith-Kipnis" />
+<meta property="og:description" content="Transformed a simple clickbot into a conversational agent serving 2.6 million patients, in an industry with almost no appetite for AI risk. I got clinical sign-off on every flow and managed a five-person team responsible for multiple mobile apps, a core design system, and an SSO product." />
+<meta property="og:image" content="https://smithkipnis.com/archive/smithkipnis/img/gracesplashimage.webp" />
+<meta property="og:url" content="https://smithkipnis.com/website/casestudies/grace-providence" />
+<meta name="twitter:card" content="summary_large_image" />
+<!-- generated:head:end -->
 <!--
   Generated archive page. See index.html for why these pages exist and why they
   sit outside the design system.
@@ -47,9 +56,9 @@
       </div>
     </div>
 <p class="cs-p"><strong>At a glance</strong></p>
-<p class="cs-p"><strong>Problem:</strong> Grace was a decision-tree click-bot with a 1% open rate, serving 2.6 million patients in an industry with almost no appetite for AI risk.</p>
-<p class="cs-p"><strong>What I did:</strong> Rebuilt it as a conversational assistant, authored the voice, escalation and design systems behind it, got clinical sign-off on every flow, and managed a five-person team across multiple mobile apps and an SSO product.</p>
-<p class="cs-p"><strong>Outcome:</strong> Open rate from 1% to 8% and return rate from 13% to 30%, inconsistencies between iOS and Android down by roughly 95%, and a patent application for contextual shortcuts. Grace and the partner cards are still live in 2026.</p>
+<p class="cs-p"><strong>Problem:</strong> Grace was a decision-tree click-bot with a 1% open rate, serving only 800 monthly active users, in a health system with almost no appetite for AI risk.</p>
+<p class="cs-p"><strong>What I did:</strong> Rebuilt it as a conversational assistant, authored the voice, escalation and design systems behind it, got clinical sign-off on every flow, and managed a five-person team across multiple mobile apps, a core design system, and an SSO product.</p>
+<p class="cs-p"><strong>Outcome:</strong> Open rate 1% to 8%, return rate 13% to 30%, and monthly active users 800 to 150,000, serving 2.6 million patients across MyChart in seven states. Inconsistencies between iOS and Android down by roughly 95%, and a patent application for contextual shortcuts. Grace and the partner cards are still live in 2026.</p>
 <img class="cs-img" src="/archive/smithkipnis/img/gracemobile.webp" alt="" loading="lazy" />
 <h3 class="cs-h3">Situation</h3>
 <p class="cs-p">In 2021, Providence Health &amp; Services was navigating the aftermath of COVID-19: caseloads were rising, and caregivers were burning out and leaving the field in large numbers. At the same time, Providence, a Catholic non-profit health system, had launched the Providence Digital Innovation Group (DIG), an internal startup incubator designed to use the health system itself as a platform to build for-profit companies, retaining an equity stake as a long-term strategy to bring revenue back into the hospital and expand access to care.</p>
@@ -94,7 +103,7 @@
 <p class="cs-p">I make a habit of using the products I build, and while doing a deep dive into our apps, I started noticing inconsistencies between the iOS and Android versions, including formatting, interactions, and color palettes. The causes were mundane but real: no style guide yet existed, design artifacts were treated as suggestions rather than rules during implementation, colors were sometimes sampled from lossy screenshots, and design docs occasionally left questions unanswered that engineers then resolved with their own judgment calls. I did a full side-by-side walkthrough of both apps, built an inventory of every issue, and had my team do the same. We surfaced dozens of inconsistencies and worked with engineering to prioritize fixes, reducing inconsistencies between iOS and Android by roughly 95%.</p>
     <p class="cs-p">A style guide was the fix I could reach. We had no QA function that owned visual consistency across platforms, since testers were assigned to iOS or to Android, and engineering was two separate teams. Whoever was implementing a screen would sometimes guess at anything a Figma file did not state outright, which is where much of the variance came from.</p>
 <p class="cs-p"><strong>AI-enabled Figma Plug-in Experiment for Flutter Code Migration</strong></p>
-<p class="cs-p">Around the same time, engineering decided to migrate our native mobile apps from Swift and Java to a unified Flutter codebase, allowing us to build once and deploy to both platforms. I saw an opportunity to streamline Figma-to-code translation and, with ChatGPT's API newly released, worked with two developers during an internal hackathon to build a plugin that exported Figma frames as Flutter code that matched our design system. We built it in under a week and proved it worked, but hit a real limit: we could export a design-system-compliant button, but the interaction logic around it wasn't captured by Figma frames, so that logic still had to be written by hand.</p>
+<p class="cs-p">Around the same time, engineering decided to migrate our native mobile apps from Swift and Java to a unified Flutter codebase, allowing us to build once and deploy to both platforms. I saw an opportunity to streamline Figma-to-code translation and, with ChatGPT's API newly released, worked with two developers during an internal hackathon to build a plugin that exported Figma frames as Flutter code that matched our design system. We built it in under a week and proved it worked: it exported a design-system-compliant button. It also surfaced a real limit. The interaction logic around that button isn't captured by Figma frames, so that logic still had to be written by hand.</p>
 <p class="cs-p"><strong>Logic trees, the universal card</strong></p>
 <p class="cs-p">Building for cross-platform experiences meant designing for wide variation in what context our systems knew about a given user. I built a logic tree showing how Grace's entry portal paths should adjust it’s display and content based on platform and user context.  This led to a patent application for contextual shortcuts. Leading by example with that logic tree, I worked with two designers on my team to design "universal card" patterns for the app's home screen.</p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide40.webp" alt="" loading="lazy" />
@@ -107,7 +116,7 @@
 <p class="cs-p"><em>Fixing Inconsistency - Before and after Universal Cards</em></p>
     <p class="cs-p">The alternative was what had been happening before I joined: a one-off card designed for each use case. Universal cards were a bet that one well-specified component covering every case would be worth more than the flexibility of designing each one, and consistency was what made the product easier to use.</p>
 <p class="cs-p"><strong>Partnership</strong></p>
-<p class="cs-p">One challenge was representing external partners, such as Omada Health and Credina, in a way that felt true to each partner's brand while staying consistent with our in-app experience. Building upon the great work from designers on my team, I refined a template for these third-party cards, sharing it with partners, allowing them to adapt it while keeping it consistent with our design language. While Providence later became more risk-averse about sharing Figma templates externally, the card format itself is still in use in the app today. I was directly involved in the sharper tradeoffs behind this work, including defining the analytics needed to make the business case legible: card impressions, click-through, and downstream program downloads.</p>
+<p class="cs-p">One challenge was representing external partners, such as Omada Health and Credina, in a way that felt true to each partner's brand while staying consistent with our in-app experience. Building upon the great work from designers on my team, I refined a template for these third-party cards, sharing it with partners, allowing them to adapt it while keeping it consistent with our design language. The card format is still in use in the app today. I was directly involved in the sharper tradeoffs behind this work, including defining the analytics needed to make the business case legible: card impressions, click-through, and downstream program downloads.</p>
     <div class="cs-row">
       <div class="cs-col" style="flex:467">
   <img class="cs-img" src="/archive/smithkipnis/img/taxonomy-of-cards.webp" alt="" loading="lazy" />
@@ -125,13 +134,13 @@
 <h3 class="cs-h3">Result</h3>
 <p class="cs-p">Grace's native in-app and web presence from this work <strong>is still live today</strong>, durable, shipped interaction design, not a one-off mockup.</p>
 <ul class="cs-list">
-      <li><strong>Engagement:</strong> The move to real NLU and the full redesign took Grace from a 1% open rate and 13% return rate, to an 8% open rate and 30% return rate.</li>
+      <li><strong>Engagement:</strong> The move to real NLU and the full redesign took Grace from a 1% open rate, a 13% return rate, and 800 monthly active users, to an 8% open rate, a 30% return rate, and 150,000 monthly active users.</li>
       <li><strong>Design system:</strong> The Zeroheight style guide gave the team shared rules instead of one-off judgment calls, a format that was expanded and adopted by all our product teams.</li>
       <li><strong>Safety &amp; buy-in:</strong> Clinical vetting kept every flow within healthcare's compliance guardrails; the presentations I gave to over 200 caregivers as part of our roadshow secured rollout across MyChart to 2.6 million patients and clinic sites in seven states.</li>
       <li><strong>Native presence:</strong> Grace's in-app entry point is still live today. The universal card pattern gave the business partner-facing engagement and conversion data.</li>
       <li><strong>Floating Action Button (FAB) shortcut menu:</strong> Grace’s usage-based curation approach became a filed patent application.</li>
       <li><strong>Cross-platform consistency:</strong> My cross-platform audit efforts subsequently reduced iOS/Android inconsistencies by ~95%, tracked directly.</li>
-      <li><strong>Figma-to-Flutter plugin:</strong> Didn't ship to production, but the week-long experiment surfaced a real limit, interaction logic isn't captured in Figma frames, ahead of the field catching up to that problem.</li>
+      <li><strong>Figma-to-Flutter plugin:</strong> A week-long experiment that surfaced a real limit ahead of the field: interaction logic isn't captured in Figma frames. It stayed a prototype.</li>
     </ul>
 <p class="cs-p">Together, this is what mobile and web design experience actually looked like on the ground: native entry-point decisions made against real platform constraints, a partner-facing feature built to move a business metric, and a systems-level effort to keep platforms honest with each other.</p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide15.webp" alt="" loading="lazy" />

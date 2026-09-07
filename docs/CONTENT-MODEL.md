@@ -270,10 +270,16 @@ npm run content   # also runs automatically via predev and prebuild
 
 ### Mounted at ~/Work
 
-`content/work/` is what Finder shows under **Work** in the sidebar; the folder
-appears only when there is at least one project. Reading order comes from numeric
-filename prefixes, so content children are *not* re-sorted alphabetically the way
-the rest of the virtual filesystem is.
+`content/work/` is what Finder shows under **Work** in the sidebar. Reading order
+comes from numeric filename prefixes, so content children are *not* re-sorted
+alphabetically the way the rest of the virtual filesystem is.
+
+The case studies that were published as pages of the archived site are listed in
+the same folder as **web locations** (`.webloc` items, `lib/work-links.ts`), built
+from `config/case-studies.mjs` so the folder and the archive's index never
+disagree. Double-clicking one opens Safari at the case study; selecting it in
+column view shows its card. They sit ahead of any MDX projects, in the running
+order the archive uses.
 
 Other top-level content folders (`writing/`, loose assets) get their own mounts
 when they're needed.

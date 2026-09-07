@@ -2,7 +2,7 @@ import type { SidebarItem } from "./finder-app";
 
 interface IndexEntry {
   name: string;
-  type: "file" | "dir" | "app";
+  type: "file" | "dir" | "app" | "webloc";
   path: string;
   icon?: string;
   nameLower: string;
@@ -22,7 +22,7 @@ export interface SearchResult {
   matchPositions: number[];
 }
 
-export type EntryInput = { name: string; type: "file" | "dir" | "app"; path: string; icon?: string; section: SidebarItem };
+export type EntryInput = { name: string; type: "file" | "dir" | "app" | "webloc"; path: string; icon?: string; section: SidebarItem };
 
 function charBitmap(s: string): number {
   let b = 0;

@@ -133,10 +133,10 @@ export function Toolbar({
         </NavArrow>
       </div>
 
-      <div
-        className={cn("flex-1 min-w-0 flex justify-center", !isMobileView && "px-2")}
-        onMouseDown={stopDrag}
-      >
+      {/* The wrapper fills the bar, so it must not swallow presses: only the
+          text field itself refuses a drag, the way the real toolbar works.
+          Stopping propagation here made the whole middle of the bar inert. */}
+      <div className={cn("flex-1 min-w-0 flex justify-center", !isMobileView && "px-2")}>
         <div className="relative w-full max-w-[520px]">
           <Search
             className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -158,6 +158,7 @@ export function Toolbar({
                 submit();
               }
             }}
+            onMouseDown={stopDrag}
             placeholder="Search or enter website name"
             aria-label="Address and search"
             spellCheck={false}

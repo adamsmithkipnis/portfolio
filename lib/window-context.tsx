@@ -106,14 +106,17 @@ function getDefaultWindowState(appId: string): WindowState {
 // State Factory Functions
 // =============================================================================
 
-// Desktop default configuration (shown after logout/restart/shutdown)
-// Windows listed in z-index order (first = back, last = front)
+// Desktop default configuration (first visit, and after logout/restart/shutdown)
+// Windows listed in z-index order (first = back, last = front).
+// Safari leads because it shows the portfolio itself; Messages and Spotify sit
+// behind it as the first hint that the desktop is explorable.
 const DESKTOP_DEFAULT_CONFIG = {
   windows: [
-    { appId: "messages", position: { x: 500, y: 60 } },
-    { appId: "notes", position: { x: 150, y: 40 }, size: { width: 1000, height: 700 } },
+    { appId: "spotify", position: { x: 260, y: 90 } },
+    { appId: "messages", position: { x: 520, y: 70 } },
+    { appId: "safari", position: { x: 120, y: 40 }, size: { width: 1100, height: 720 } },
   ],
-  focusedAppId: "notes",
+  focusedAppId: "safari",
 } as const;
 
 // Export for use in desktop.tsx URL handling
@@ -144,8 +147,8 @@ function getBaseState(): WindowManagerState {
 
 /**
  * Desktop default state: multiple apps open in windowed mode
- * Used after logout/restart/shutdown to show a "fresh desktop" view
- * Notes in front (left of center), Messages behind (right, peeking out)
+ * Used on first visit and after logout/restart/shutdown to show a "fresh desktop" view
+ * Safari in front (left of center), Messages and Spotify behind (right, peeking out)
  */
 function getDesktopDefaultState(): WindowManagerState {
   const state = getBaseState();
