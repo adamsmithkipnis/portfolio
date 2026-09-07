@@ -1,9 +1,16 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PostHogProvider } from "@/components/posthog-provider";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 import { SystemSettingsProvider } from "@/lib/system-settings-context";
+
+// umami cloud by default; set the host var only when self-hosting.
+const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+const umamiScriptSrc =
+  process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL ?? "https://cloud.umami.is/script.js";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -42,17 +49,32 @@ export default function RootLayout({
         compared normally.
       */}
       <body className="h-dvh" suppressHydrationWarning>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SystemSettingsProvider>
-            {children}
-          </SystemSettingsProvider>
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SystemSettingsProvider>
+              {children}
+            </SystemSettingsProvider>
+          </ThemeProvider>
+        </PostHogProvider>
         <Analytics />
+        {/*
+          umami. self-hooks history.pushState, so the desktop's client-side
+          window/route changes are counted without any wiring on our side.
+          absent env var = no script, which is what local dev and forks get.
+        */}
+        {umamiWebsiteId ? (
+          <Script
+            defer
+            src={umamiScriptSrc}
+            data-website-id={umamiWebsiteId}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

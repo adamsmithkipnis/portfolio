@@ -25,7 +25,8 @@ export function MessagesApp({
   onExternalSelectRequestHandled,
 }: MessagesAppProps) {
   return (
-    <div className="h-full w-full overflow-hidden">
+    // data-ph-mask keeps visitor-typed chat out of posthog session replay.
+    <div className="h-full w-full overflow-hidden" data-ph-mask>
       <App
         isDesktop={!isMobile}
         inShell={inShell}
