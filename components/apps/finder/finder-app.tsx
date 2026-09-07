@@ -15,7 +15,7 @@ import {
   getLocalTextFileContent,
   PROJECTS_DIR,
 } from "@/lib/file-route-utils";
-import { getContentNode, isContentPath, WORK_DIR } from "@/lib/content-files";
+import { getContentNode, hasContent, isContentPath, WORK_DIR } from "@/lib/content-files";
 import { ContentDetail } from "@/components/content/content-detail";
 import { getWorkLink, WORK_LINKS } from "@/lib/work-links";
 import { WorkLinkDetail } from "@/components/content/work-link-detail";
@@ -65,7 +65,9 @@ export type SidebarItem = "recents" | "applications" | "work" | "desktop" | "doc
 const SIDEBAR_ITEMS: { id: SidebarItem; label: string; icon: string }[] = [
   { id: "recents", label: "Recents", icon: "clock" },
   { id: "applications", label: "Applications", icon: "grid" },
-  { id: "work", label: "Work", icon: "briefcase" },
+  // Hidden when content/work is empty, so the sidebar never offers a folder with
+  // nothing in it. Mirrors the same gate on the Home listing in file-route-utils.
+  ...(hasContent() ? [{ id: "work" as const, label: "Work", icon: "briefcase" }] : []),
   { id: "desktop", label: "Desktop", icon: "desktop" },
   { id: "documents", label: "Documents", icon: "document" },
   { id: "downloads", label: "Downloads", icon: "download" },
