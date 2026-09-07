@@ -120,13 +120,21 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 .hero-sub { margin: 0.55em 0 0; }
 .hero strong, .hero-sub strong { font-weight: 600; }
 
-.lede, .patents {
+.lede, .patents, .hero-target {
   font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
   line-height: 1.14;
   max-width: min(100%, 26em);
 }
 .lede { margin: 14vh 0 0; }
 .patents { margin: 0.9em 0 0; }
+
+/* ---------- target line ----------
+   The hero says who; this says what is wanted, in the first screen, before
+   the industries paragraph and the collage a viewport further down. It is set
+   like the lede it precedes, so the two read as one voice rather than as a
+   statement and a caption. */
+
+.hero-target { margin: 8vh 0 0; letter-spacing: -0.02em; }
 
 /* ---------- collage ----------
    Free-form scatter, not a grid: each tile is placed by percentage inside a

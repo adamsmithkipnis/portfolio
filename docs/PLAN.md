@@ -169,7 +169,12 @@ state to diff against.
 - [ ] Essays into Notes
 - [ ] Messages personas
 - [x] Resume escape hatch — `~/Desktop`, opens in Preview, visible as a desktop icon
-- [ ] Front door
+- [x] Front door — desktop `/` opens Safari alone on the archived site, with
+      the dock's Messages badge (computed from the seeds before the app runs,
+      `lib/messages/unread-count.ts`) as the hint there is more. Phones are
+      redirected server-side from `/` to `/website`; the shell stays reachable
+      at `/safari` and the other app routes. The home page carries a target
+      line under the hero; the case studies stay on their own page
 
 ---
 

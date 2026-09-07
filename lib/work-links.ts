@@ -14,7 +14,7 @@
 
 import { CASE_STUDIES, ORDER, SITE_MODE } from "@/config/case-studies.mjs";
 import { ARCHIVE_ROOT } from "@/lib/archive-site";
-import { WORK_DIR } from "@/lib/content-files";
+import { hasContent, WORK_DIR } from "@/lib/content-files";
 
 export interface WorkLink {
   /** Case study slug, shared with the archive and its index. */
@@ -59,4 +59,16 @@ const LINKS_BY_PATH = new Map(WORK_LINKS.map((link) => [link.path, link]));
 
 export function getWorkLink(path: string): WorkLink | null {
   return LINKS_BY_PATH.get(path) ?? null;
+}
+
+/**
+ * Whether ~/Work has anything in it.
+ *
+ * Two things can fill the folder: the published case studies above, and MDX
+ * projects under `content/work/`. Asking only about the MDX, as the Finder
+ * sidebar once did, hid the folder whenever `content/work` was empty — which
+ * is exactly the state the archived case studies were added to cover.
+ */
+export function hasWorkItems(): boolean {
+  return WORK_LINKS.length > 0 || hasContent();
 }

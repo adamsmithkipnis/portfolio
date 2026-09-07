@@ -9,6 +9,7 @@ import {
   isContentPath,
   WORK_DIR,
 } from "@/lib/content-files";
+import { hasWorkItems } from "@/lib/work-links";
 
 export const HOME_DIR = "/Users/adamsmithkipnis";
 export const PROJECTS_DIR = `${HOME_DIR}/Projects`;
@@ -90,9 +91,9 @@ export const LOCAL_FINDER_FILES: Record<string, LocalFinderItem[]> = {
     // The folder is ~/Projects; the label says what it holds. It mirrors
     // GitHub, and "Projects" alone read as a sibling of Work.
     { name: "GitHub Projects", type: "dir", path: `${HOME_DIR}/Projects` },
-    // Work always lists: the case studies mount there as web locations
-    // (lib/work-links.ts) even when no MDX content is checked in.
-    { name: "Work", type: "dir", path: WORK_DIR },
+    // Same gate as the Finder sidebar, so the two can never disagree about
+    // whether ~/Work exists.
+    ...(hasWorkItems() ? [{ name: "Work", type: "dir" as const, path: WORK_DIR }] : []),
   ],
   [`${HOME_DIR}/Desktop`]: sampleItemsIn(`${HOME_DIR}/Desktop`),
   [`${HOME_DIR}/Documents`]: sampleItemsIn(`${HOME_DIR}/Documents`),

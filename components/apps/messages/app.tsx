@@ -14,6 +14,10 @@ import { useFileMenu } from "@/lib/file-menu-context";
 import { loadMessagesConversation, saveMessagesConversation } from "@/lib/sidebar-persistence";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
 import type { MessagesConversationSelectRequest } from "@/types/messages/selection";
+import {
+  CONVERSATIONS_STORAGE_KEY,
+  DELETED_INITIAL_CONVERSATIONS_KEY,
+} from "@/lib/messages/storage-keys";
 
 interface AppProps {
   isDesktop?: boolean;
@@ -25,8 +29,8 @@ interface AppProps {
   onExternalSelectRequestHandled?: (requestId: number) => void;
 }
 
-const STORAGE_KEY = "dialogueConversations";
-const DELETED_INITIAL_KEY = "dialogueDeletedInitialConversations";
+const STORAGE_KEY = CONVERSATIONS_STORAGE_KEY;
+const DELETED_INITIAL_KEY = DELETED_INITIAL_CONVERSATIONS_KEY;
 
 function formatNotificationBody(content: string): string {
   return content.trim().replace(/\s+/g, " ");
