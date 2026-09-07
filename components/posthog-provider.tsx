@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import posthog from "posthog-js";
+import { analyticsEnabled } from "@/lib/analytics";
 import type { CaptureResult } from "posthog-js";
 
 // absent key = posthog never initializes, which is what local dev and forks get.
@@ -33,7 +34,7 @@ function stripQueryStrings(event: CaptureResult | null): CaptureResult | null {
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (!posthogKey || posthog.__loaded) return;
+    if (!posthogKey || !analyticsEnabled || posthog.__loaded) return;
 
     posthog.init(posthogKey, {
       api_host: posthogHost,

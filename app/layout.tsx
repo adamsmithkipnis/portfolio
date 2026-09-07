@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PostHogProvider } from "@/components/posthog-provider";
+import { analyticsEnabled } from "@/lib/analytics";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 import { SystemSettingsProvider } from "@/lib/system-settings-context";
@@ -67,7 +68,7 @@ export default function RootLayout({
           window/route changes are counted without any wiring on our side.
           absent env var = no script, which is what local dev and forks get.
         */}
-        {umamiWebsiteId ? (
+        {umamiWebsiteId && analyticsEnabled ? (
           <Script
             defer
             src={umamiScriptSrc}
