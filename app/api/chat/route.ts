@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Recipient, Message } from "@/types/messages";
 import { initialContacts } from "@/data/messages/initial-contacts";
 import { wrapOpenAI } from "braintrust";
-import { initLogger } from "braintrust";
+import { logger } from "@/app/api/logger";
 import {
   formatConversation,
   formatConversationReversed,
@@ -30,7 +30,6 @@ import {
 export const maxDuration = 14;
 
 let client: OpenAI | null = null;
-let loggerInitialized = false;
 const CHAT_REQUEST_TIMEOUT_MS = 9000;
 const CHAT_MAX_BODY_BYTES = 128 * 1024;
 const CHAT_MAX_RECIPIENTS = 4;
@@ -70,14 +69,25 @@ function getClient() {
       })
     ) as unknown as OpenAI;
   }
-  if (!loggerInitialized) {
-    initLogger({
-      projectName: "messages",
-      apiKey: process.env.BRAINTRUST_API_KEY,
-    });
-    loggerInitialized = true;
-  }
   return client;
+}
+
+type ChatAction = { action: string } & Record<string, unknown>;
+
+// Flatten the assistant's tool calls into the text a reader would see in the
+// thread, so Braintrust can show it as a column next to the user's message.
+function summarizeAssistantResponse(actions: ChatAction[]): string {
+  return actions
+    .map((a) => {
+      if (a.action === "respond" && Array.isArray(a.messages)) {
+        return a.messages.filter((m) => typeof m === "string").join("\n");
+      }
+      if (a.action === "react" && typeof a.reaction === "string") {
+        return `[reacted: ${a.reaction}]`;
+      }
+      return `[${a.action}]`;
+    })
+    .join("\n");
 }
 
 function isQuotaError(error: unknown): boolean {
@@ -270,43 +280,72 @@ export async function POST(req: NextRequest) {
       ? buildOneOnOneTools(recipients[0].name)
       : buildGroupTools(participantNames, state.lastSpeaker);
 
-    const response = await createChatCompletionWithTimeout(
-      {
-        model: GROUP_CHAT_MODEL,
-        messages: chatMessages,
-        tool_choice: "required",
-        tools,
-        stream: false,
-        parallel_tool_calls: false,
-        temperature: 0.7,
-        max_tokens: 300,
+    // The wrapped OpenAI client logs the raw completion as a child span. This
+    // parent span carries the structured fields Braintrust's log table can
+    // show as columns: input.user_message and output.assistant_response.
+    const actions = await logger.traced(
+      async (span) => {
+        span.log({
+          input: {
+            user_message: state.lastHumanMessage,
+            recipients: participantNames,
+          },
+          metadata: {
+            chat_type: isOneOnOne ? "one_on_one" : "group",
+            message_count: messages.length,
+          },
+        });
+
+        const response = await createChatCompletionWithTimeout(
+          {
+            model: GROUP_CHAT_MODEL,
+            messages: chatMessages,
+            tool_choice: "required",
+            tools,
+            stream: false,
+            parallel_tool_calls: false,
+            temperature: 0.7,
+            max_tokens: 300,
+          },
+          CHAT_REQUEST_TIMEOUT_MS
+        );
+        if (!hasChoices(response)) {
+          throw new Error("Unexpected streaming response from chat completions API");
+        }
+
+        const toolCalls = response.choices[0]?.message?.tool_calls;
+        let turnActions: ChatAction[];
+        if (!toolCalls || toolCalls.length === 0) {
+          console.error(
+            "No tool calls in response. Message:",
+            JSON.stringify(response.choices[0]?.message, null, 2)
+          );
+          turnActions = [{ action: "wait" }];
+        } else {
+          // Return all actions (supports react + respond in same turn)
+          turnActions = toolCalls.map((tc: ChatCompletionMessageToolCall) => {
+            const args = parseToolCallArguments(
+              tc.function.arguments,
+              tc.function.name
+            );
+            return {
+              action: tc.function.name,
+              ...args,
+            };
+          });
+        }
+
+        span.log({
+          output: {
+            assistant_response: summarizeAssistantResponse(turnActions),
+            actions: turnActions,
+          },
+        });
+
+        return turnActions;
       },
-      CHAT_REQUEST_TIMEOUT_MS
+      { name: "Chat turn", type: "task" }
     );
-    if (!hasChoices(response)) {
-      throw new Error("Unexpected streaming response from chat completions API");
-    }
-
-    const toolCalls = response.choices[0]?.message?.tool_calls;
-    if (!toolCalls || toolCalls.length === 0) {
-      console.error(
-        "No tool calls in response. Message:",
-        JSON.stringify(response.choices[0]?.message, null, 2)
-      );
-      return jsonResponse({ actions: [{ action: "wait" }] });
-    }
-
-    // Return all actions (supports react + respond in same turn)
-    const actions = toolCalls.map((tc: ChatCompletionMessageToolCall) => {
-      const args = parseToolCallArguments(
-        tc.function.arguments,
-        tc.function.name
-      );
-      return {
-        action: tc.function.name,
-        ...args,
-      };
-    });
 
     return jsonResponse({ actions });
   } catch (error) {
