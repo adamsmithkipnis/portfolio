@@ -63,12 +63,16 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   };
 
   return (
-    <div className="relative flex-1 min-h-0" onWheel={forwardWheel}>
+    // The frame stays a flex child rather than being absolutely positioned:
+    // Chrome loses track of an absolutely positioned frame's scroller when its
+    // containing block is resized by hand, and the page stops responding to
+    // the wheel until the next layout change. As a flex child it survives.
+    <div className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
       <iframe
         ref={ref}
         src={src}
         title="smithkipnis.com"
-        className="absolute inset-0 h-full w-full border-0 bg-background"
+        className="flex-1 w-full border-0 bg-background"
         sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation allow-storage-access-by-user-activation"
       />
     </div>
