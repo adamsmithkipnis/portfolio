@@ -32,6 +32,13 @@ export function PlaylistView({
   onTrackPlay,
   isMobileView,
 }: PlaylistViewProps) {
+  // A playlist name is arbitrary user text and can be pathological — decorative
+  // Unicode with stacked combining marks renders many times taller than normal
+  // type, and unbounded it buries the cover art and pushes Play below the fold.
+  // The heading keeps its full size and clamps to three lines, which is what
+  // Spotify itself does. The hard clip matters as much as the clamp: combining
+  // marks paint outside their line box, and line-clamp alone does not contain
+  // them.
   const totalDuration = totalPlaylistDuration(playlist.tracks);
   const firstTrackUri = playlist.tracks[0]?.uri;
   const hue = playlistHeaderHue(playlist.id);
@@ -91,13 +98,14 @@ export function PlaylistView({
                 )}
               </div>
 
-              <div className="flex flex-col justify-end min-w-0 gap-2">
+              <div className="flex w-0 flex-1 flex-col justify-end gap-2">
                 <p className="text-xs font-semibold text-[var(--spotify-text)]">
                   Public Playlist
                 </p>
                 <h1
+                  title={playlist.name}
                   className={cn(
-                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words leading-[1.05]",
+                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words leading-[1.05] line-clamp-3 overflow-hidden",
                     isMobileView ? "text-3xl" : "text-5xl",
                   )}
                 >
