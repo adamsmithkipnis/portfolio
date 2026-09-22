@@ -240,6 +240,14 @@ export function MenuBar({
 
   const closeMenu = useCallback(() => setOpenMenu(null), []);
 
+  // The clock button opens Notification Center, but its name has to start with
+  // the text on its face: WCAG 2.5.3 asks that a visible label be contained in
+  // the accessible name, so someone saying "click 10:52" hits the same target
+  // a screen reader just read out. The old label was a full locale timestamp,
+  // which shared no substring with the face in either clock style.
+  const clockFace = clockStyle === "analog" ? datePrefix : currentTime;
+  const clockLabel = clockFace ? `${clockFace}, Notification Center` : "Date and time";
+
   return (
     <div
       className={cn(
@@ -251,6 +259,7 @@ export function MenuBar({
       <div className="flex items-center gap-4">
         <button
           onClick={() => toggleMenu("apple")}
+          aria-label="Apple menu"
           className={cn(
             "flex items-center justify-center w-6 h-5 -ml-1 rounded transition-colors",
             openMenu === "apple" ? "bg-blue-500" : "can-hover:hover:bg-white/10"
@@ -353,6 +362,7 @@ export function MenuBar({
         {/* Wi-Fi */}
         <button
           onClick={() => toggleMenu("wifi")}
+          aria-label="Wi-Fi"
           className={cn(
             "flex items-center justify-center w-7 h-5 rounded transition-colors",
             openMenu === "wifi" ? "bg-white/30 dark:bg-white/20" : "can-hover:hover:bg-white/10"
@@ -396,7 +406,7 @@ export function MenuBar({
         {/* Date/Time */}
         <button
           onClick={() => toggleMenu("notificationCenter")}
-          aria-label={currentDate ? currentDate.toLocaleString("en-US") : "Date and time"}
+          aria-label={clockLabel}
           data-testid="menu-bar-clock"
           className={cn(
             "flex items-center gap-1.5 text-sm px-2 py-0.5 rounded transition-colors ml-1",
