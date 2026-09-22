@@ -63,12 +63,22 @@ const AUDIOBOOKS = [
   "https://open.spotify.com/show/5V1w9Aneai09yOCqdtSAPo", // Sapiens
   "https://open.spotify.com/show/6F76upFmtM9h8aL3IVNCyv", // Radical Candor
   "https://open.spotify.com/show/2x1VOtgXzIyN736HHvdDH5", // There Is No Antimemetics Division
+  "https://open.spotify.com/show/1dWbTgR5CioWUNYEgsCUKu", // Unreasonable Hospitality
 ];
 
 const ROOT = process.cwd();
 const ENV_PATH = join(ROOT, ".env.local");
 const OUT_PATH = join(ROOT, "lib/spotify/data.ts");
 const REDIRECT_URI = "http://127.0.0.1:8888/callback";
+
+/**
+ * Availability is per-market, and Spotify only reports `is_playable` when a
+ * market is supplied. Tracks that cannot play there are skipped rather than
+ * baked into the site, since the embed would fail on them. Tradeoff: a track
+ * unavailable here may still play for a listener elsewhere, and this drops it
+ * for everyone.
+ */
+const MARKET = "US";
 const SCOPES = "playlist-read-private playlist-read-collaborative";
 
 // ---------------------------------------------------------------------------
@@ -293,7 +303,7 @@ async function fetchPlaylistItems(playlistId, token) {
   const collected = [];
   for (const endpoint of ["items", "tracks"]) {
     try {
-      let next = `/playlists/${playlistId}/${endpoint}?limit=50`;
+      let next = `/playlists/${playlistId}/${endpoint}?limit=50&market=${MARKET}`;
       while (next) {
         const page = await api(next.replace("https://api.spotify.com/v1", ""), token);
         collected.push(...(page.items ?? []));
@@ -318,6 +328,8 @@ function normalizeTrack(entry) {
   const track = entry?.item ?? entry?.track;
   if (!track || typeof track !== "object") return null;
   if (track.type !== "track" || !track.id) return null;
+  // Unavailable in this market: the embed would fail on it, so leave it out.
+  if (track.is_playable === false) return null;
   return {
     id: track.id,
     uri: track.uri,
@@ -338,7 +350,15 @@ async function fetchPlaylist(rawId, token) {
   const items = await fetchPlaylistItems(id, token);
   const tracks = items.map(normalizeTrack).filter(Boolean);
 
-  console.log(`  ${playlist.name} — ${tracks.length} tracks`);
+  const skipped = items.filter((entry) => {
+    const track = entry?.item ?? entry?.track;
+    return track && typeof track === "object" && track.is_playable === false;
+  }).length;
+
+  console.log(
+    `  ${playlist.name} — ${tracks.length} tracks` +
+      (skipped ? `  (${skipped} unavailable in ${MARKET}, skipped)` : "")
+  );
 
   return {
     id: playlist.id,
