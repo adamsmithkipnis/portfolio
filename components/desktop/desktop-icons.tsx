@@ -23,7 +23,12 @@ function fileExtension(name: string): string {
 // it inherits the same treatment as every other on-wallpaper element.
 function FileGlyph({ extension }: { extension: string }) {
   return (
-    <svg viewBox="0 0 48 60" className="w-12 h-[60px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]">
+    <svg
+      viewBox="0 0 48 60"
+      aria-hidden="true"
+      focusable="false"
+      className="w-12 h-[60px] drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]"
+    >
       <path d="M4 3a2 2 0 0 1 2-2h24l14 14v42a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V3z" fill="#fbfbfd" />
       <path d="M30 1l14 14H32a2 2 0 0 1-2-2V1z" fill="#d6d8dd" />
       {extension && (
@@ -101,9 +106,28 @@ export function DesktopIcons({ onOpenPreviewFile, onOpenTextFile }: DesktopIcons
               openItem(item);
             }
           }}
-          aria-label={`Open ${item.name}`}
+          // The glyph draws the extension as a badge, so "PDF" is on screen next to
+          // the filename. WCAG 2.5.3 wants the accessible name to contain what is
+          // visible — and deliberately counts text the glyph hides from the
+          // accessibility tree, since someone driving the page by voice reads the
+          // screen, not the tree. Hence the badge in the name as well.
+          aria-label={[
+            "Open",
+            fileExtension(item.name),
+            item.name,
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           <FileGlyph extension={fileExtension(item.name)} />
+          {/*
+            JSX drops the newline between these two, so the badge and the
+            filename concatenate into "PDFAdam Smith-Kipnis - Resume.pdf" —
+            and no readable accessible name contains that. One space puts a
+            word boundary in the text content. A whitespace-only node is not
+            rendered as a flex item, so nothing moves.
+          */}
+          {" "}
           <span
             className={cn(
               "line-clamp-2 w-full break-words text-center text-[11px] leading-tight text-white",

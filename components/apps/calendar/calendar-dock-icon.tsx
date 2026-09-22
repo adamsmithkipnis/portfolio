@@ -48,9 +48,15 @@ export function CalendarDockIcon({ size = 48 }: CalendarDockIconProps) {
       className="relative overflow-hidden shadow-md bg-white flex flex-col items-center justify-center"
       style={{ width: size, height: size, paddingTop: size * 0.04, borderRadius }}
     >
-      {/* Day name in red */}
+      {/*
+        Apple systemRed under Increase Contrast, not the plain systemRed the
+        Calendar app itself uses. At the size the dock draws this — around 8px —
+        #FF3B30 lands at 3.55:1 on white, short of the 4.5:1 small text needs.
+        #D70015 is 5.38:1 and is still a real macOS colour rather than an
+        invented darkening, so the icon stays honest to the OS.
+      */}
       <span
-        className="text-[#FF3B30] font-medium leading-none"
+        className="text-[#D70015] font-medium leading-none"
         style={{ fontSize: size * 0.22 }}
       >
         {dayOfWeek}

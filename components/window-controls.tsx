@@ -27,6 +27,22 @@ interface WindowControlButtonProps {
 const iconWrapperClasses =
   "pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 desktop:can-hover:group-hover:opacity-100";
 
+/*
+ * These stay 12x12 at 18px centres, and knowingly fail WCAG 2.5.8, which asks
+ * for 24x24 or 24px of clear spacing. Neither is reachable without giving up
+ * the shape of the thing: 24px targets would overlap each other at these
+ * centres, and 24px centres would double the gap and stop reading as a macOS
+ * traffic light cluster. Apple ships 12px dots and fails the same rule.
+ *
+ * What makes the trade acceptable is who reaches this: a phone or iPad is
+ * routed to the archived site by middleware.ts and never sees a window, so the
+ * controls are mouse-driven in practice. Every one of them also carries an
+ * aria-label and sits beside a keyboard path, so the function is never only
+ * available through a small target.
+ *
+ * If touch ever does reach the shell, widen the hit area rather than the dot:
+ * an 18x18 pseudo-element fills the gap without moving anything on screen.
+ */
 function WindowControlButton({
   colorClass,
   icon,

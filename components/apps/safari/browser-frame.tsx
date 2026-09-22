@@ -26,6 +26,15 @@ interface BrowserFrameProps {
  */
 export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   const ref = useRef<HTMLIFrameElement>(null);
+  // The frame is uncontrolled after mount. Rendering src={src} made React
+  // rewrite the attribute whenever history changed, and assigning an iframe
+  // src navigates even when the value is identical — so every link click
+  // loaded the page once for the click and again for the history entry it
+  // produced. Holding the mount value still keeps React off the attribute.
+  const initialSrc = useRef(src);
+  // Where the frame actually is, per its own load event, which is the only
+  // thing that can tell a page we asked for from a page a link went to.
+  const loadedPath = useRef(src);
 
   useEffect(() => {
     const frame = ref.current;
@@ -33,7 +42,10 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     const report = () => {
       try {
         const path = frame.contentWindow?.location.pathname;
-        if (path) onNavigate(path);
+        if (path) {
+          loadedPath.current = path;
+          onNavigate(path);
+        }
       } catch {
         // A cross-origin document would throw. Nothing here should be, but a
         // stray navigation should not take the app down with it.
@@ -42,6 +54,16 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     frame.addEventListener("load", report);
     return () => frame.removeEventListener("load", report);
   }, [onNavigate]);
+
+  // Drive the frame only towards a page it is not already showing. A path that
+  // matches came from the frame itself — the toolbar catching up with a link
+  // click — and re-asserting it would just reload what is on screen.
+  useEffect(() => {
+    const frame = ref.current;
+    if (!frame || src === loadedPath.current) return;
+    loadedPath.current = src;
+    frame.src = src;
+  }, [src]);
 
   // While the window is in the background, the shell makes the frame inert so
   // the first click lands on the window and brings it forward (see the iframe
@@ -70,7 +92,7 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     <div className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
       <iframe
         ref={ref}
-        src={src}
+        src={initialSrc.current}
         title="smithkipnis.com"
         className="flex-1 w-full border-0 bg-background"
         sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation allow-storage-access-by-user-activation"
