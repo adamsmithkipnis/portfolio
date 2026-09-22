@@ -1,7 +1,5 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
-import { isMobileRequest } from "@/lib/is-mobile-request";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
@@ -13,12 +11,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
-  // A phone gets the portfolio itself. The simulated desktop is built for a
-  // desktop, and on a phone its Safari chrome only costs screen; anyone who
-  // wants the shell can still open /safari, /finder, or any app route.
-  if (await isMobileRequest()) {
-    redirect("/website");
-  }
+// The phone branch lives in `middleware.ts` now — it rewrites `/` to the
+// archived site at the edge. Keeping it out of here is what lets this page
+// render statically instead of per-request.
+export default function Home() {
   return <HomeClient />;
 }
