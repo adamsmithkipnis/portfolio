@@ -12,6 +12,7 @@ import {
   totalPlaylistDuration,
 } from "@/lib/spotify/format";
 import type { SpotifyPlaylist } from "@/lib/spotify/types";
+import { siteConfig } from "@/config/site";
 import { Clock, ExternalLink, ListMusic, Pause, Play } from "lucide-react";
 
 interface PlaylistViewProps {
@@ -45,7 +46,13 @@ export function PlaylistView({
   // to breathe instead, which is how the real client renders this one.
   const combiningMarks = (playlist.name.match(/\p{M}/gu) ?? []).length;
   const titleLeading =
-    combiningMarks > 20 ? "leading-[1.45]" : "leading-[1.05]";
+    combiningMarks > 20 ? "leading-[1.25]" : "leading-[1.05]";
+
+  // Only badge the owner when the playlist is this site owner’s own — the
+  // headshot would be wrong on somebody else’s playlist.
+  const isOwnPlaylist =
+    playlist.owner.trim().toLowerCase() ===
+    siteConfig.name.trim().toLowerCase();
 
   const totalDuration = totalPlaylistDuration(playlist.tracks);
   const firstTrackUri = playlist.tracks[0]?.uri;
@@ -75,7 +82,7 @@ export function PlaylistView({
         {/* Colour wash behind the header, the way Spotify tints from cover art */}
         <div
           style={{
-            background: `linear-gradient(180deg, hsl(${hue} 42% 32%) 0%, hsl(${hue} 30% 18%) 40%, var(--spotify-surface) 100%)`,
+            background: `linear-gradient(180deg, hsl(${hue} 20% 28%) 0%, hsl(${hue} 14% 17%) 40%, var(--spotify-surface) 100%)`,
           }}
         >
           <div className={cn("px-6 pt-6 pb-4", isMobileView && "px-4")}>
@@ -88,7 +95,11 @@ export function PlaylistView({
               <div
                 className={cn(
                   "relative flex-shrink-0 overflow-hidden shadow-2xl bg-[var(--spotify-surface-raised)]",
-                  isMobileView ? "w-40 h-40" : "w-[192px] h-[192px]",
+                  isMobileView
+                    ? "w-40 h-40"
+                    : paneWidth >= 720
+                      ? "w-[232px] h-[232px]"
+                      : "w-[192px] h-[192px]",
                 )}
               >
                 {playlist.coverArt ? (
@@ -125,7 +136,18 @@ export function PlaylistView({
                     {playlist.description}
                   </p>
                 )}
-                <p className="text-sm text-[var(--spotify-text)]">
+                <p className="flex items-center gap-2 text-sm text-[var(--spotify-text)]">
+                  {isOwnPlaylist && (
+                    <span className="relative inline-block h-6 w-6 shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        src="/headshot.jpg"
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="24px"
+                      />
+                    </span>
+                  )}
                   {playlist.owner && (
                     <span className="font-semibold">{playlist.owner}</span>
                   )}
