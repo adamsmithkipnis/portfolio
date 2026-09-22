@@ -22,6 +22,14 @@ export interface AppConfig {
   minSize: Size;
   menuBarTitle: string;
   showOnDockByDefault?: boolean; // defaults to true if not specified
+  /**
+   * The dock draws this app with a live component rather than its `icon`, the
+   * way macOS Calendar shows the current date. The icon file is still used
+   * everywhere else — Finder, the About dialog — so it stays in the registry.
+   * This only tells the dock not to draw it, and tells the preloads in
+   * app/page.tsx not to fetch an image the dock will never render.
+   */
+  drawsOwnDockIcon?: boolean; // defaults to false
   showInFinderApplications?: boolean; // defaults to true if not specified
   mobile?: AppMobilePolicy;
   multiWindow?: boolean; // defaults to false - allows multiple windows per app

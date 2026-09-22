@@ -22,7 +22,14 @@
   frame the way a real site does. Every link that leaves the archive is
   explicitly target="_blank".
 -->
+<!--
+  Every face the page sets, not just the body one. Poppins cannot be
+  discovered until site.css has downloaded and parsed, so without this it
+  arrives after first paint and the text it sets visibly restyles.
+-->
 <link rel="preload" href="/archive/smithkipnis/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/archive/smithkipnis/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/archive/smithkipnis/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="/archive/smithkipnis/site.css" />
 </head>
 <body>

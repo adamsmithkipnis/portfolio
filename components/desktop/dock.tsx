@@ -641,7 +641,7 @@ export function Dock({
                   transformOrigin: "bottom center",
                 }}
               >
-                {app.id === "calendar" ? (
+                {app.drawsOwnDockIcon ? (
                   <CalendarDockIcon size={Math.round(metrics.icon * 0.79)} />
                 ) : (
                   <Image
@@ -652,6 +652,11 @@ export function Dock({
                     className="object-contain [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.35))] pointer-events-none"
                     draggable={false}
                     unoptimized
+                    // next/image lazy-loads by default, which put an extra beat
+                    // between hydration and the request for an icon that is
+                    // already on screen and is often the largest paint. The
+                    // matching preloads are in app/page.tsx.
+                    priority
                   />
                 )}
                 {badgeCount > 0 && (
