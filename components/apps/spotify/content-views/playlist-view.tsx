@@ -76,6 +76,30 @@ export function PlaylistView({
   const showAlbum = !isMobileView && paneWidth >= 640;
   const showAddedDate = !isMobileView && paneWidth >= 800;
 
+  // The real client sizes this heading inversely to the name: a short one fills
+  // the header as display type, a long one steps down until it fits. Measured
+  // against the desktop app, "Dog" sits near 96px while a 993-codepoint name
+  // sits near 48px — about 2.3x, taken relative to the artwork. A length ladder
+  // approximates their fit-to-width behaviour without measuring glyphs, and
+  // drops a step on a narrow pane so a short name does not swamp a small window.
+  const titleLength = [...playlist.name].length;
+  const roomForDisplayType = paneWidth === 0 || paneWidth >= 600;
+  const titleSize = isMobileView
+    ? titleLength > 40
+      ? "text-2xl"
+      : "text-3xl"
+    : titleLength <= 10
+      ? roomForDisplayType
+        ? "text-8xl"
+        : "text-5xl"
+      : titleLength <= 20
+        ? roomForDisplayType
+          ? "text-7xl"
+          : "text-5xl"
+        : titleLength <= 40
+          ? "text-6xl"
+          : "text-5xl";
+
   return (
     <div ref={containerRef} className="h-full">
       <ScrollArea className="h-full">
@@ -125,7 +149,7 @@ export function PlaylistView({
                   title={playlist.name}
                   className={cn(
                     "font-extrabold tracking-tight text-[var(--spotify-text)] break-words line-clamp-3 overflow-hidden",
-                    isMobileView ? "text-3xl" : "text-5xl",
+                    titleSize,
                     titleLeading,
                   )}
                 >
