@@ -39,6 +39,14 @@ export function PlaylistView({
   // Spotify itself does. The hard clip matters as much as the clamp: combining
   // marks paint outside their line box, and line-clamp alone does not contain
   // them.
+  // Display type is set tight, which is right for ordinary names. Names built
+  // from stacked combining marks are much taller than their font size, so at
+  // 1.05 the rows collide and the clip shears the glyphs. Give those names room
+  // to breathe instead, which is how the real client renders this one.
+  const combiningMarks = (playlist.name.match(/\p{M}/gu) ?? []).length;
+  const titleLeading =
+    combiningMarks > 20 ? "leading-[1.45]" : "leading-[1.05]";
+
   const totalDuration = totalPlaylistDuration(playlist.tracks);
   const firstTrackUri = playlist.tracks[0]?.uri;
   const hue = playlistHeaderHue(playlist.id);
@@ -105,8 +113,9 @@ export function PlaylistView({
                 <h1
                   title={playlist.name}
                   className={cn(
-                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words leading-[1.05] line-clamp-3 overflow-hidden",
+                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words line-clamp-3 overflow-hidden",
                     isMobileView ? "text-3xl" : "text-5xl",
+                    titleLeading,
                   )}
                 >
                   {playlist.name}
