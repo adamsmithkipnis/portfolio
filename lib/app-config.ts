@@ -82,6 +82,7 @@ export const APPS: AppConfig[] = [
     description: "Calendar and events",
     provenance: { agent: "Claude Code", circa: "January 2026" },
     accentColor: "#FF3B30",
+    drawsOwnDockIcon: true,
     defaultPosition: { x: 170, y: 60 },
     defaultSize: { width: 900, height: 700 },
     minSize: { width: 700, height: 500 },
