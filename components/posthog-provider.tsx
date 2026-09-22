@@ -9,6 +9,11 @@ import type { CaptureResult } from "posthog-js";
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost =
   process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
+// where posthog's own app lives, which stops being where events go the moment
+// api_host becomes a reverse proxy. the toolbar and the session replay player
+// resolve against this, and both break if it is left to follow api_host.
+const posthogUiHost =
+  process.env.NEXT_PUBLIC_POSTHOG_UI_HOST ?? "https://us.posthog.com";
 
 // query strings carry nothing this site needs to measure, and they are where a
 // stray ?email=... would end up. drop them before the event leaves the browser
@@ -38,6 +43,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
     posthog.init(posthogKey, {
       api_host: posthogHost,
+      ui_host: posthogUiHost,
       // the desktop moves between routes client-side, so the history api is the
       // only thing that marks a "pageview" here. this also keeps us off
       // useSearchParams, which would force every static route to render dynamically.
