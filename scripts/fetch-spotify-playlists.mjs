@@ -40,6 +40,7 @@ const PLAYLISTS = [
   "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU", // Nominative Determinism
   "https://open.spotify.com/playlist/667Y4GSLr8QcczrEhtOQQH", // Bells
   "https://open.spotify.com/playlist/5XTvRczV7HhehCMrWtduyn", // Opera
+  "https://open.spotify.com/playlist/5C7j5fGDxpqCUjZqCrcaD3", // (unicode-art name)
 ];
 
 // Audiobooks are Spotify "shows". Only the show embeds — individual chapters
