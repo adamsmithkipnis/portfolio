@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -60,18 +60,55 @@ export function PlaylistView({
 
   // Spotify sheds table columns as the window narrows. The window is resizable
   // independently of the viewport, so measure the pane rather than the screen.
-  const containerRef = useRef<HTMLDivElement>(null);
   const [paneWidth, setPaneWidth] = useState(0);
+  const paneRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
+
+  const readPaneWidth = useCallback(() => {
+    const el = paneRef.current;
+    if (!el) return;
+    const width = el.getBoundingClientRect().width;
+    setPaneWidth((current) =>
+      Math.abs(current - width) > 0.5 ? width : current,
+    );
+  }, []);
+
+  // Measured two ways on purpose. A ResizeObserver mounted once in an effect
+  // ended up watching a node React had replaced, so it stopped reporting and
+  // every width-dependent choice froze at whatever the pane happened to
+  // measure first. A callback ref re-attaches whenever the node changes, and
+  // the window listener covers the case where the pane is resized by the
+  // window manager without the observer firing.
+  const measurePane = useCallback(
+    (el: HTMLDivElement | null) => {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      paneRef.current = el;
+      if (!el) return;
+      const observer = new ResizeObserver(() => readPaneWidth());
+      observer.observe(el);
+      observerRef.current = observer;
+      readPaneWidth();
+    },
+    [readPaneWidth],
+  );
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      setPaneWidth(entry.contentRect.width);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    window.addEventListener("resize", readPaneWidth);
+    const raf = requestAnimationFrame(readPaneWidth);
+    return () => {
+      window.removeEventListener("resize", readPaneWidth);
+      cancelAnimationFrame(raf);
+      observerRef.current?.disconnect();
+    };
+  }, [readPaneWidth]);
+
+  // The desktop window resizes independently of the browser window, so poll
+  // cheaply while it is being dragged rather than trusting a single signal.
+  useEffect(() => {
+    const id = window.setInterval(readPaneWidth, 250);
+    return () => window.clearInterval(id);
+  }, [readPaneWidth]);
 
   const showAlbum = !isMobileView && paneWidth >= 640;
   const showAddedDate = !isMobileView && paneWidth >= 800;
@@ -94,8 +131,22 @@ export function PlaylistView({
   // widow, so the estimate errs small rather than risking a wrap.
   const AVERAGE_GLYPH_EM = 0.62;
   const FIT_SAFETY = 0.97;
-  const MAX_TITLE_PX = 96;
-  const MIN_TITLE_PX = 24;
+  /**
+   * The real client steps this heading through a handful of discrete sizes
+   * rather than scaling it continuously, which is why resizing its window shows
+   * distinct states instead of type that creeps a pixel at a time. Fitting
+   * picks the step; these are the steps.
+   */
+  const TITLE_STEPS_PX = [24, 32, 48, 72, 96] as const;
+  const MAX_TITLE_PX = TITLE_STEPS_PX[TITLE_STEPS_PX.length - 1];
+  const MIN_TITLE_PX = TITLE_STEPS_PX[0];
+
+  /** Largest step that still fits, so a snap can never cause a wrap. */
+  const snapToStep = (px: number) =>
+    TITLE_STEPS_PX.reduce(
+      (best, step) => (step <= px ? step : best),
+      TITLE_STEPS_PX[0] as number,
+    );
   /** Past this a name cannot fit at any readable size, so stop fitting it. */
   const FITTABLE_LENGTH = 30;
 
@@ -128,7 +179,7 @@ export function PlaylistView({
 
   const titlePx =
     titleLength <= FITTABLE_LENGTH
-      ? Math.round(
+      ? snapToStep(
           Math.min(
             MAX_TITLE_PX,
             Math.max(
@@ -144,7 +195,7 @@ export function PlaylistView({
         : 48;
 
   return (
-    <div ref={containerRef} className="h-full">
+    <div ref={measurePane} className="h-full">
       <ScrollArea className="h-full">
         {/* Colour wash behind the header, the way Spotify tints from cover art */}
         <div
