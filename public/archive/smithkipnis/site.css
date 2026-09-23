@@ -90,14 +90,13 @@
   --band: #e0e0db;
   --ink: #253551;
   --footer: #253551;
-  /* Highlighter inks for the industry and patent links. Picked by eye, not
-     taken from the original, which set every link in the ink colour. */
-  --hl-yellow: #fff05a;
-  --hl-pink: #ff9ecb;
-  --hl-green: #a8f06c;
-  --hl-blue: #8fd6ff;
-  --hl-orange: #ffbf6b;
-  --hl-violet: #d2b0ff;
+  /* Two highlighter inks, each with one job, both taken from the navy rather
+     than set beside it. Amber, the navy's complement, marks the message: the
+     headline's claims and the call to action. A light tint of the navy marks
+     somewhere to go: every link that leads to more about the work. Picked by
+     eye, not taken from the original, which set every link in the ink colour. */
+  --hl-message: #ffcf4a;
+  --hl-link: #bcd3f2;
   /* Sized so the content box (inside the 4vw gutters) lands on the
      original's 1400px at a 1800px viewport, which also puts the left edge
      at 200px exactly as the live site does. */
@@ -204,60 +203,89 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 .hero-sub { margin: 0.55em 0 0; }
 .hero strong, .hero-sub strong { font-weight: 600; }
 
-.lede, .patents, .hero-target {
+.lede, .patents {
   font-size: clamp(20px, min(calc(16px + 1.44vw), calc(27.52px + 0.48vw)), 40px);
   line-height: 1.14;
   max-width: min(100%, 26em);
 }
-.lede { margin: 14vh 0 0; }
+.lede { margin: 5vh 0 0; }
 .patents { margin: 0.9em 0 0; }
 
-/* ---------- target line ----------
-   The hero says who; this says what is wanted, in the first screen, before
-   the industries paragraph and the collage a viewport further down. It is set
-   like the lede it precedes, so the two read as one voice rather than as a
-   statement and a caption. */
-
-.hero-target { margin: 8vh 0 0; letter-spacing: -0.02em; }
-
-/* ---------- highlighted links ----------
+/* ---------- highlighter ----------
    An ink-coloured underline at headline size read as a hairline, so the
-   industry and patent links went unnoticed. Each gets a pass of highlighter
-   instead: a rounded, slightly uneven stroke, tilted a little differently per
-   colour so the strokes don't line up like a pattern. The faint underline is
-   what still marks the stroke as a link rather than emphasis. */
+   industry and patent links went unnoticed. They, the headline's claims and
+   the call to action each get a pass of highlighter instead: a rounded,
+   slightly uneven stroke, tilted a little differently from its neighbours so
+   the strokes don't line up like a pattern. The ink says what the stroke is
+   (see --hl-message and --hl-link); the faint underline on links is what
+   still marks them as clickable.
 
+   Strokes sit in one layer under all of a block's text, not each under its
+   own words: a stroke on the next line would otherwise paint over this
+   line's descenders. So the marked words are positioned without a z-index,
+   and the block they sit in is the stacking context. */
+
+.hero, .hero-sub, .lede, .patents, .cta { isolation: isolate; }
+.hero strong, .hero-sub strong, .cta-mark,
 .lede a, .patents a {
   position: relative;
-  z-index: 0;
-  text-decoration-color: rgb(37 53 81 / 0.35);
-  text-decoration-thickness: 0.06em;
-  text-underline-offset: 0.18em;
 }
+.hero strong, .hero-sub strong, .cta-mark { --hl: var(--hl-message); white-space: nowrap; }
+.lede a, .patents a { --hl: var(--hl-link); }
+
+.hero strong::before, .hero-sub strong::before, .cta-mark::before,
 .lede a::before, .patents a::before {
   content: "";
   position: absolute;
   z-index: -1;
   inset: 0.2em -0.1em 0.02em -0.14em;
-  background: var(--hl, var(--hl-yellow));
-  opacity: 0.8;
+  background: var(--hl);
+  opacity: 0.85;
   border-radius: 0.35em 0.15em 0.45em 0.2em / 0.55em 0.3em 0.5em 0.35em;
   transform: rotate(var(--hl-tilt, -1deg)) skewX(var(--hl-slant, -8deg));
 }
-.lede a:nth-of-type(6n+1) { --hl: var(--hl-yellow); --hl-tilt: -1.2deg; }
-.lede a:nth-of-type(6n+2) { --hl: var(--hl-pink); --hl-tilt: 0.8deg; --hl-slant: -6deg; }
-.lede a:nth-of-type(6n+3) { --hl: var(--hl-green); --hl-tilt: -0.5deg; }
-.lede a:nth-of-type(6n+4) { --hl: var(--hl-blue); --hl-tilt: 1.3deg; --hl-slant: -10deg; }
-.lede a:nth-of-type(6n+5) { --hl: var(--hl-orange); --hl-tilt: -1.6deg; }
-.lede a:nth-of-type(6n+6) { --hl: var(--hl-violet); --hl-tilt: 0.6deg; --hl-slant: -5deg; }
-.patents a { --hl: var(--hl-blue); --hl-tilt: 1deg; }
+
+.hero strong:nth-of-type(1) { --hl-tilt: -0.8deg; --hl-slant: -6deg; }
+.hero strong:nth-of-type(2) { --hl-tilt: 0.7deg; --hl-slant: -9deg; }
+.hero-sub strong { --hl-tilt: -1.4deg; }
+.cta-mark { --hl-tilt: 0.9deg; }
+.lede a:nth-of-type(4n+1) { --hl-tilt: 0.8deg; --hl-slant: -6deg; }
+.lede a:nth-of-type(4n+2) { --hl-tilt: -0.5deg; }
+.lede a:nth-of-type(4n+3) { --hl-tilt: 1.3deg; --hl-slant: -10deg; }
+.lede a:nth-of-type(4n+4) { --hl-tilt: -1.6deg; }
+.patents a { --hl-tilt: 1deg; }
+
+.lede a, .patents a, .cta {
+  text-decoration-color: rgb(37 53 81 / 0.35);
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.18em;
+}
 
 @media (hover: hover) {
-  .lede a:hover, .patents a:hover { text-decoration-color: var(--ink); }
-  .lede a:hover::before, .patents a:hover::before {
+  .lede a:hover, .patents a:hover, .cta:hover { text-decoration-color: var(--ink); }
+  .lede a:hover::before, .patents a:hover::before, .cta:hover .cta-mark::before {
     opacity: 1;
     transform: rotate(var(--hl-tilt, -1deg)) skewX(var(--hl-slant, -8deg)) scaleY(1.08);
   }
+}
+
+/* A phrase kept whole on a phone pushes the words around it onto lines of
+   their own. There the headline's phrases wrap, and the stroke is painted per
+   line as a background instead, which gives up the tilt but follows the
+   break. A background paints with its own line's text, not beneath the
+   block, so it is kept to a band that stops short of the line above. */
+@media (max-width: 700px) {
+  .hero strong, .hero-sub strong {
+    white-space: normal;
+    background:
+      linear-gradient(color-mix(in srgb, var(--hl) 85%, transparent) 0 0)
+      0 85% / 100% 70% no-repeat;
+    border-radius: 0.35em 0.15em 0.45em 0.2em / 0.55em 0.3em 0.5em 0.35em;
+    padding: 0 0.08em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .hero strong::before, .hero-sub strong::before { content: none; }
 }
 
 /* ---------- collage ----------
@@ -270,7 +298,7 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
   position: relative;
   width: 100%;
   padding-bottom: 86.7%; /* 1110 / 1280 */
-  margin: 6vh 0 2vh;
+  margin: 3vh 0 2vh;
 }
 .collage img {
   position: absolute;
@@ -329,7 +357,7 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 footer { background: var(--footer); padding: 34px 0; }
 footer .wrap { display: flex; justify-content: center; gap: 26px; }
 footer a { color: #fff; opacity: 0.92; display: inline-flex; }
-footer a:hover { opacity: 1; }
+footer a:hover { opacity: 1; color: var(--hl-link); }
 footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 /* ---------- narrow ----------
@@ -360,7 +388,8 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 @media (prefers-reduced-motion: no-preference) {
   a { transition: text-decoration-thickness 120ms ease; }
-  .lede a::before, .patents a::before { transition: opacity 150ms ease, transform 150ms ease; }
+  .lede a::before, .patents a::before, .cta-mark::before { transition: opacity 150ms ease, transform 150ms ease; }
+  footer a { transition: color 150ms ease, opacity 150ms ease; }
 }
 
 /* ---------- case study pages ----------
