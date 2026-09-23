@@ -30,6 +30,7 @@ import { join } from "node:path";
 // Accepts a bare id, a spotify: URI, or an open.spotify.com URL.
 // ---------------------------------------------------------------------------
 const PLAYLISTS = [
+  "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU", // Nominative Determinism
   "https://open.spotify.com/playlist/3Xx6Rw0wnsBkXLOApUNWM9", // Sunrise
   "https://open.spotify.com/playlist/5C7j5fGDxpqCUjZqCrcaD3", // (unicode-art name)
   "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1", // Disco Francais
@@ -38,7 +39,6 @@ const PLAYLISTS = [
   "https://open.spotify.com/playlist/4bScjAZD4W2UGaNVbNHgdQ", // Bumpin'
   "https://open.spotify.com/playlist/3cai0SGQQ03gcvaEB4VMYw", // Hot Funk Disco Skate
   "https://open.spotify.com/playlist/1cKu6eH7jmqwlKjW1Nxcdf", // Jumping
-  "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU", // Nominative Determinism
   "https://open.spotify.com/playlist/667Y4GSLr8QcczrEhtOQQH", // Bells
   "https://open.spotify.com/playlist/5XTvRczV7HhehCMrWtduyn", // Opera
 ];
