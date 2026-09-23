@@ -82,23 +82,66 @@ export function PlaylistView({
   // sits near 48px — about 2.3x, taken relative to the artwork. A length ladder
   // approximates their fit-to-width behaviour without measuring glyphs, and
   // drops a step on a narrow pane so a short name does not swamp a small window.
+  // The real client shrinks this heading until the name fits rather than
+  // wrapping it, so a narrow window gets small type on one line instead of a
+  // broken word. Sizing by character count alone could not do that: it never
+  // saw how much width was actually available, so at the minimum window a
+  // 14-character name still rendered at 48px and broke into a widow.
+  //
+  // Fit is estimated from an average advance width rather than measured, which
+  // is cheap and stable; the clamp and clip below cover an underestimate.
+  // Slightly pessimistic on purpose: a name fitted onto one line cannot leave a
+  // widow, so the estimate errs small rather than risking a wrap.
+  const AVERAGE_GLYPH_EM = 0.62;
+  const FIT_SAFETY = 0.97;
+  const MAX_TITLE_PX = 96;
+  const MIN_TITLE_PX = 24;
+  /** Past this a name cannot fit at any readable size, so stop fitting it. */
+  const FITTABLE_LENGTH = 30;
+
   const titleLength = [...playlist.name].length;
-  const roomForDisplayType = paneWidth === 0 || paneWidth >= 600;
-  const titleSize = isMobileView
-    ? titleLength > 40
-      ? "text-2xl"
-      : "text-3xl"
-    : titleLength <= 10
-      ? roomForDisplayType
-        ? "text-8xl"
-        : "text-5xl"
-      : titleLength <= 20
-        ? roomForDisplayType
-          ? "text-7xl"
-          : "text-5xl"
-        : titleLength <= 40
-          ? "text-6xl"
-          : "text-5xl";
+
+  // The artwork shrinks too, or at the minimum window it leaves the heading
+  // almost no room. These mirror the real client stepping its art down.
+  const artClass = isMobileView
+    ? "w-40 h-40"
+    : paneWidth === 0 || paneWidth >= 720
+      ? "w-[232px] h-[232px]"
+      : paneWidth >= 560
+        ? "w-[192px] h-[192px]"
+        : paneWidth >= 460
+          ? "w-[160px] h-[160px]"
+          : "w-[120px] h-[120px]";
+
+  const artPx = isMobileView
+    ? 160
+    : paneWidth === 0 || paneWidth >= 720
+      ? 232
+      : paneWidth >= 560
+        ? 192
+        : paneWidth >= 460
+          ? 160
+          : 120;
+
+  // pane minus the artwork, the gap beside it and the section padding
+  const textWidthPx = Math.max(120, (paneWidth || 900) - artPx - 24 - 48);
+
+  const titlePx =
+    titleLength <= FITTABLE_LENGTH
+      ? Math.round(
+          Math.min(
+            MAX_TITLE_PX,
+            Math.max(
+              MIN_TITLE_PX,
+              (textWidthPx * FIT_SAFETY) / (titleLength * AVERAGE_GLYPH_EM),
+            ),
+          ),
+        )
+      : // Too long to fit at a readable size: hold a display minimum and let the
+        // clamp and clip contain it.
+        paneWidth > 0 && paneWidth < 600
+        ? 32
+        : 48;
 
   return (
     <div ref={containerRef} className="h-full">
@@ -119,11 +162,7 @@ export function PlaylistView({
               <div
                 className={cn(
                   "relative flex-shrink-0 overflow-hidden shadow-2xl bg-[var(--spotify-surface-raised)]",
-                  isMobileView
-                    ? "w-40 h-40"
-                    : paneWidth >= 720
-                      ? "w-[232px] h-[232px]"
-                      : "w-[192px] h-[192px]",
+                  artClass,
                 )}
               >
                 {playlist.coverArt ? (
@@ -147,10 +186,13 @@ export function PlaylistView({
                 </p>
                 <h1
                   title={playlist.name}
+                  style={{ fontSize: `${titlePx}px` }}
                   className={cn(
-                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words line-clamp-3 overflow-hidden",
-                    titleSize,
+                    "font-extrabold tracking-tight text-[var(--spotify-text)] break-words overflow-hidden",
                     titleLeading,
+                    titleLength <= FITTABLE_LENGTH
+                      ? "line-clamp-2"
+                      : "line-clamp-3",
                   )}
                 >
                   {playlist.name}
@@ -160,7 +202,10 @@ export function PlaylistView({
                     {playlist.description}
                   </p>
                 )}
-                <p className="flex items-center gap-2 text-sm text-[var(--spotify-text)]">
+                {/* Wraps between the name and the counts, never inside either:
+                    at the minimum window the hyphen in a surname was being used
+                    as a break opportunity. */}
+                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--spotify-text)]">
                   {isOwnPlaylist && (
                     <span className="relative inline-block h-6 w-6 shrink-0 overflow-hidden rounded-full">
                       <Image
@@ -173,10 +218,12 @@ export function PlaylistView({
                     </span>
                   )}
                   {playlist.owner && (
-                    <span className="font-semibold">{playlist.owner}</span>
+                    <span className="font-semibold whitespace-nowrap">
+                      {playlist.owner}
+                    </span>
                   )}
-                  <span className="text-[var(--spotify-text-subdued)]">
-                    {playlist.owner ? " · " : ""}
+                  <span className="whitespace-nowrap text-[var(--spotify-text-subdued)]">
+                    {playlist.owner ? "· " : ""}
                     {playlist.tracks.length} songs,{" "}
                     {formatTotalDuration(totalDuration)}
                   </span>
