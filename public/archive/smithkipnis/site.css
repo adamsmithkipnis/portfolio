@@ -90,6 +90,14 @@
   --band: #e0e0db;
   --ink: #253551;
   --footer: #253551;
+  /* Highlighter inks for the industry and patent links. Picked by eye, not
+     taken from the original, which set every link in the ink colour. */
+  --hl-yellow: #fff05a;
+  --hl-pink: #ff9ecb;
+  --hl-green: #a8f06c;
+  --hl-blue: #8fd6ff;
+  --hl-orange: #ffbf6b;
+  --hl-violet: #d2b0ff;
   /* Sized so the content box (inside the 4vw gutters) lands on the
      original's 1400px at a 1800px viewport, which also puts the left edge
      at 200px exactly as the live site does. */
@@ -212,6 +220,46 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 
 .hero-target { margin: 8vh 0 0; letter-spacing: -0.02em; }
 
+/* ---------- highlighted links ----------
+   An ink-coloured underline at headline size read as a hairline, so the
+   industry and patent links went unnoticed. Each gets a pass of highlighter
+   instead: a rounded, slightly uneven stroke, tilted a little differently per
+   colour so the strokes don't line up like a pattern. The faint underline is
+   what still marks the stroke as a link rather than emphasis. */
+
+.lede a, .patents a {
+  position: relative;
+  z-index: 0;
+  text-decoration-color: rgb(37 53 81 / 0.35);
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.18em;
+}
+.lede a::before, .patents a::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0.2em -0.1em 0.02em -0.14em;
+  background: var(--hl, var(--hl-yellow));
+  opacity: 0.8;
+  border-radius: 0.35em 0.15em 0.45em 0.2em / 0.55em 0.3em 0.5em 0.35em;
+  transform: rotate(var(--hl-tilt, -1deg)) skewX(var(--hl-slant, -8deg));
+}
+.lede a:nth-of-type(6n+1) { --hl: var(--hl-yellow); --hl-tilt: -1.2deg; }
+.lede a:nth-of-type(6n+2) { --hl: var(--hl-pink); --hl-tilt: 0.8deg; --hl-slant: -6deg; }
+.lede a:nth-of-type(6n+3) { --hl: var(--hl-green); --hl-tilt: -0.5deg; }
+.lede a:nth-of-type(6n+4) { --hl: var(--hl-blue); --hl-tilt: 1.3deg; --hl-slant: -10deg; }
+.lede a:nth-of-type(6n+5) { --hl: var(--hl-orange); --hl-tilt: -1.6deg; }
+.lede a:nth-of-type(6n+6) { --hl: var(--hl-violet); --hl-tilt: 0.6deg; --hl-slant: -5deg; }
+.patents a { --hl: var(--hl-blue); --hl-tilt: 1deg; }
+
+@media (hover: hover) {
+  .lede a:hover, .patents a:hover { text-decoration-color: var(--ink); }
+  .lede a:hover::before, .patents a:hover::before {
+    opacity: 1;
+    transform: rotate(var(--hl-tilt, -1deg)) skewX(var(--hl-slant, -8deg)) scaleY(1.08);
+  }
+}
+
 /* ---------- collage ----------
    Free-form scatter, not a grid: each tile is placed by percentage inside a
    fixed-aspect box, so the whole arrangement scales with the container the
@@ -312,6 +360,7 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 
 @media (prefers-reduced-motion: no-preference) {
   a { transition: text-decoration-thickness 120ms ease; }
+  .lede a::before, .patents a::before { transition: opacity 150ms ease, transform 150ms ease; }
 }
 
 /* ---------- case study pages ----------
