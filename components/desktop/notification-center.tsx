@@ -18,6 +18,7 @@ import { useClickOutside } from "@/lib/hooks/use-click-outside";
 import { useWindowManager } from "@/lib/window-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePhotos } from "@/lib/photos/use-photos";
+import { isAppDiscoverable } from "@/lib/app-availability";
 import { getThumbnailUrl } from "@/lib/photos/image-utils";
 import { getEventsForDay, formatEventTime } from "@/components/apps/calendar/utils";
 import { loadCalendars } from "@/components/apps/calendar/data";
@@ -484,7 +485,10 @@ export function NotificationCenter({
     setOpenRefreshKey((key) => key + 1);
   }, [isOpen]);
 
-  const { photos, loading: photosLoading } = usePhotos({ enabled: isOpen });
+  // Skip the Supabase round trip entirely while Photos is hidden: the widget
+  // would only open an app visitors can't otherwise reach.
+  const showPhotos = isAppDiscoverable("photos");
+  const { photos, loading: photosLoading } = usePhotos({ enabled: isOpen && showPhotos });
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
@@ -561,7 +565,9 @@ export function NotificationCenter({
           refreshKey={openRefreshKey}
           onOpenConversation={onOpenMessagesConversation}
         />
-        <PhotosWidget photos={photos} loading={photosLoading} onActivate={onClose} />
+        {showPhotos && (
+          <PhotosWidget photos={photos} loading={photosLoading} onActivate={onClose} />
+        )}
         <WeatherWidget weather={weather} loading={weatherLoading} onActivate={onClose} />
       </ScrollArea>
     </div>

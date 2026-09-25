@@ -34,6 +34,14 @@ export function isAppVisibleInFinderApplications(app: AppConfig, context: Availa
   return true;
 }
 
+// An app hidden from both the Dock and Finder's Applications has no way in, so
+// nothing else (Notification Center widgets, say) should surface or load it.
+export function isAppDiscoverable(appId: string): boolean {
+  const app = getAppConfigOrNull(appId);
+  if (!app) return false;
+  return app.showOnDockByDefault !== false || app.showInFinderApplications !== false;
+}
+
 export function getFinderVisibleApps(context: AvailabilityContext): AppConfig[] {
   return APPS.filter((app) => isAppVisibleInFinderApplications(app, context));
 }
