@@ -3,15 +3,14 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PostHogProvider } from "@/components/posthog-provider";
-import { analyticsEnabled } from "@/lib/analytics";
+import {
+  analyticsEnabled,
+  umamiScriptSrc,
+  umamiWebsiteId,
+} from "@/lib/analytics";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 import { SystemSettingsProvider } from "@/lib/system-settings-context";
-
-// umami cloud by default; set the host var only when self-hosting.
-const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-const umamiScriptSrc =
-  process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL ?? "https://cloud.umami.is/script.js";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
