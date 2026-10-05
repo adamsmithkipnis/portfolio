@@ -11,3 +11,9 @@
 export const analyticsEnabled =
   process.env.NODE_ENV === "production" ||
   process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "1";
+
+// umami cloud by default; set the host var only when self-hosting.
+// absent id = no script, which is what local dev and forks get.
+export const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+export const umamiScriptSrc =
+  process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL ?? "https://cloud.umami.is/script.js";
