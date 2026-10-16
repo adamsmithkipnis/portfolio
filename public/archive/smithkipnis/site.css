@@ -425,6 +425,14 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   margin: 1.7em 0 0;
 }
 
+.cs-h4 {
+  font-family: Poppins, Manrope, sans-serif;
+  font-size: clamp(17px, calc(15px + 0.7vw), 24px);
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 1.5em 0 0;
+}
+
 /* Body copy is 16px on the original — deliberately small against the
    headings — and regular weight where the rest of the site runs medium. */
 /* Body copy on the case studies is Poppins with normal tracking, while the
@@ -440,9 +448,8 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 .cs-p { font-size: 16px; line-height: 1.5; font-weight: 400; margin: 1.1em 0 0; }
 .cs-p em { color: rgb(37 53 81 / 0.72); }
 
-/* The live pages indent their lists but suppress the markers, so a list reads
-   as a run of indented paragraphs rather than a bulleted block. */
-.cs-list { margin: 1.1em 0 0; padding-left: 40px; list-style: none; }
+/* Visible markers: with them hidden a list read as a run of indented paragraphs. */
+.cs-list { margin: 1.1em 0 0; padding-left: 40px; list-style: disc; }
 .cs-list li { font-size: 16px; line-height: 1.5; font-weight: 400; margin: 0 0 0.9em; }
 .cs-list li:last-child { margin-bottom: 0; }
 
