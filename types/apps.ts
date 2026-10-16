@@ -32,6 +32,7 @@ export interface AppConfig {
   drawsOwnDockIcon?: boolean; // defaults to false
   showInFinderApplications?: boolean; // defaults to true if not specified
   mobile?: AppMobilePolicy;
+  fillDesktop?: boolean; // default window is sized relative to the viewport, centered
   multiWindow?: boolean; // defaults to false - allows multiple windows per app
   cascadeOffset?: number; // offset for cascading new windows (default 30)
 }

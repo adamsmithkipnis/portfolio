@@ -14,13 +14,18 @@ import {
   Position,
   Size,
 } from "@/types/window";
+import { AppConfig } from "@/types/apps";
 import { APPS, getAppById } from "./app-config";
 import { clearAppState, clearAllAppState } from "./sidebar-persistence";
 import {
   loadWindowState,
   saveWindowStatePayload,
 } from "./window-state-storage";
-import { fitToDesktop, repairSquashedHeight } from "./window-fit";
+import {
+  fitToDesktop,
+  repairSquashedHeight,
+  viewportSizedPreset,
+} from "./window-fit";
 
 const WINDOW_STATE_PERSIST_DEBOUNCE_MS = 1000;
 
@@ -33,6 +38,15 @@ function fitWindowPresetToDesktop(
     return { position, size };
   }
   return fitToDesktop(position, size, window.innerHeight, minSize);
+}
+
+/** The app's opening preset: viewport-relative if it opts in, else its static one. */
+function appDefaultPreset(app: AppConfig): { position: Position; size: Size } {
+  const sized =
+    app.fillDesktop && typeof window !== "undefined"
+      ? viewportSizedPreset(window.innerWidth, window.innerHeight, app.minSize)
+      : null;
+  return sized ?? { position: app.defaultPosition, size: app.defaultSize };
 }
 
 function repairSquashedWindow(windowState: WindowState): WindowState {
@@ -85,11 +99,8 @@ function getDefaultWindowState(appId: string): WindowState {
   if (!app) {
     throw new Error(`Unknown app: ${appId}`);
   }
-  const preset = fitWindowPresetToDesktop(
-    app.defaultPosition,
-    app.defaultSize,
-    app.minSize
-  );
+  const base = appDefaultPreset(app);
+  const preset = fitWindowPresetToDesktop(base.position, base.size, app.minSize);
   return {
     id: appId,
     appId,
@@ -114,7 +125,7 @@ function getDefaultWindowState(appId: string): WindowState {
 // is the portfolio's chrome and nothing else.
 const DESKTOP_DEFAULT_CONFIG = {
   windows: [
-    { appId: "safari", position: { x: 120, y: 40 }, size: { width: 1100, height: 720 } },
+    { appId: "safari" },
   ],
   focusedAppId: "safari",
 } as const;
@@ -156,9 +167,10 @@ function getDesktopDefaultState(): WindowManagerState {
 
   windows.forEach((config, index) => {
     const currentWindow = state.windows[config.appId];
+    // The base state already carries the app's (viewport-relative) preset.
     const preset = fitWindowPresetToDesktop(
-      config.position,
-      "size" in config && config.size ? config.size : currentWindow.size,
+      currentWindow.position,
+      currentWindow.size,
       getAppById(config.appId)?.minSize
     );
 
@@ -558,14 +570,15 @@ function windowReducer(
         (w) => w.appId === appId && w.isOpen
       );
       const cascadeOffset = app.cascadeOffset ?? 30;
-      const basePosition = app.defaultPosition;
+      const basePreset = appDefaultPreset(app);
+      const basePosition = basePreset.position;
       const newPosition = {
         x: basePosition.x + existingAppWindows.length * cascadeOffset,
         y: basePosition.y + existingAppWindows.length * cascadeOffset,
       };
       const preset = fitWindowPresetToDesktop(
         customPosition ?? newPosition,
-        customSize ?? app.defaultSize,
+        customSize ?? basePreset.size,
         app.minSize
       );
 
