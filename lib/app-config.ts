@@ -12,6 +12,7 @@ export const APPS: AppConfig[] = [
     defaultSize: { width: 900, height: 600 },
     minSize: { width: 600, height: 400 },
     menuBarTitle: "Finder",
+    fillDesktop: true,
     multiWindow: true,
     cascadeOffset: 30,
   },
@@ -118,6 +119,7 @@ export const APPS: AppConfig[] = [
     defaultSize: { width: 1000, height: 700 },
     minSize: { width: 560, height: 420 },
     menuBarTitle: "Safari",
+    fillDesktop: true,
   },
   {
     id: "iterm",

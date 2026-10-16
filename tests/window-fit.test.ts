@@ -7,6 +7,7 @@ import {
   MENU_BAR_HEIGHT,
   fitToDesktop,
   repairSquashedHeight,
+  viewportSizedPreset,
 } from "../lib/window-fit";
 
 const safari = APPS.find((app) => app.id === "safari");
@@ -84,4 +85,44 @@ test("restore does not touch a window the visitor sized themselves", () => {
   );
   assert.deepEqual(repaired.size, chosen);
   assert.deepEqual(repaired.position, { x: 40, y: 60 });
+});
+
+const sized = (w: number, h: number) => {
+  const p = viewportSizedPreset(w, h, safari.minSize);
+  assert.ok(p, `${w}x${h} should be measured`);
+  return p;
+};
+
+test("a 13-inch laptop viewport gets a window that is centered", () => {
+  const { position, size } = sized(1440, 900);
+  assert.equal(size.width, Math.round(1440 * 0.72));
+  assert.ok(size.height > 500 && size.height <= 900);
+  assert.equal(position.x, Math.round((1440 - size.width) / 2));
+});
+
+test("a large monitor caps the window instead of letting it grow forever", () => {
+  const { position, size } = sized(2560, 1440);
+  assert.equal(size.width, 1400);
+  assert.equal(size.height, 900);
+  assert.equal(position.x, (2560 - 1400) / 2);
+});
+
+test("a narrow viewport keeps the window on screen and above the minimum", () => {
+  for (const [w, h] of [[1024, 768], [700, 500], [400, 300]]) {
+    const { position, size } = sized(w, h);
+    assert.ok(position.x >= 0, `x at ${w}`);
+    assert.ok(size.width >= safari.minSize!.width, `width at ${w}`);
+    assert.ok(size.height >= safari.minSize!.height, `height at ${h}`);
+  }
+  assert.ok(sized(1024, 768).position.x + sized(1024, 768).size.width <= 1024);
+});
+
+test("an unmeasured viewport yields no viewport preset", () => {
+  assert.equal(viewportSizedPreset(0, 900, safari.minSize), null);
+  assert.equal(viewportSizedPreset(1440, 0, safari.minSize), null);
+});
+
+test("only Safari and Finder opt in to viewport-relative defaults", () => {
+  const optedIn = APPS.filter((app) => app.fillDesktop).map((app) => app.id);
+  assert.deepEqual(optedIn.sort(), ["finder", "safari"]);
 });

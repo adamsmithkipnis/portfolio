@@ -23,6 +23,60 @@ export function availableDesktopHeight(viewportHeight: number): number {
   );
 }
 
+const VIEWPORT_WIDTH_FRACTION = 0.72;
+const VIEWPORT_HEIGHT_FRACTION = 0.8;
+const MIN_PREFERRED_WIDTH = 900;
+const MAX_PREFERRED_WIDTH = 1400;
+const MAX_PREFERRED_HEIGHT = 900;
+const VIEWPORT_SIDE_MARGIN = 16;
+
+/**
+ * A default window sized to the viewport and centered horizontally, so a
+ * laptop and a 4K monitor open the same share of the screen.
+ *
+ * Returns null while the viewport is unmeasured; callers fall back to the
+ * app's static preset.
+ */
+export function viewportSizedPreset(
+  viewportWidth: number,
+  viewportHeight: number,
+  minSize?: Size
+): { position: Position; size: Size } | null {
+  if (viewportWidth <= 0 || viewportHeight <= 0) return null;
+
+  const minWidth = minSize?.width ?? 0;
+  const minHeight = minSize?.height ?? 0;
+
+  const preferredWidth = Math.min(
+    MAX_PREFERRED_WIDTH,
+    Math.max(MIN_PREFERRED_WIDTH, viewportWidth * VIEWPORT_WIDTH_FRACTION)
+  );
+  // A narrow viewport wins over the preferred floor, but not over the app's minimum.
+  const width = Math.round(
+    Math.max(
+      minWidth,
+      Math.min(preferredWidth, viewportWidth - 2 * VIEWPORT_SIDE_MARGIN)
+    )
+  );
+  const height = Math.round(
+    Math.max(
+      minHeight,
+      Math.min(
+        MAX_PREFERRED_HEIGHT,
+        availableDesktopHeight(viewportHeight) * VIEWPORT_HEIGHT_FRACTION
+      )
+    )
+  );
+
+  return {
+    position: {
+      x: Math.max(0, Math.round((viewportWidth - width) / 2)),
+      y: MENU_BAR_HEIGHT + DEFAULT_WINDOW_DOCK_GAP,
+    },
+    size: { width, height },
+  };
+}
+
 /**
  * Fits a preset to the desktop.
  *

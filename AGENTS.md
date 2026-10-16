@@ -45,6 +45,7 @@ read before building, update when you ship:
 - **menu system**: menus are mutually exclusive via `openMenu` state in `menu-bar.tsx`. panel-style menus follow the `status-menus.tsx` pattern. use `useClickOutside()` for dismissal
 - **app discoverability + availability**: define Dock, Finder, and mobile support policy in `lib/app-config.ts` (`showOnDockByDefault`, `showInFinderApplications`, and `mobile.*`). avoid hardcoded app-id allow/deny lists in app components
 - **case study content**: `content/work/<project>/` is the source of truth — adding a project is creating a folder, never a registry edit. `npm run content` regenerates the bundled tree (`predev`/`prebuild` do it for you). case study sections open in Preview windows (`PreviewFileType` includes `case-study`); column view previews them on selection. see `docs/CONTENT-MODEL.md`
+- **default window size**: apps with `fillDesktop` in `lib/app-config.ts` (Safari, Finder) open at a viewport-relative size, centered (`viewportSizedPreset` in `lib/window-fit.ts`); others use their fixed `defaultSize`. session-persisted sizes are never re-fit
 - **finder + document apps**: Finder is multi-window on desktop. keep per-window Finder browsing state inside the Finder window/app pair, and keep TextEdit/Preview launch roots aligned with `components/desktop/desktop.tsx`, route files, and `docs/document-apps.md`
 - **weather scenes**: weather visuals are shared between the weather app and notification center. use `components/apps/weather/weather-scene-effects.tsx` for scene rendering and `lib/weather.ts` for palettes/effect selection instead of duplicating scene markup
 
@@ -131,3 +132,13 @@ fabricate quotes or testimonials attributed to real people.**
 
 case studies are MDX under `content/`; the filesystem is the information
 architecture. see `docs/CONTENT-MODEL.md`. adding a project = creating a folder.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
