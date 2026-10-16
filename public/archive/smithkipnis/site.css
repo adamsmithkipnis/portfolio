@@ -469,6 +469,18 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   max-height: none;
 }
 
+/* A caption is an italic-only paragraph straight after an image. It belongs to
+   that image, so it sits close under it and the generous gap goes after it;
+   with equal space either side it read as a label for whichever image the eye
+   landed on. Prose under an image is body text and keeps the default rhythm. */
+.cs-img:has(+ .cs-p > em:only-child) { margin-bottom: 0.6em; }
+.cs-img + .cs-p:has(> em:only-child) {
+  margin: 0 0 2.6em;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+}
+
 /* Reserves the embed's space before it loads. Ratio is overridable, since not
    every clip is 16:9 — one of the Wilson X videos is shot portrait. */
 .cs-video {
@@ -493,6 +505,8 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 .cs-col { min-width: 0; }
 /* The row already supplies the spacing above it. */
 .cs-col > *:first-child { margin-top: 0; }
+/* ...and so does the row's own bottom margin, below a caption. */
+.cs-row .cs-col > .cs-p:last-child { margin-bottom: 0; }
 .cs-row .cs-img,
 .cs-row .cs-video {
   width: 100%;
