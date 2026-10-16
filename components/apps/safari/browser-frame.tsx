@@ -31,6 +31,7 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   // src navigates even when the value is identical — so every link click
   // loaded the page once for the click and again for the history entry it
   // produced. Holding the mount value still keeps React off the attribute.
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const initialSrc = useRef(src);
   // Where the frame actually is, per its own load event, which is the only
   // thing that can tell a page we asked for from a page a link went to.
@@ -65,6 +66,50 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     frame.src = src;
   }, [src]);
 
+  // After the window is resized by hand, the frame's size is rewritten
+  // imperatively and then again by React, and the shell makes the frame inert
+  // for the length of the gesture and interactive again afterwards. Chrome can
+  // be left with a stale scroller or hit-test target that ignores the wheel
+  // until the frame is clicked. So once the size settles, and again just after
+  // any release (the frame turns interactive then, without a size change), tell
+  // the page it was resized and round-trip its scroll position by a pixel so
+  // the scroller is re-attached. Both writes happen in one task: nothing paints.
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    let raf: number | null = null;
+    const nudge = () => {
+      raf = null;
+      try {
+        const win = ref.current?.contentWindow;
+        if (!win) return;
+        win.dispatchEvent(new Event("resize"));
+        const { scrollX, scrollY } = win;
+        win.scrollTo(scrollX, scrollY + 1);
+        win.scrollTo(scrollX, scrollY);
+      } catch {
+        // Cross-origin content would throw; nothing here should be.
+      }
+    };
+    const schedule = () => {
+      if (raf !== null) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(nudge);
+      });
+    };
+    const observer =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
+    observer?.observe(wrapper);
+    window.addEventListener("mouseup", schedule, true);
+    window.addEventListener("pointerup", schedule, true);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("mouseup", schedule, true);
+      window.removeEventListener("pointerup", schedule, true);
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   // While the window is in the background, the shell makes the frame inert so
   // the first click lands on the window and brings it forward (see the iframe
   // rule in `components/desktop/window.tsx`). That also stops wheel events
@@ -89,13 +134,22 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     // Chrome loses track of an absolutely positioned frame's scroller when its
     // containing block is resized by hand, and the page stops responding to
     // the wheel until the next layout change. As a flex child it survives.
-    <div className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
+    <div ref={wrapperRef} className="relative flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
       <iframe
         ref={ref}
         src={initialSrc.current}
         title="smithkipnis.com"
-        className="flex-1 w-full border-0 bg-background"
+        // The shell makes embeds inert during a drag or resize and while the
+        // window is in the background. Flipping this frame's own pointer-events
+        // left Chrome with a stale wheel target after a resize, so scrolling
+        // died until a few clicks forced a fresh hit test. The shield below
+        // does the blocking instead; the frame itself is never toggled.
+        className="flex-1 w-full border-0 bg-background !pointer-events-auto"
         sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation allow-storage-access-by-user-activation"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 hidden group-data-[interacting=true]/window:block group-data-[focused=false]/window:block"
       />
     </div>
   );

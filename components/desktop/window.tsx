@@ -151,7 +151,7 @@ export function Window({
     <div
       ref={windowRef}
       className={cn(
-        "fixed",
+        "fixed group/window",
         isHiddenMinimized && "invisible pointer-events-none",
         !isFocused && !isMaximized && !isHiddenMinimized && "opacity-95",
         // An iframe under the cursor consumes mouse events before they reach
@@ -171,6 +171,8 @@ export function Window({
         (isInteracting || !isFocused) && "[&_iframe]:pointer-events-none",
       )}
       style={windowStyle}
+      data-interacting={isInteracting}
+      data-focused={isFocused}
       aria-hidden={isHiddenMinimized || undefined}
       onMouseDownCapture={(e) => {
         if (isHiddenMinimized) return;

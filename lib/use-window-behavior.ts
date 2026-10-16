@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { shouldEndInteraction } from "./window-interaction";
 
 export interface Position {
   x: number;
@@ -141,7 +142,12 @@ export function useWindowBehavior({
     const processMouseMove = (x: number, y: number, buttons: number) => {
       // Some embedded content (for example PDF iframes) can swallow mouseup.
       // If buttons are no longer pressed, end interaction immediately.
-      if ((isDraggingRef.current || resizeDirRef.current) && buttons === 0) {
+      if (
+        shouldEndInteraction(isDraggingRef.current || !!resizeDirRef.current, {
+          type: "mousemove",
+          buttons,
+        })
+      ) {
         endInteraction();
         return;
       }
@@ -227,18 +233,28 @@ export function useWindowBehavior({
     };
 
     const handleMouseUp = () => endInteraction();
-
+    // Capture phase, so nothing stops the release from reaching us, plus the
+    // other ways a gesture can end without a mouseup: a cancelled pointer, a
+    // context menu, or the tab being hidden mid-gesture.
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mouseup", handleMouseUp, true);
+    window.addEventListener("pointerup", handleMouseUp, true);
+    window.addEventListener("pointercancel", handleMouseUp, true);
+    window.addEventListener("contextmenu", handleMouseUp, true);
     window.addEventListener("blur", handleMouseUp);
+    document.addEventListener("visibilitychange", handleMouseUp);
     return () => {
       if (rafIdRef.current !== null) {
         window.cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mouseup", handleMouseUp, true);
+      window.removeEventListener("pointerup", handleMouseUp, true);
+      window.removeEventListener("pointercancel", handleMouseUp, true);
+      window.removeEventListener("contextmenu", handleMouseUp, true);
       window.removeEventListener("blur", handleMouseUp);
+      document.removeEventListener("visibilitychange", handleMouseUp);
     };
   }, [isInteracting, windowRef, minSize, onMove, onResize, positionMode]);
 
