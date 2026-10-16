@@ -134,13 +134,22 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     // Chrome loses track of an absolutely positioned frame's scroller when its
     // containing block is resized by hand, and the page stops responding to
     // the wheel until the next layout change. As a flex child it survives.
-    <div ref={wrapperRef} className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
+    <div ref={wrapperRef} className="relative flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
       <iframe
         ref={ref}
         src={initialSrc.current}
         title="smithkipnis.com"
-        className="flex-1 w-full border-0 bg-background"
+        // The shell makes embeds inert during a drag or resize and while the
+        // window is in the background. Flipping this frame's own pointer-events
+        // left Chrome with a stale wheel target after a resize, so scrolling
+        // died until a few clicks forced a fresh hit test. The shield below
+        // does the blocking instead; the frame itself is never toggled.
+        className="flex-1 w-full border-0 bg-background !pointer-events-auto"
         sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation allow-storage-access-by-user-activation"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 hidden group-data-[interacting=true]/window:block group-data-[focused=false]/window:block"
       />
     </div>
   );
