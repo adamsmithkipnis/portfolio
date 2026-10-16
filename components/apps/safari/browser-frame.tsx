@@ -67,12 +67,16 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   }, [src]);
 
   // After the window is resized by hand, the frame's size is rewritten
-  // imperatively and then again by React, and Chrome can be left with a stale
-  // scroller that ignores the wheel. Once the size settles, tell the page it
-  // was resized and nudge its scroll position so the scroller is re-attached.
+  // imperatively and then again by React, and the shell makes the frame inert
+  // for the length of the gesture and interactive again afterwards. Chrome can
+  // be left with a stale scroller or hit-test target that ignores the wheel
+  // until the frame is clicked. So once the size settles, and again just after
+  // any release (the frame turns interactive then, without a size change), tell
+  // the page it was resized and round-trip its scroll position by a pixel so
+  // the scroller is re-attached. Both writes happen in one task: nothing paints.
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    if (!wrapper || typeof ResizeObserver === "undefined") return;
+    if (!wrapper) return;
     let raf: number | null = null;
     const nudge = () => {
       raf = null;
@@ -80,20 +84,28 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
         const win = ref.current?.contentWindow;
         if (!win) return;
         win.dispatchEvent(new Event("resize"));
-        win.scrollBy(0, 0);
+        const { scrollX, scrollY } = win;
+        win.scrollTo(scrollX, scrollY + 1);
+        win.scrollTo(scrollX, scrollY);
       } catch {
         // Cross-origin content would throw; nothing here should be.
       }
     };
-    const observer = new ResizeObserver(() => {
+    const schedule = () => {
       if (raf !== null) cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         raf = requestAnimationFrame(nudge);
       });
-    });
-    observer.observe(wrapper);
+    };
+    const observer =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
+    observer?.observe(wrapper);
+    window.addEventListener("mouseup", schedule, true);
+    window.addEventListener("pointerup", schedule, true);
     return () => {
-      observer.disconnect();
+      observer?.disconnect();
+      window.removeEventListener("mouseup", schedule, true);
+      window.removeEventListener("pointerup", schedule, true);
       if (raf !== null) cancelAnimationFrame(raf);
     };
   }, []);
