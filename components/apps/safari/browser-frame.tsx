@@ -31,6 +31,7 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
   // src navigates even when the value is identical — so every link click
   // loaded the page once for the click and again for the history entry it
   // produced. Holding the mount value still keeps React off the attribute.
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const initialSrc = useRef(src);
   // Where the frame actually is, per its own load event, which is the only
   // thing that can tell a page we asked for from a page a link went to.
@@ -65,6 +66,38 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     frame.src = src;
   }, [src]);
 
+  // After the window is resized by hand, the frame's size is rewritten
+  // imperatively and then again by React, and Chrome can be left with a stale
+  // scroller that ignores the wheel. Once the size settles, tell the page it
+  // was resized and nudge its scroll position so the scroller is re-attached.
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || typeof ResizeObserver === "undefined") return;
+    let raf: number | null = null;
+    const nudge = () => {
+      raf = null;
+      try {
+        const win = ref.current?.contentWindow;
+        if (!win) return;
+        win.dispatchEvent(new Event("resize"));
+        win.scrollBy(0, 0);
+      } catch {
+        // Cross-origin content would throw; nothing here should be.
+      }
+    };
+    const observer = new ResizeObserver(() => {
+      if (raf !== null) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(nudge);
+      });
+    });
+    observer.observe(wrapper);
+    return () => {
+      observer.disconnect();
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   // While the window is in the background, the shell makes the frame inert so
   // the first click lands on the window and brings it forward (see the iframe
   // rule in `components/desktop/window.tsx`). That also stops wheel events
@@ -89,7 +122,7 @@ export function BrowserFrame({ src, onNavigate }: BrowserFrameProps) {
     // Chrome loses track of an absolutely positioned frame's scroller when its
     // containing block is resized by hand, and the page stops responding to
     // the wheel until the next layout change. As a flex child it survives.
-    <div className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
+    <div ref={wrapperRef} className="flex flex-1 min-h-0 flex-col" onWheel={forwardWheel}>
       <iframe
         ref={ref}
         src={initialSrc.current}
