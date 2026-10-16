@@ -2,7 +2,8 @@
  * @type {import('next').NextConfig}
  *
  * Routing behavior:
- * - /                    → shows desktop with saved session state (default layout for new visitors)
+ * - /                    → shows desktop with saved session state (default layout for new visitors);
+ *                          a phone gets the archived site instead (see `beforeFiles`)
  * - /notes               → on desktop: notes focused (selection resolved client-side)
  *                          on mobile: shows sidebar (no redirect)
  * - /notes/{slug}        → shows the note (notes focused)
@@ -19,6 +20,32 @@
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseHostname = supabaseUrl ? new URL(supabaseUrl).hostname : null;
 
+// The archived site's front page. A phone gets this for `/`; see `beforeFiles`.
+const ARCHIVE_INDEX = "/archive/smithkipnis/index.html";
+
+/**
+ * The header conditions that send a phone to the archive, mirroring
+ * `isMobileBySignals` in lib/device-detection.ts for the two signals a request
+ * carries: the mobile client hint, and the user agent. Next and Vercel anchor
+ * these and match them case-sensitively, so each is a whole-header pattern
+ * spelled the way real user agents spell it. tests/mobile-rewrite.test.ts holds
+ * them to the same answers as `isMobileBySignals`.
+ */
+export const MOBILE_REWRITE_CONDITIONS = [
+  [{ type: "header", key: "sec-ch-ua-mobile", value: "\\?1" }],
+  [
+    {
+      type: "header",
+      key: "user-agent",
+      // MOBILE_USER_AGENT_PATTERN, then iPadOS reporting as a Mac with a
+      // mobile Safari fragment.
+      value:
+        "(?:.*(?:Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*" +
+        "|.*Macintosh.*Mobile/.*|.*Mobile/.*Macintosh.*)",
+    },
+  ],
+];
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -31,16 +58,41 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      // The archived Squarespace site, served from our own origin so the
-      // Safari app can frame it — Squarespace sends X-Frame-Options:
-      // SAMEORIGIN, and a subdomain would not have helped, since that check
-      // is origin-based and a subdomain is a different origin.
-      { source: "/website", destination: "/archive/smithkipnis/index.html" },
-      // The archived case studies mirror the original's paths, so links
-      // between them read the way they did on the live site.
-      { source: "/website/:path*", destination: "/archive/smithkipnis/:path*/index.html" },
-    ];
+    return {
+      /**
+       * A phone gets the portfolio itself rather than the simulated desktop,
+       * which is built for a desktop and on a phone spends screen on Safari
+       * chrome.
+       *
+       * Before the filesystem, because `/` is a page and would otherwise win.
+       * A rewrite rather than a redirect, so the URL stays `smithkipnis.com` and
+       * a phone pays no second round trip; the archive's own links move to
+       * `/website/...` once someone browses. Only the root: every other route,
+       * including the app routes a phone can still reach on purpose (/safari,
+       * /finder), is left alone.
+       *
+       * This was `middleware.ts`, which Next 16 renames to `proxy.ts` — and a
+       * proxy always runs on Node.js, where the middleware ran at the edge.
+       * Header conditions need neither: Vercel evaluates them in its routing
+       * layer, so the archive still comes back on the first response, from the
+       * CDN, and `/` stays static for desktop.
+       */
+      beforeFiles: MOBILE_REWRITE_CONDITIONS.map((has) => ({
+        source: "/",
+        has,
+        destination: ARCHIVE_INDEX,
+      })),
+      afterFiles: [
+        // The archived Squarespace site, served from our own origin so the
+        // Safari app can frame it — Squarespace sends X-Frame-Options:
+        // SAMEORIGIN, and a subdomain would not have helped, since that check
+        // is origin-based and a subdomain is a different origin.
+        { source: "/website", destination: ARCHIVE_INDEX },
+        // The archived case studies mirror the original's paths, so links
+        // between them read the way they did on the live site.
+        { source: "/website/:path*", destination: "/archive/smithkipnis/:path*/index.html" },
+      ],
+    };
   },
   async redirects() {
     // Bare-slug URLs for the public notes, e.g. /listening -> /notes/listening.
