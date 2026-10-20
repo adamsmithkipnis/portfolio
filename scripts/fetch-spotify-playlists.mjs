@@ -33,10 +33,11 @@ const PLAYLISTS = [
   "https://open.spotify.com/playlist/1d6JclfbtbBzJtC1DIghkU", // Nominative Determinism
   "https://open.spotify.com/playlist/3Xx6Rw0wnsBkXLOApUNWM9", // Sunrise
   "https://open.spotify.com/playlist/5C7j5fGDxpqCUjZqCrcaD3", // (unicode-art name)
-  "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1", // Disco Francais
+  "https://open.spotify.com/playlist/6IYcGH53qjn6e6f1s4dZ2w", // Friends
   "https://open.spotify.com/playlist/5P7T0iKh7qO4Fdvh6ko0sW", // Dogs
   "https://open.spotify.com/playlist/5gReAQknu34R5xsvBnrtyq", // Food — follows Dogs on purpose
   "https://open.spotify.com/playlist/4bScjAZD4W2UGaNVbNHgdQ", // Bumpin'
+  "https://open.spotify.com/playlist/6h9X5RLuHl877a1N1SLox1", // Disco Francais
   "https://open.spotify.com/playlist/3cai0SGQQ03gcvaEB4VMYw", // Hot Funk Disco Skate
   "https://open.spotify.com/playlist/1cKu6eH7jmqwlKjW1Nxcdf", // Jumping
   "https://open.spotify.com/playlist/667Y4GSLr8QcczrEhtOQQH", // Bells
