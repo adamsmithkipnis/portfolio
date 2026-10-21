@@ -309,6 +309,25 @@ Two gotchas worth remembering, both fixed:
 - Finder clears its selection on background click, so the detail pane must stop
   click propagation or interacting with a video or link closes what you're reading.
 
+### Earlier work (recovered from Semplice)
+
+`content/work/earlier-work/` holds 20 older projects recovered from the original
+Semplice/WordPress site, in that site's running order (numeric folder prefixes).
+`earlier-work` has no `index.mdx`, so it is a plain folder; each project inside is
+a normal project with `index.mdx` plus one section (`01-case-study.mdx`, or
+`01-video.mdx` for the two video-only pages). Projects may sit at any depth.
+
+Their metadata records only what the original page stated, so `role`, `org`,
+`year`, `tags` and `summary` are optional in `ProjectMeta` — `title` is the only
+guaranteed field, and `ContentDetail` renders the rest only when present.
+
+Images live in `public/content/work/earlier-work/<project>/` as WebP. They are
+not in `content/` (so they don't list as Finder files) and are referenced from the
+Markdown by URL. `npm run import:earlier-work-images` converts them from the
+recovered export using `scripts/earlier-work-images.json`, and
+`tests/content-assets.test.ts` fails if a case study references an image that
+isn't on disk.
+
 ### Not yet built
 
 Quick Look (spacebar), tag filtering, sort-by-date, and the `confidential: true`

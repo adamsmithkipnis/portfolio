@@ -162,9 +162,11 @@ state to diff against.
 - [x] Case study pipeline into Finder — `content/` walk, Work sidebar, column-view
       reading surface, Get Info metadata, click-to-load video embeds
 - [x] The real case studies — archived under `public/archive/smithkipnis/casestudies`
-      and browsable in Safari. `content/work` is empty, and Finder's Work folder
-      lists the archived studies as web locations instead (`lib/work-links.ts`),
-      so a double-click hands Safari the page
+      and browsable in Safari. Finder's Work folder lists the archived studies as
+      web locations (`lib/work-links.ts`), so a double-click hands Safari the page
+- [x] Earlier work — 20 older projects recovered from the Semplice site, as
+      Markdown under `content/work/earlier-work` (Finder: Work › Earlier Work).
+      Images come in with `npm run import:earlier-work-images`
 - [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
 - [ ] Essays into Notes
 - [ ] Messages personas

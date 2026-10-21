@@ -110,7 +110,10 @@ function main() {
       `export const CONTENT_TREE: ContentNode = ${JSON.stringify(tree, null, 2)};\n`
   );
 
-  const projects = (tree.children ?? []).flatMap((child) => child.children ?? []).filter((child) => child.meta);
+  // Projects can sit at any depth (content/work/earlier-work/<project>), so count recursively
+  const countProjects = (node) =>
+    (node.meta ? 1 : 0) + (node.children ?? []).reduce((total, child) => total + countProjects(child), 0);
+  const projects = { length: countProjects(tree) };
   console.log(`content: ${projects.length} project(s) -> ${relative(ROOT, OUT_FILE)}`);
 }
 
