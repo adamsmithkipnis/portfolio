@@ -29,7 +29,7 @@ export interface WorkLink {
   archivePath: string;
   /**
    * Earlier-work entries record only what their original page stated, so any
-   * of these can be absent there. The featured three always carry role,
+   * of these can be absent there. The featured studies always carry role,
    * years, summary and tags.
    */
   role?: string;

@@ -1,7 +1,7 @@
 /**
  * The case studies, and how the site frames them.
  *
- * The same three projects read differently depending on the role being
+ * The same projects read differently depending on the role being
  * applied for, so the framing sentence and the running order are switched
  * from one value here rather than by rewriting pages. `scripts/build-archive.mjs`
  * regenerates the index and the previous/next links from this file, and
@@ -15,9 +15,9 @@ export const SITE_MODE = "management";
 
 export const FRAMING = {
   management:
-    "Three projects across design leadership, production leadership, and self-initiated AI product strategy.",
+    "Four projects across design leadership, production leadership, hardware interaction design, and self-initiated AI product strategy.",
   ic:
-    "Products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Three projects, hands on the work in all three.",
+    "Products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Four projects, hands on the work in all four.",
 };
 
 /**
@@ -26,8 +26,8 @@ export const FRAMING = {
  * study's neighbours always match the order a visitor was just reading in.
  */
 export const ORDER = {
-  management: ["grace-providence", "wilson-x", "invoca-workflow-agent"],
-  ic: ["invoca-workflow-agent", "wilson-x", "grace-providence"],
+  management: ["grace-providence", "wilson-x", "gear-iconx", "invoca-workflow-agent"],
+  ic: ["invoca-workflow-agent", "gear-iconx", "wilson-x", "grace-providence"],
 };
 
 export const CASE_STUDIES = {
@@ -51,6 +51,16 @@ export const CASE_STUDIES = {
       "Transformed a simple clickbot into a conversational agent serving 2.6 million patients, in an industry with almost no appetite for AI risk. I got clinical sign-off on every flow and managed a five-person team responsible for multiple mobile apps, a core design system, and an SSO product.",
     tags: ["Conversational AI", "Healthcare", "Design Systems", "Product Design Management", "Team leadership"],
   },
+  "gear-iconx": {
+    title: "Samsung Gear IconX",
+    role: "Senior Interaction Designer",
+    years: "2014–2016",
+    image: "/archive/smithkipnis/img/gear-iconx/cover.webp",
+    alt: "A Samsung Gear IconX earbud in a listener's ear, a fingertip tapping its touch surface.",
+    summary:
+      "As a Senior Interaction Designer working on Samsung's Gear Icon X earbud headphones, I created prototypes, defined touch based interactions, developed the audio UI, and created specifications for lighting feedback.",
+    tags: ["Connected hardware", "Audio UI", "Interaction prototyping", "Human factors"],
+  },
   "wilson-x": {
     title: "Wilson X Connected Basketball",
     role: "UX Lead & Production Lead",
@@ -64,12 +74,12 @@ export const CASE_STUDIES = {
 };
 
 /**
- * Earlier work: twenty older projects recovered from the original Semplice
- * (WordPress) portfolio. They sit below the featured three on the case study
+ * Earlier work: nineteen older projects recovered from the original Semplice
+ * (WordPress) portfolio. They sit below the featured case studies on the
  * index as a compact grid, and in Finder under Work › Earlier Work.
  *
- * Order is the Semplice site's running order. Grace and Wilson X were on that
- * site too; their newer write-ups above replace them.
+ * Order is the Semplice site's running order. Grace, Wilson X and Gear IconX
+ * were on that site too and appear above as featured case studies instead.
  *
  * Only what each original page stated is recorded: `org`, `role` and `years`
  * are left out where the page didn't say. `summary` is the page's own first
@@ -87,15 +97,6 @@ export const EARLIER_WORK = [
     years: "2018–2021",
     summary:
       "From 2018 to 2021, I worked at Wells Fargo, designing product concepts for conversational AI, internal tools for conversation designers, conversation analytics and machine learning.",
-  },
-  {
-    slug: "gear-iconx",
-    title: "Gear IconX",
-    role: "Senior Interaction Designer",
-    org: "Samsung",
-    years: "2014–2016",
-    summary:
-      "As a Senior Interaction Designer working on Samsung's Gear Icon X earbud headphones, I created prototypes, defined touch based interactions, developed the audio UI, and created specifications for lighting feedback.",
   },
   {
     slug: "hololens",

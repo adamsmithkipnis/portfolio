@@ -1,7 +1,7 @@
 /**
  * Imports the Earlier Work thumbnails from the recovered Semplice export.
  *
- * The twenty earlier case studies (config/case-studies.mjs → EARLIER_WORK) use
+ * The earlier case studies (config/case-studies.mjs → EARLIER_WORK) use
  * the old site's 360x360 cover sketches as their thumbnails on the case study
  * index and in Finder. Those came out of the site backup into a local folder
  * (smithkipnis-case-studies/images/<project>/cover-*.png); this converts them

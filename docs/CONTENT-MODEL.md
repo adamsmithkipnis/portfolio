@@ -281,7 +281,7 @@ disagree. Double-clicking one opens Safari at the case study; selecting it in
 column view shows its card. They sit ahead of any MDX projects, in the running
 order the archive uses.
 
-After them comes an **Earlier Work** folder (`EARLIER_WORK_DIR`): twenty older
+After them comes an **Earlier Work** folder (`EARLIER_WORK_DIR`): nineteen older
 projects recovered from the Semplice/WordPress site, also as web locations,
 listed flat with no subfolders, from `EARLIER_WORK` in the same config. Their
 pages live beside the featured ones in the archive and appear below them on the

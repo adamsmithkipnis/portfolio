@@ -111,9 +111,9 @@ function renderEarlierCard(project) {
 }
 
 /**
- * Earlier work sits below the featured three: a compact grid of thumbnails
- * and titles, so twenty older projects read as depth rather than competing
- * with the three the framing line introduces.
+ * Earlier work sits below the featured case studies: a compact grid of thumbnails
+ * and titles, so the older projects read as depth rather than competing
+ * with the ones the framing line introduces.
  */
 export function renderEarlierWork() {
   return `
@@ -191,7 +191,7 @@ export function renderEarlierHead(project) {
 }
 
 /**
- * Previous/next within one running order. The featured three page among
+ * Previous/next within one running order. The featured studies page among
  * themselves, and so do the earlier projects, so a reader moving through
  * either set stays in it.
  */
