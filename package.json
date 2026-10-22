@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "content": "node scripts/build-content.mjs",
+    "import:earlier-work-images": "node scripts/import-earlier-work-images.mjs",
     "spotify:fetch": "node scripts/fetch-spotify-playlists.mjs",
     "pdf-worker": "node scripts/copy-pdf-worker.mjs",
     "predev": "npm run content && npm run archive && npm run pdf-worker",

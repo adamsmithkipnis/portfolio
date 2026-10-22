@@ -88,7 +88,8 @@ there is a curated set; the `/photos` route still works)
 - opens at `/safari`
 - start page is the archived smithkipnis.com, framed same-origin from `/website`,
   which is also directly visitable on its own
-- five archived pages: home, the case studies index, and three case studies, at
+- archived pages: home, the case studies index, four featured case studies and
+  nineteen earlier ones (`config/case-studies.mjs`), at
   the same paths the original used
 - it really browses — links between archived pages load in the frame, back and
   forward walk session history, and the address bar tracks where you are

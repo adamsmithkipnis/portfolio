@@ -281,6 +281,14 @@ disagree. Double-clicking one opens Safari at the case study; selecting it in
 column view shows its card. They sit ahead of any MDX projects, in the running
 order the archive uses.
 
+After them comes an **Earlier Work** folder (`EARLIER_WORK_DIR`): nineteen older
+projects recovered from the Semplice/WordPress site, also as web locations,
+listed flat with no subfolders, from `EARLIER_WORK` in the same config. Their
+pages live beside the featured ones in the archive and appear below them on the
+case study index as a compact grid. Those projects record only what their
+original page stated, so role, company, timeline and summary can each be absent;
+`WorkLinkDetail` shows a row only when it has a value.
+
 Other top-level content folders (`writing/`, loose assets) get their own mounts
 when they're needed.
 

@@ -165,6 +165,12 @@ state to diff against.
       and browsable in Safari. `content/work` is empty, and Finder's Work folder
       lists the archived studies as web locations instead (`lib/work-links.ts`),
       so a double-click hands Safari the page
+- [x] Earlier work — 19 older projects recovered from the Semplice site, as
+      archive pages in the house markup (`EARLIER_WORK` in
+      `config/case-studies.mjs`). Index shows them below the featured three as
+      a compact grid; Finder lists them in Work › Earlier Work; each landing
+      page collage image links to its case study. Thumbnails come in with
+      `npm run import:earlier-work-images`
 - [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
 - [ ] Essays into Notes
 - [ ] Messages personas

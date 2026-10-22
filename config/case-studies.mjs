@@ -1,7 +1,7 @@
 /**
  * The case studies, and how the site frames them.
  *
- * The same three projects read differently depending on the role being
+ * The same projects read differently depending on the role being
  * applied for, so the framing sentence and the running order are switched
  * from one value here rather than by rewriting pages. `scripts/build-archive.mjs`
  * regenerates the index and the previous/next links from this file, and
@@ -15,9 +15,9 @@ export const SITE_MODE = "management";
 
 export const FRAMING = {
   management:
-    "Three projects across design leadership, production leadership, and self-initiated AI product strategy.",
+    "Four projects across design leadership, production leadership, hardware interaction design, and self-initiated AI product strategy.",
   ic:
-    "Products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Three projects, hands on the work in all three.",
+    "Products where the technology is genuinely hard: conversational AI, agentic systems, connected hardware. Four projects, hands on the work in all four.",
 };
 
 /**
@@ -26,8 +26,8 @@ export const FRAMING = {
  * study's neighbours always match the order a visitor was just reading in.
  */
 export const ORDER = {
-  management: ["grace-providence", "wilson-x", "invoca-workflow-agent"],
-  ic: ["invoca-workflow-agent", "wilson-x", "grace-providence"],
+  management: ["grace-providence", "wilson-x", "gear-iconx", "invoca-workflow-agent"],
+  ic: ["invoca-workflow-agent", "gear-iconx", "wilson-x", "grace-providence"],
 };
 
 export const CASE_STUDIES = {
@@ -51,6 +51,16 @@ export const CASE_STUDIES = {
       "Transformed a simple clickbot into a conversational agent serving 2.6 million patients, in an industry with almost no appetite for AI risk. I got clinical sign-off on every flow and managed a five-person team responsible for multiple mobile apps, a core design system, and an SSO product.",
     tags: ["Conversational AI", "Healthcare", "Design Systems", "Product Design Management", "Team leadership"],
   },
+  "gear-iconx": {
+    title: "Samsung Gear IconX",
+    role: "Senior Interaction Designer",
+    years: "2014–2016",
+    image: "/archive/smithkipnis/img/gear-iconx/cover.webp",
+    alt: "A Samsung Gear IconX earbud in a listener's ear, a fingertip tapping its touch surface.",
+    summary:
+      "As a Senior Interaction Designer working on Samsung's Gear Icon X earbud headphones, I created prototypes, defined touch based interactions, developed the audio UI, and created specifications for lighting feedback.",
+    tags: ["Connected hardware", "Audio UI", "Interaction prototyping", "Human factors"],
+  },
   "wilson-x": {
     title: "Wilson X Connected Basketball",
     role: "UX Lead & Production Lead",
@@ -62,3 +72,145 @@ export const CASE_STUDIES = {
     tags: ["Connected hardware", "Audio-first UX", "Games", "Cannes Lion"],
   },
 };
+
+/**
+ * Earlier work: nineteen older projects recovered from the original Semplice
+ * (WordPress) portfolio. They sit below the featured case studies on the
+ * index as a compact grid, and in Finder under Work › Earlier Work.
+ *
+ * Order is the Semplice site's running order. Grace, Wilson X and Gear IconX
+ * were on that site too and appear above as featured case studies instead.
+ *
+ * Only what each original page stated is recorded: `org`, `role` and `years`
+ * are left out where the page didn't say. `summary` is the page's own first
+ * sentence, quoted exactly, and is used for link previews and Finder's card.
+ * `image` is the project's thumbnail from the Semplice site, imported by
+ * `npm run import:earlier-work-images`. Page bodies are hand-maintained HTML in
+ * public/archive/smithkipnis/casestudies/<slug>/; `scripts/build-archive.mjs`
+ * regenerates their head tags and previous/next links from this list.
+ */
+export const EARLIER_WORK = [
+  {
+    slug: "wells-fargo-conversational-ai",
+    title: "Wells Fargo Conversational AI",
+    org: "Wells Fargo",
+    years: "2018–2021",
+    summary:
+      "From 2018 to 2021, I worked at Wells Fargo, designing product concepts for conversational AI, internal tools for conversation designers, conversation analytics and machine learning.",
+  },
+  {
+    slug: "hololens",
+    title: "Hololens",
+    role: "Audio Lead, LXP Studio",
+    org: "Microsoft",
+    summary:
+      "As the Audio Lead for LXP Studio at Microsoft, I was part of the team that created the very first experiences for Hololens, Microsoft's mixed-reality headset.",
+  },
+  {
+    slug: "gear-fit-2-pro",
+    title: "Gear Fit 2 Pro",
+    org: "Samsung",
+    summary:
+      "Sometimes, the best way to improve a product isn't through prototyping or pixel-perfect screen design.",
+  },
+  {
+    slug: "kinect-adventures",
+    title: "Kinect Adventures",
+    role: "Audio Lead",
+    summary:
+      "I was the first fully dedicated Audio Designer brought on to Project Natal, later known as Kinect.",
+  },
+  { slug: "samsung-home-hub", title: "Samsung Home Hub", org: "Samsung" },
+  {
+    slug: "hackcouture-cloud-hoodie",
+    title: "HackCouture Cloud Hoodie",
+    org: "HackCouture",
+    summary:
+      "I brought the HackCouture team to Las Vegas to compete in another AT&T Hackathon.",
+  },
+  {
+    slug: "hackcouture-gauntlet",
+    title: "HackCouture Gauntlet",
+    org: "HackCouture",
+    summary:
+      "I formed and led the team that took first place in the SIC AT&T wearable computing hackathon with the creation of our gesture detecting fabric glove and air guitar app.",
+  },
+  { slug: "family-hub-refrigerator", title: "Family Hub Refrigerator" },
+  {
+    slug: "kinect-fun-labs",
+    title: "Kinect Fun Labs",
+    years: "3 months",
+    summary:
+      "Kinect Fun Labs was a 3 month effort to create a new set of lightweight experiences to showcase Kinect's capabilities.",
+  },
+  {
+    slug: "kinect-star-wars",
+    title: "Kinect Star Wars",
+    summary: "Kinect Star wars was one of the most complex projects I've ever worked on.",
+  },
+  {
+    slug: "grooviks-cube",
+    title: "Grooviks Cube",
+    summary:
+      "I designed the sounds and behavior of sounds for the \"Groovik's Cube\", a giant (15 feet x 15 feet), interactive, light-based, Rubik's Cube for the Burning Man art festival.",
+  },
+  {
+    slug: "m-a-g",
+    title: "M.A.G.",
+    role: "Audio Lead",
+    org: "Zipper Interactive",
+    summary: "While at Zipper interactive, I was the Audio Lead for MAG Massive Action Game.",
+  },
+  {
+    slug: "transformers-re-edit",
+    title: "Transformers Re-Edit",
+    summary:
+      "I re-edited this video to showcase some of my recording, editing and sound design abilities.",
+  },
+  {
+    slug: "hackcouture-rfid-rings",
+    title: "HackCouture RFID Rings",
+    org: "HackCouture",
+    summary:
+      "I remixed these rings from Maxsu on Thingiverse, 3D printed them and used them to explore associating identity with wearable technology.",
+  },
+  {
+    slug: "guild-wars-2",
+    title: "Guild Wars 2",
+    org: "ArenaNet",
+    years: "Summer 2009",
+    summary:
+      "In the summer of 2009, I worked with ArenaNet's Audio department to build out their Sound Library.",
+  },
+  {
+    slug: "100-clickthrough-campaign",
+    title: "100% Clickthrough Campaign",
+    years: "August 2013",
+    summary:
+      "In August of 2013, I did a privacy research project where I successfully targeted a Facebook ad at only one user.",
+  },
+  {
+    slug: "hackcouture-qr-code-watchface",
+    title: "HackCouture QR Code Watchface",
+    org: "HackCouture",
+    summary:
+      "As an exploration into how we might create some unique branding for Hackcouture and share links from wearable technology, I created a scannable QR code watchface for a pebble watch.",
+  },
+  {
+    slug: "destroy-all-humans-path-of-the-furon",
+    title: "Destroy All Humans Path Of The Furon",
+    org: "CrankyPants Games",
+    summary:
+      "I spent a year and a half working on Path Of The Furon with a fantastic team from CrankyPants Games, later known as Sandblast Games.",
+  },
+  {
+    slug: "evil-dead-regeneration",
+    title: "Evil Dead: Regeneration",
+    summary:
+      "In addition to being accountable for the audio of the XBox version of ED:R, and doing lots of content creation and implementation, I also did the Cinematic Audio Post-production for a number of Evil Dead Regeneration videos.",
+  },
+].map((project) => ({
+  ...project,
+  image: `/archive/smithkipnis/img/earlier-work/covers/${project.slug}.webp`,
+  alt: project.title,
+}));

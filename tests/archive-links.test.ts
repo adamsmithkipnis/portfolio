@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { ARCHIVE_PATHS } from "@/lib/archive-site";
+import { CASE_STUDIES, EARLIER_WORK } from "@/config/case-studies.mjs";
 
 /**
  * The archived site is displayed inside Safari's frame, and its links come in
@@ -37,14 +38,14 @@ const anchorsOf = (html: string) => html.match(/<a\s[^>]*>/g) ?? [];
 const hrefOf = (a: string) => a.match(/href="([^"]*)"/)?.[1] ?? "";
 
 test("every archived page is present", () => {
+  // The home page, the index, and one page per case study in the config,
+  // featured and earlier alike, with nothing extra on disk.
   const names = pages.map((p) => p.name).sort();
-  assert.deepEqual(names, [
-    "casestudies/grace-providence/index.html",
-    "casestudies/index.html",
-    "casestudies/invoca-workflow-agent/index.html",
-    "casestudies/wilson-x/index.html",
-    "index.html",
-  ]);
+  const slugs = [...Object.keys(CASE_STUDIES), ...EARLIER_WORK.map((project) => project.slug)];
+  assert.deepEqual(
+    names,
+    ["casestudies/index.html", "index.html", ...slugs.map((slug) => `casestudies/${slug}/index.html`)].sort()
+  );
 });
 
 test("links that leave the archive open in a new tab", () => {
@@ -142,6 +143,17 @@ const EXPECTED_VIDEOS: Record<string, string[]> = {
   "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08"],
   "casestudies/grace-providence/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
   "casestudies/wilson-x/index.html": ["bC2qMDS8g9Q", "F-Abz-lDYFU"],
+  // Earlier work, recovered from the Semplice site
+  "casestudies/family-hub-refrigerator/index.html": ["gZC198NCW48"],
+  "casestudies/grooviks-cube/index.html": ["5IdX6UlClGg"],
+  "casestudies/hackcouture-rfid-rings/index.html": ["H4HAfhG7OHo"],
+  "casestudies/hololens/index.html": ["Hf9qkURqtbM"],
+  "casestudies/kinect-adventures/index.html": ["BZbeBGHpdio"],
+  "casestudies/kinect-fun-labs/index.html": ["Kc3l9OdFqvQ"],
+  "casestudies/kinect-star-wars/index.html": ["oXUoguMor0Y"],
+  "casestudies/m-a-g/index.html": ["9TCrd0u8eVs"],
+  "casestudies/samsung-home-hub/index.html": ["Oc3zejgmJTY"],
+  "casestudies/wells-fargo-conversational-ai/index.html": ["aKQZXQ1QO5k"],
 };
 
 test("each case study embeds exactly the videos it should", () => {
@@ -162,7 +174,8 @@ test("embeds use the privacy-preserving host and reserve their space", () => {
       assert.match(frame, /allowfullscreen/, `${page.name}: embed cannot go fullscreen`);
       assert.match(frame, /allow="[^"]*encrypted-media/, `${page.name}: incomplete allow list`);
     }
-    const embeds = (page.html.match(/youtube-nocookie/g) ?? []).length;
+    // Two earlier-work pages embed Vimeo; every player needs a sized box either way.
+    const embeds = (page.html.match(/youtube-nocookie|player\.vimeo\.com/g) ?? []).length;
     const boxes = (page.html.match(/class="cs-video/g) ?? []).length;
     assert.equal(boxes, embeds, `${page.name}: every embed needs a sized container`);
   }

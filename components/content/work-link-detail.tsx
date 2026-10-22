@@ -36,24 +36,30 @@ export function WorkLinkDetail({ link, onOpen, className }: WorkLinkDetailProps)
       </div>
 
       <h1 className="mt-4 text-lg font-semibold">{link.title}</h1>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{link.summary}</p>
+      {link.summary && (
+        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{link.summary}</p>
+      )}
 
+      {/* Earlier work records only what its original page stated, so each row is optional. */}
       <div className="mt-4 max-w-md rounded-xl bg-muted/50 px-4 py-2">
-        <MetaRow label="Role" value={link.role} />
-        <MetaRow label="Years" value={link.years} />
+        {link.role && <MetaRow label="Role" value={link.role} />}
+        {link.org && <MetaRow label="Company" value={link.org} />}
+        {link.years && <MetaRow label="Timeline" value={link.years} />}
         <MetaRow label="Kind" value="Web Internet Location" />
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {link.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] text-muted-foreground"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      {link.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {link.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] text-muted-foreground"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       <button
         type="button"

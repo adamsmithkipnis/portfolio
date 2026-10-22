@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   CASE_STUDIES,
+  EARLIER_WORK,
   FRAMING,
   ORDER,
   SITE_MODE,
@@ -94,6 +95,37 @@ ${tags}
     </a>`;
 }
 
+/** "Wells Fargo · 2018–2021", from whichever of the two the page stated. */
+function earlierMeta(project) {
+  return [project.org, project.years].filter(Boolean).map(escapeHtml).join(" &middot; ");
+}
+
+function renderEarlierCard(project) {
+  const meta = earlierMeta(project);
+  return `      <a class="cs-mini" href="${BASE}/${project.slug}">
+        <img src="${project.image}" alt="" loading="lazy" />
+        <span class="cs-mini-title">${escapeHtml(project.title)}</span>${
+          meta ? `\n        <span class="cs-mini-meta">${meta}</span>` : ""
+        }
+      </a>`;
+}
+
+/**
+ * Earlier work sits below the featured case studies: a compact grid of thumbnails
+ * and titles, so the older projects read as depth rather than competing
+ * with the ones the framing line introduces.
+ */
+export function renderEarlierWork() {
+  return `
+  <section class="cs-earlier" aria-labelledby="earlier-work">
+    <h2 class="cs-earlier-h2" id="earlier-work">Earlier Work</h2>
+    <div class="cs-mini-grid">
+${EARLIER_WORK.map(renderEarlierCard).join("\n")}
+    </div>
+  </section>
+`;
+}
+
 export function renderIndex() {
   const cards = orderedSlugs().map(renderCard).join("\n\n");
   return `
@@ -103,7 +135,7 @@ export function renderIndex() {
   <div class="cs-cards">
 ${cards}
   </div>
-`;
+${renderEarlierWork()}`;
 }
 
 /**
@@ -111,12 +143,18 @@ ${cards}
  * this only adds what a search result or a pasted link needs to look right.
  */
 function renderHeadTags({ title, description, image, url }) {
-  return `
-<meta name="description" content="${escapeHtml(description)}" />
+  // Two earlier-work pages are a single video with no text, so there is no
+  // sentence of the author's to use. Better no description than an invented one.
+  const describe = description
+    ? `\n<meta name="description" content="${escapeHtml(description)}" />`
+    : "";
+  const ogDescribe = description
+    ? `\n<meta property="og:description" content="${escapeHtml(description)}" />`
+    : "";
+  return `${describe}
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />
-<meta property="og:title" content="${escapeHtml(title)}" />
-<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:title" content="${escapeHtml(title)}" />${ogDescribe}
 <meta property="og:image" content="${SITE_URL}${image}" />
 <meta property="og:url" content="${SITE_URL}${url}" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -143,25 +181,47 @@ export function renderCaseStudyHead(slug) {
   });
 }
 
-export function renderPager(slug) {
-  const slugs = orderedSlugs();
+export function renderEarlierHead(project) {
+  return renderHeadTags({
+    title: `${project.title} — ${SITE_NAME}`,
+    description: project.summary,
+    image: project.image,
+    url: `${BASE}/${project.slug}`,
+  });
+}
+
+/**
+ * Previous/next within one running order. The featured studies page among
+ * themselves, and so do the earlier projects, so a reader moving through
+ * either set stays in it.
+ */
+function renderPagerIn(slugs, titleOf, slug) {
   const at = slugs.indexOf(slug);
   const links = [];
 
   if (at > 0) {
     const previous = slugs[at - 1];
     links.push(
-      `    <a class="cs-prev-link" href="${BASE}/${previous}"><span>Previous</span>${escapeHtml(CASE_STUDIES[previous].title)}</a>`
+      `    <a class="cs-prev-link" href="${BASE}/${previous}"><span>Previous</span>${escapeHtml(titleOf(previous))}</a>`
     );
   }
   if (at !== -1 && at < slugs.length - 1) {
     const next = slugs[at + 1];
     links.push(
-      `    <a class="cs-next-link" href="${BASE}/${next}"><span>Next</span>${escapeHtml(CASE_STUDIES[next].title)}</a>`
+      `    <a class="cs-next-link" href="${BASE}/${next}"><span>Next</span>${escapeHtml(titleOf(next))}</a>`
     );
   }
 
   return `\n${links.join("\n")}\n  `;
+}
+
+export function renderPager(slug) {
+  return renderPagerIn(orderedSlugs(), (s) => CASE_STUDIES[s].title, slug);
+}
+
+export function renderEarlierPager(slug) {
+  const titles = new Map(EARLIER_WORK.map((project) => [project.slug, project.title]));
+  return renderPagerIn([...titles.keys()], (s) => titles.get(s), slug);
 }
 
 /** The files this script owns, as { file, contents } after regeneration. */
@@ -179,6 +239,14 @@ export async function buildArchive() {
     let html = await readFile(pagePath, "utf8");
     html = replaceRegion(html, "generated:head", renderCaseStudyHead(slug), pagePath);
     html = replaceRegion(html, "generated:pager", renderPager(slug), pagePath);
+    results.push({ file: pagePath, contents: html });
+  }
+
+  for (const project of EARLIER_WORK) {
+    const pagePath = path.join(CASE_STUDY_DIR, project.slug, "index.html");
+    let html = await readFile(pagePath, "utf8");
+    html = replaceRegion(html, "generated:head", renderEarlierHead(project), pagePath);
+    html = replaceRegion(html, "generated:pager", renderEarlierPager(project.slug), pagePath);
     results.push({ file: pagePath, contents: html });
   }
 
