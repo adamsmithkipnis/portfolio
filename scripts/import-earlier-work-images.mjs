@@ -1,19 +1,19 @@
 /**
- * Imports the images for content/work/earlier-work from the recovered Semplice export.
+ * Imports the Earlier Work thumbnails from the recovered Semplice export.
  *
- * The case studies under content/work/earlier-work were recovered from the old
- * Semplice (WordPress) site. Their Markdown is in the repo; their images came out
- * of the site backup into a local folder (smithkipnis-case-studies/images/<project>/),
- * which this script converts to WebP and copies into public/content/.
+ * The twenty earlier case studies (config/case-studies.mjs → EARLIER_WORK) use
+ * the old site's 360x360 cover sketches as their thumbnails on the case study
+ * index and in Finder. Those came out of the site backup into a local folder
+ * (smithkipnis-case-studies/images/<project>/cover-*.png); this converts them
+ * to WebP under public/archive/smithkipnis/img/earlier-work/covers/.
  *
  * Usage:
  *   npm run import:earlier-work-images                         # ~/Downloads/smithkipnis-case-studies/images
  *   npm run import:earlier-work-images -- /path/to/images      # somewhere else
  *
- * scripts/earlier-work-images.json maps each source file to its target. Lossy WebP at
- * quality 85 with no downscaling, matching scripts/optimize-archive-images.mjs.
- * Safe to re-run: it re-encodes from the originals and overwrites the targets.
- * tests/content-assets.test.ts fails until every referenced image is present.
+ * scripts/earlier-work-covers.json maps each source file to its target. Lossy
+ * WebP at quality 85 with no downscaling, matching optimize-archive-images.mjs.
+ * Safe to re-run. tests/archive-assets.test.ts fails while any is missing.
  */
 
 import sharp from "sharp";
@@ -23,7 +23,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const MANIFEST = path.join(ROOT, "scripts/earlier-work-images.json");
+const MANIFEST = path.join(ROOT, "scripts/earlier-work-covers.json");
 const QUALITY = 85;
 
 const sourceDir = path.resolve(
@@ -47,10 +47,8 @@ async function main() {
   }
 
   const manifest = JSON.parse(await readFile(MANIFEST, "utf8"));
-  let converted = 0;
-  let inputBytes = 0;
-  let outputBytes = 0;
   const missing = [];
+  let converted = 0;
 
   for (const { from, to } of manifest) {
     const source = path.join(sourceDir, from);
@@ -58,21 +56,13 @@ async function main() {
       missing.push(from);
       continue;
     }
-
     const target = path.join(ROOT, to);
     await mkdir(path.dirname(target), { recursive: true });
-    const info = await sharp(source).webp({ quality: QUALITY }).toFile(target);
-
-    inputBytes += (await stat(source)).size;
-    outputBytes += info.size;
+    await sharp(source).webp({ quality: QUALITY }).toFile(target);
     converted += 1;
   }
 
-  const mb = (bytes) => (bytes / 1024 / 1024).toFixed(1);
-  console.log(
-    `earlier-work images: ${converted}/${manifest.length} converted (${mb(inputBytes)}MB -> ${mb(outputBytes)}MB)`
-  );
-
+  console.log(`earlier-work thumbnails: ${converted}/${manifest.length} converted`);
   if (missing.length > 0) {
     console.error(`Missing from ${sourceDir}:`);
     for (const file of missing) console.error(`  ${file}`);

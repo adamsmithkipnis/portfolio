@@ -8,18 +8,15 @@ export interface Outcome {
   value: string;
 }
 
-// Only `title` is guaranteed. Older recovered work (content/work/earlier-work) records
-// just what its original page stated, so the rest may be absent; ContentDetail
-// already renders each field only when present.
 export interface ProjectMeta {
   title: string;
-  role?: string;
-  org?: string;
-  year?: number;
+  role: string;
+  org: string;
+  year: number;
   duration?: string;
   team?: string;
-  tags?: string[];
-  summary?: string;
+  tags: string[];
+  summary: string;
   outcomes?: Outcome[];
   featured?: boolean;
   /** Redacts org name and artifacts in the UI. */

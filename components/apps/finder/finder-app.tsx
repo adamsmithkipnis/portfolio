@@ -17,7 +17,14 @@ import {
 } from "@/lib/file-route-utils";
 import { getContentNode, isContentPath, WORK_DIR } from "@/lib/content-files";
 import { ContentDetail } from "@/components/content/content-detail";
-import { getWorkLink, hasWorkItems, WORK_LINKS } from "@/lib/work-links";
+import {
+  EARLIER_WORK_DIR,
+  EARLIER_WORK_LINKS,
+  getWorkFolderItems,
+  getWorkLink,
+  hasWorkItems,
+  WORK_LINKS,
+} from "@/lib/work-links";
 import { WorkLinkDetail } from "@/components/content/work-link-detail";
 import type { PreviewFileType } from "@/components/apps/preview";
 import { getFinderVisibleApps } from "@/lib/app-availability";
@@ -436,18 +443,12 @@ export function FinderApp({
         return;
       }
 
-      // ~/Work: the published case studies as web locations, then any MDX
-      // case studies from the build-time content tree
-      if (path === WORK_DIR) {
-        setFiles([
-          ...WORK_LINKS.map((link) => ({
-            name: link.name,
-            displayName: link.title,
-            type: "webloc" as const,
-            path: link.path,
-          })),
-          ...getLocalFinderFiles(path),
-        ]);
+      // ~/Work and ~/Work/Earlier Work: the case studies as web locations
+      // (plus the Earlier Work folder), then any MDX case studies from the
+      // build-time content tree
+      const workItems = getWorkFolderItems(path);
+      if (workItems) {
+        setFiles([...workItems, ...getLocalFinderFiles(path)]);
         setLoading(false);
         return;
       }
@@ -619,8 +620,11 @@ export function FinderApp({
       }
     }
 
-    for (const link of WORK_LINKS) {
+    for (const link of [...WORK_LINKS, ...EARLIER_WORK_LINKS]) {
       entries.push({ name: link.name, type: "webloc", path: link.path, section: "work" });
+    }
+    if (EARLIER_WORK_LINKS.length > 0) {
+      entries.push({ name: "Earlier Work", type: "dir", path: EARLIER_WORK_DIR, section: "work" });
     }
 
     for (const item of TRASH_FILES) {

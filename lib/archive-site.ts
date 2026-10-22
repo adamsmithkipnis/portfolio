@@ -9,6 +9,8 @@
  * because the frame can only serve what is in `public/archive/smithkipnis`.
  */
 
+import { CASE_STUDIES, EARLIER_WORK } from "@/config/case-studies.mjs";
+
 /** Host the archive stands in for. */
 export const ARCHIVE_HOST = "smithkipnis.com";
 
@@ -20,13 +22,14 @@ export const ARCHIVE_ROOT = "/website";
  * files on disk, so a page added without listing it here fails the build
  * rather than silently becoming unreachable from the address bar.
  */
-export const ARCHIVE_PATHS = [
+export const ARCHIVE_PATHS: readonly string[] = [
   ARCHIVE_ROOT,
   `${ARCHIVE_ROOT}/casestudies`,
-  `${ARCHIVE_ROOT}/casestudies/invoca-workflow-agent`,
-  `${ARCHIVE_ROOT}/casestudies/grace-providence`,
-  `${ARCHIVE_ROOT}/casestudies/wilson-x`,
-] as const;
+  // Every case study page, featured and earlier, from the one config both the
+  // pages and Finder are built from.
+  ...Object.keys(CASE_STUDIES).map((slug) => `${ARCHIVE_ROOT}/casestudies/${slug}`),
+  ...EARLIER_WORK.map((project) => `${ARCHIVE_ROOT}/casestudies/${project.slug}`),
+];
 
 /**
  * Case study addresses that were published before the slugs were readable.

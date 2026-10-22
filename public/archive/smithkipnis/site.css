@@ -300,14 +300,24 @@ h1, h2, h3 { font-weight: 500; margin: 0; letter-spacing: -0.02em; }
   padding-bottom: 86.7%; /* 1110 / 1280 */
   margin: 3vh 0 2vh;
 }
-.collage img {
+/* Each tile is a link to its case study. Placement (left/top/width) is inline
+   on the link, so the image just fills it. */
+.collage .tile {
   position: absolute;
+  display: block;
+}
+.collage img {
   display: block;
   width: 100%;
   height: auto;
   border-radius: 20px;
 }
 .collage img.cutout { border-radius: 0; }
+@media (hover: hover) {
+  .collage .tile img { transition: transform 160ms ease; }
+  .collage .tile:hover img { transform: scale(1.03); }
+}
+.collage .tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 4px; }
 
 /* ---------- speaking ---------- */
 
@@ -382,8 +392,8 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   }
   /* Placement is inline (left/top/width per tile), so the stacked layout has
      to beat those inline widths — hence the !important. */
-  .collage img { position: static; width: 100% !important; }
-  .collage img:nth-child(even) { transform: translateY(26px); }
+  .collage .tile { position: static; width: 100% !important; }
+  .collage .tile:nth-child(even) { transform: translateY(26px); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -628,6 +638,64 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   border: 1px solid rgb(37 53 81 / 0.18);
   border-radius: 999px;
   white-space: nowrap;
+}
+
+/* ---------- earlier work ----------
+   Twenty older projects below the featured three. Smaller and denser on
+   purpose: thumbnail and title only, so they read as depth behind the
+   featured work instead of competing with it. Same radius, hover and type
+   families as the cards above, at a smaller size. */
+
+.cs-earlier {
+  margin-top: 12vh;
+  padding-top: 3.2em;
+  border-top: 1px solid rgb(37 53 81 / 0.15);
+}
+
+.cs-earlier-h2 {
+  font-size: clamp(24px, min(calc(14px + 1.6vw), calc(26px + 0.5vw)), 36px);
+  line-height: 1.15;
+  margin: 0 0 1.4em;
+}
+
+.cs-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 34px 22px;
+}
+
+.cs-mini { text-decoration: none; display: block; }
+.cs-mini img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 14px;
+  transition: transform 140ms ease;
+}
+.cs-mini:hover img { transform: scale(1.03); }
+
+.cs-mini-title {
+  display: block;
+  margin: 0.75em 0 0;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.cs-mini:hover .cs-mini-title { text-decoration: underline; text-underline-offset: 3px; }
+
+.cs-mini-meta {
+  display: block;
+  margin: 0.3em 0 0;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  opacity: 0.62;
+}
+
+@media (max-width: 560px) {
+  .cs-mini-grid { grid-template-columns: repeat(2, 1fr); gap: 26px 16px; }
 }
 
 /* ---------- previous / next ---------- */
