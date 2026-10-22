@@ -131,8 +131,18 @@ header {
   background: var(--paper);
   padding: 22px 0;
 }
-header .wrap { display: flex; align-items: center; justify-content: space-between; }
+/* Three nav links do not fit beside the wordmark on a phone. Rather than let
+   the wordmark break across lines or the row run off the side, the nav drops
+   to a second line under it. */
+header .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 26px;
+}
 .wordmark {
+  white-space: nowrap;
   font-family: Poppins, Manrope, sans-serif;
   font-size: 17px;
   font-weight: 500;
@@ -141,10 +151,10 @@ header .wrap { display: flex; align-items: center; justify-content: space-betwee
 }
 .header-nav { display: flex; align-items: center; gap: 26px; }
 
-/* "Case Studies" sits beside Contact. The original has no way in to those
-   pages at all, so this is an addition — the archive is unreachable without
-   one — but it should read as part of the same nav, so both links share a
-   rule. The weight shift on hover is reserved so the text does not reflow
+/* "Case Studies" and "Resume" sit beside Contact. The original has no way in
+   to the case studies at all, so that is an addition — the archive is
+   unreachable without one — and the resume link is too, but they should read
+   as part of the same nav, so all the links share a rule. The weight shift on hover is reserved so the text does not reflow
    its neighbours as it thickens. */
 .nav-link,
 .contact-link {
