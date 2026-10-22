@@ -571,19 +571,17 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   margin: 0 0 3.2em;
 }
 
-/* Cards carry a problem statement now, so they need room to be read rather
-   than counted. Four featured: four across on a wide screen, two by two in
-   the middle, one below the breakpoint. Never three plus an orphan. */
+/* Cards carry a problem statement, so they need room to be read rather than
+   counted. The four featured studies sit in one row, side by side, down to
+   tablet width (the Safari window included); stacking them two by two read
+   as a wall. Phones get one column. */
 .cs-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 44px 26px;
-}
-@media (max-width: 1100px) {
-  .cs-cards { grid-template-columns: repeat(2, 1fr); gap: 44px 30px; }
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px 22px;
 }
 @media (max-width: 600px) {
-  .cs-cards { grid-template-columns: 1fr; }
+  .cs-cards { grid-template-columns: 1fr; gap: 44px; }
 }
 
 .cs-card { text-decoration: none; display: block; }
@@ -645,6 +643,15 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   border: 1px solid rgb(37 53 81 / 0.18);
   border-radius: 999px;
   white-space: nowrap;
+}
+
+/* Four across in a narrower window: scale the card type down a step and let a
+   long tag wrap rather than run past its card. */
+@media (min-width: 601px) and (max-width: 1100px) {
+  .cs-card-title { font-size: 17px; }
+  .cs-card-meta { font-size: 13px; }
+  .cs-card-summary { font-size: 14px; }
+  .cs-tags li { white-space: normal; line-height: 1.25; }
 }
 
 /* ---------- earlier work ----------
