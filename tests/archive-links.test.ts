@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { ARCHIVE_PATHS } from "@/lib/archive-site";
@@ -53,7 +53,10 @@ test("links that leave the archive open in a new tab", () => {
   for (const page of pages) {
     for (const a of anchorsOf(page.html)) {
       const href = hrefOf(a);
-      const leaves = /^(https?:|mailto:)/.test(href);
+      // Same-origin files outside /website (the resume PDF) leave the archive
+      // too: they are not pages it holds, so framing one breaks Safari's
+      // address bar, and a PDF in an iframe is not dependably rendered.
+      const leaves = /^(https?:|mailto:)/.test(href) || /^\/(?!website(\/|$))/.test(href);
       if (leaves && !a.includes('target="_blank"')) offenders.push(`${page.name}: ${a}`);
     }
   }
@@ -131,6 +134,16 @@ test("every page offers a way into the case studies", () => {
       /href="\/website\/casestudies"/,
       `${page.name} has no route to the case studies`
     );
+  }
+});
+
+test("every page links the resume from its header", () => {
+  // The same PDF the desktop shows as ~/Desktop/Adam Smith-Kipnis - Resume.pdf.
+  const resume = '/documents/Adam%20Smith-Kipnis%20-%20Resume.pdf';
+  assert.ok(existsSync(path.join(process.cwd(), "public", decodeURIComponent(resume))));
+  for (const page of pages) {
+    const nav = page.html.match(/<nav class="header-nav">[\s\S]*?<\/nav>/)?.[0] ?? "";
+    assert.ok(nav.includes(`href="${resume}"`), `${page.name} has no resume link in its header`);
   }
 });
 
