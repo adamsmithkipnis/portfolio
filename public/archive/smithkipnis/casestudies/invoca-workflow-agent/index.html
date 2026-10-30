@@ -86,6 +86,9 @@
     <p class="cs-p">The trade-off between the last two is the page underneath. A panel that overlays the dashboard makes the agent useless at the task it's best at, which is explaining what's on screen. So the embedded state reflows the dashboard grid into the narrower space rather than covering it, at the cost of a heavier, slower transition. The popover deliberately leaves the page untouched and accepts the occlusion. I kept both instead of choosing, because the question being asked determines which cost is acceptable.</p>
     <img class="cs-img" src="/archive/smithkipnis/img/screenshot-2026-08-21-at-11-09-00-pm.webp" alt="" loading="lazy" />
     <p class="cs-p"><em>Agent embodiment designs</em></p>
+    <p class="cs-p">Taking inspiration from Braintrust's Loop, the chat window balances an intuitive conversation with a rich set of agentic features in a compact view, small enough to float over a dashboard or dock beside one.</p>
+    <img class="cs-img" src="/archive/smithkipnis/img/web-11-chat-window-anatomy.webp" alt="Annotated chat window. Header: active chats, pop-in/out to float or embed the window, new conversation, and exit. Under the input: data sources, tools, and model selection. In the thread: a card showing searched docs with source links. Above the input: a quick reply suggesting an action based on the user's context." loading="lazy" />
+    <p class="cs-p"><em>Anatomy of the Workflow chat window, my initial UI design</em></p>
     <h4 class="cs-h4">Context Engineering</h4>
     <p class="cs-p">An agent's usefulness is a function of its context, so deciding what it should know is a set of design decisions about what users will ask and what a good answer requires. I specified four pillars of context.</p>
     <ul class="cs-list">
@@ -129,9 +132,13 @@
     <h4 class="cs-h4">Logging every interaction</h4>
     <p class="cs-p">Every interaction was logged to Braintrust: the system prompt, the assembled user context, the scraped page content, and the conversation. When anyone asked how the agent knew something, the answer included a link to one of our published knowledge bases. During our live demo, we refreshed Braintrust in real time and read the trace of the conversation we had just had.</p>
     <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/enlXyoJ2T08" title="Video" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>
-    <h4 class="cs-h4">Getting buy-in from the teams I was threatening</h4>
+    <h4 class="cs-h4">Disrupting the status quo</h4>
     <p class="cs-p">There was real anxiety in the organization that a retrieval agent would devalue the support and Academy teams' work. I made the opposite argument publicly, because the project would have failed politically otherwise. Content from <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">support.invoca.com</a> and <a target="_blank" href="https://support.invoca.com" rel="noopener noreferrer">academy.invoca.com</a> doesn't become less valuable because an agent can retrieve it. It gets a new channel. What is changing is that agents are becoming a bigger consumer of documentation than humans are, which argues for investing in documentation.</p>
     <p class="cs-p">I got that point about agents consuming documentation from Hahnbee Lee, a founder of Mintlify, at Braintrust’s 2026 Trace conference in San Francisco, where <a target="_blank" href="https://www.mintlify.com/blog/state-of-ai" rel="noopener noreferrer">she said close to 50% of their usage was already from agents and was trending toward 90%</a>.</p>
+    <h4 class="cs-h4">Build vs. buy</h4>
+    <p class="cs-p">Building on my Invoca Agent work, I was asked to evaluate how ThoughtSpot could be integrated into the Invoca platform. My thesis was that native context should win: an agent bolted on from outside can’t know who you are, where you are, or what’s on your screen. But to fulfill the request, I prototyped ThoughtSpot’s Spotter and SpotterViz agents running inside Invoca in Figma Make and recorded a walkthrough. This work informed the direction that eventually shipped as Nico.</p>
+    <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/2nS1CrG0LpM" title="Video" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>
+    <p class="cs-p"><em>Figma Make prototype: ThoughtSpot Spotter and SpotterViz inside Invoca</em></p>
     <h3 class="cs-h3">Result</h3>
     <p class="cs-p">Gabriel and I built the majority of this in three days. The Workflow Agent ran on localhost and was deployed to our internal QA platform so everyone in the company could access it.</p>
     <ul class="cs-list">

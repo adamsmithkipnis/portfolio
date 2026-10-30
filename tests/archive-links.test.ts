@@ -140,7 +140,7 @@ test("every page offers a way into the case studies", () => {
  * video was hosted on Squarespace rather than YouTube. Pin the expected set.
  */
 const EXPECTED_VIDEOS: Record<string, string[]> = {
-  "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08"],
+  "casestudies/invoca-workflow-agent/index.html": ["OLVHsXg_M8M", "enlXyoJ2T08", "2nS1CrG0LpM"],
   "casestudies/grace-providence/index.html": ["P5DYWmvUo0c", "SNXDSbrib0g", "4GUX88ot5LM"],
   "casestudies/wilson-x/index.html": ["bC2qMDS8g9Q", "F-Abz-lDYFU"],
   // Earlier work, recovered from the Semplice site
