@@ -1,5 +1,6 @@
 import { Conversation, Message, ReactionType } from "@/types/messages";
 import { soundEffects } from "./sound-effects";
+import { captureEvent, captureMessagesFirstSend } from "@/lib/analytics";
 import { trimConversationHistory } from "@/lib/messages/history-window";
 
 type ConversationState = {
@@ -148,6 +149,7 @@ export class MessageQueue {
   }
 
   public enqueueUserMessage(conversation: Conversation) {
+    captureMessagesFirstSend();
     const state = this.getOrCreateState(conversation.id);
 
     this.cancelProcessing(conversation.id);
@@ -483,7 +485,10 @@ export class MessageQueue {
         if (error instanceof Error && error.name === "AbortError") throw error;
         // Don't retry quota/rate-limit errors
         const status = (error as unknown as Record<string, number>)?.status;
-        if (status === 429) throw error;
+        if (status === 429) {
+          captureEvent("chat_429");
+          throw error;
+        }
         if (attempt < retries) {
           await this.delay(1000, signal);
           continue;

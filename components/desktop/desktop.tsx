@@ -66,6 +66,14 @@ const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app")
 const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
 import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
 import { getStoredUnreadCount } from "@/lib/messages/unread-count";
+import {
+  FIRST_VISIT_DELAY_MS,
+  FIRST_VISIT_NOTIFICATION_ID,
+  buildFirstVisitNotification,
+  markFirstVisitNudgeShown,
+  shouldShowFirstVisitNudge,
+} from "@/lib/messages/first-visit";
+import { captureEvent } from "@/lib/analytics";
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
@@ -801,6 +809,33 @@ function DesktopContent({
     setIsNotificationHovered(false);
   }, []);
 
+  // First visit: Messages opens behind Safari, then a notification says what
+  // is in it. Runs once per browser; the flag is set when the banner shows.
+  const firstVisitRef = useRef({ openWindow, focusWindow, getWindow });
+  firstVisitRef.current = { openWindow, focusWindow, getWindow };
+  useEffect(() => {
+    if (initialAppId && initialAppId !== "safari") return;
+    if (!shouldShowFirstVisitNudge(window.localStorage)) return;
+    const notification = buildFirstVisitNotification();
+    if (!notification) return;
+
+    const { openWindow: open, getWindow: get } = firstVisitRef.current;
+    if (!get("messages")?.isOpen) {
+      open("messages");
+      // opening focuses; hand focus straight back so Safari stays in front
+      queueMicrotask(() => firstVisitRef.current.focusWindow("safari"));
+    }
+
+    const timer = window.setTimeout(() => {
+      markFirstVisitNudgeShown(window.localStorage);
+      setActiveNotification(notification);
+      setIsNotificationHovered(false);
+      captureEvent("first_visit_nudge_shown");
+    }, FIRST_VISIT_DELAY_MS);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleNotificationDismiss = useCallback(() => {
     setActiveNotification(null);
     setIsNotificationHovered(false);
@@ -816,7 +851,7 @@ function DesktopContent({
     notificationTimeoutRef.current = setTimeout(() => {
       setActiveNotification(null);
       notificationTimeoutRef.current = null;
-    }, 3000);
+    }, activeNotification.durationMs ?? 3000);
   }, [activeNotification, isNotificationHovered]);
 
   useEffect(() => {
@@ -833,6 +868,7 @@ function DesktopContent({
 
   const handleNotificationClick = useCallback((notification: MessagesNotificationPayload) => {
     const { conversationId } = notification;
+    if (notification.id === FIRST_VISIT_NOTIFICATION_ID) captureEvent("first_visit_nudge_clicked");
     saveMessagesConversation(conversationId);
     const requestId = nextMessagesSelectRequestIdRef.current++;
     setMessagesSelectRequest({ conversationId, requestId });

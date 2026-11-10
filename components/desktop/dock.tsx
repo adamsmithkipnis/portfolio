@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { APPS, getAppById } from "@/lib/app-config";
+import { captureEvent } from "@/lib/analytics";
 import { useWindowManager } from "@/lib/window-context";
 import { cn } from "@/lib/utils";
 import { CalendarDockIcon } from "@/components/apps/calendar/calendar-dock-icon";
@@ -301,6 +302,10 @@ export function Dock({
   }, [currentAppsKey, visibleApps]);
 
   const handleAppClick = (appId: string) => {
+    captureEvent("app_opened", { app: appId, via: "dock" });
+    if ((appBadges[appId] ?? 0) > 0) {
+      captureEvent("dock_badge_clicked", { app: appId, count: appBadges[appId] ?? 0 });
+    }
     // Special handling for Finder to reset tab to recents
     if (appId === "finder" && onFinderClick) {
       onFinderClick();
