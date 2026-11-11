@@ -8,8 +8,8 @@ import type { MessagesNotificationPayload } from "@/types/messages/notification"
  */
 export const FIRST_VISIT_STORAGE_KEY = "portfolioFirstVisitNudgeShown";
 export const FIRST_VISIT_DELAY_MS = 30_000;
-/** Long enough to read two sentences; ordinary banners last 3s. */
-export const FIRST_VISIT_BANNER_MS = 9_000;
+/** A touch over macOS's ~5s banner, since the visitor is not expecting it. */
+export const FIRST_VISIT_BANNER_MS = 6_000;
 
 export const FIRST_VISIT_NOTIFICATION_ID = "first-visit-nudge";
 
@@ -21,8 +21,9 @@ const FIRST_VISIT_CONVERSATION_NAME = "The City";
  * puts words in a real person's mouth. Change the copy here only.
  */
 export const FIRST_VISIT_SENDER = "Adam Smith-Kipnis";
+/** Two banner lines (~80 characters) hold all of it; the banner clamps at two. */
 export const FIRST_VISIT_BODY =
-  "Still here? Behind this window is a group chat of AI personas I built. Open it and ask them something.";
+  "Behind this window: a group chat of AI personas I built. Ask them something.";
 
 /** True when this browser has never been shown the nudge. */
 export function shouldShowFirstVisitNudge(storage: Pick<Storage, "getItem"> | null): boolean {
