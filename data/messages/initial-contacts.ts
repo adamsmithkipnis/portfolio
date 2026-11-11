@@ -1,3 +1,5 @@
+import { ADAM_AI_BIO, ADAM_AI_NAME, ADAM_AI_PROMPT, ADAM_AI_TITLE } from "@/lib/messages/adam-ai";
+
 export interface InitialContact {
   name: string;
   title?: string;
@@ -6,6 +8,12 @@ export interface InitialContact {
 }
 
 export const initialContacts: InitialContact[] = [
+  {
+    name: ADAM_AI_NAME,
+    title: ADAM_AI_TITLE,
+    prompt: ADAM_AI_PROMPT,
+    bio: ADAM_AI_BIO,
+  },
   {
     name: "Jony Ive",
     title: "Designer",

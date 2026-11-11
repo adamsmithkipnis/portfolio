@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { initialContacts } from "../data/messages/initial-contacts";
+import { ADAM_AI_NAME } from "../lib/messages/adam-ai";
 import { initialConversations } from "../data/messages/initial-conversations";
 import {
   FIRST_VISIT_STORAGE_KEY,
@@ -40,4 +42,19 @@ test("the banner opens a seeded conversation", () => {
   const notification = buildFirstVisitNotification();
   assert.ok(notification);
   assert.ok(initialConversations.some((c) => c.id === notification.conversationId));
+});
+
+test("the banner is from the labeled AI, and the thread holds that message", () => {
+  const notification = buildFirstVisitNotification();
+  assert.ok(notification);
+  assert.match(notification.sender, /\(AI\)$/);
+  const thread = initialConversations.find((c) => c.id === notification.conversationId)!;
+  assert.equal(thread.messages[0].content, notification.body);
+  assert.equal(thread.messages[0].sender, notification.sender);
+  assert.ok(notification.body.length <= 80, "must fit the banner's two lines");
+});
+
+test("the AI persona has a prompt, so the chat route can answer as it", () => {
+  const contact = initialContacts.find((c) => c.name === ADAM_AI_NAME);
+  assert.ok(contact?.prompt?.includes("AI"));
 });
