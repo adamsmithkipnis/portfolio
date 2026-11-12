@@ -1,7 +1,7 @@
 import {
   ADAM_AI_CONVERSATION_ID,
   ADAM_AI_NAME,
-  ADAM_AI_OPENING_MESSAGE,
+  ADAM_AI_BANNER_TEXT,
 } from "@/lib/messages/adam-ai";
 import { initialConversations } from "@/data/messages/initial-conversations";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
@@ -38,8 +38,8 @@ export function markFirstVisitNudgeShown(storage: Pick<Storage, "setItem"> | nul
 }
 
 /**
- * The banner announces the opening message of the seeded AI-Adam thread, from
- * the same constants, so what pops up is what the thread holds. The sender
+ * The banner announces the opening line of the seeded AI-Adam thread, from
+ * the same constants, so what pops up is how the thread starts. The sender
  * carries the "(AI)" label.
  */
 export function buildFirstVisitNotification(): MessagesNotificationPayload | null {
@@ -49,7 +49,7 @@ export function buildFirstVisitNotification(): MessagesNotificationPayload | nul
     conversationId: ADAM_AI_CONVERSATION_ID,
     sender: ADAM_AI_NAME,
     title: ADAM_AI_NAME,
-    body: ADAM_AI_OPENING_MESSAGE,
+    body: ADAM_AI_BANNER_TEXT,
     type: "message",
     durationMs: FIRST_VISIT_BANNER_MS,
   };

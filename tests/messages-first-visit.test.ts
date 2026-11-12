@@ -49,7 +49,7 @@ test("the banner is from the labeled AI, and the thread holds that message", () 
   assert.ok(notification);
   assert.match(notification.sender, /\(AI\)$/);
   const thread = initialConversations.find((c) => c.id === notification.conversationId)!;
-  assert.equal(thread.messages[0].content, notification.body);
+  assert.ok(thread.messages[0].content.startsWith(notification.body));
   assert.equal(thread.messages[0].sender, notification.sender);
   assert.ok(notification.body.length <= 80, "must fit the banner's two lines");
 });

@@ -7,16 +7,15 @@ export const ADAM_AI_NAME = "Adam Smith-Kipnis (AI)";
 export const ADAM_AI_CONVERSATION_ID = "0c5d1e7a-4b92-4f36-8a1d-6e3b9c2f5a08";
 export const ADAM_AI_CONTACT_ID = "a3f8d2b1-7c46-4e90-b5a2-1d9e6f0c3b74";
 
-export const ADAM_AI_TITLE = "AI stand-in for Adam, a UX designer";
-export const ADAM_AI_BIO =
-  "An AI built by Adam Smith-Kipnis to answer questions about his work. It is not Adam and is not him speaking: it only knows what is written on this site, and can be wrong.";
+/** The thread's first message: the owner's own words, posted under the labeled AI name. */
+export const ADAM_AI_OPENING_MESSAGE = [
+  "Hey, welcome. I'm Adam. Thanks for stopping by.",
+  "This site is a small desktop I built to show how I work, not just what I've shipped. A few places to start:",
+  "1. Case studies in Safari: Grace at Providence, voice and SMS agents at Invoca, and ThoughtSpot",
+  "2. My GitHub, linked in the footer of the Safari page, if you want to see how the site itself is put together",
+  "3. Here: ask me anything about design, AI, or game audio",
+  "So what brings you here today? Hiring, building something, or just curious?",
+].join("\n\n");
 
-/** What Adam wrote himself, and so the only facts the AI may state. */
-export const ADAM_AI_PROMPT =
-  "You are an AI stand-in for Adam Smith-Kipnis, a UX designer, built by Adam and clearly labeled as an AI on this site. You are not Adam and you never claim to be: if anyone asks, say plainly that you are an AI version of him. Be warm, direct and brief. " +
-  "Facts you may state, and nothing beyond them: Adam builds and leads teams that turn complex technologies into intuitive experiences. He has worked across cybersecurity, healthcare, fintech, wearables, sports, IoT and games, and holds patents. His case studies are in Safari on this site, covering Invoca, ThoughtSpot and the Providence health system's Grace chatbot. His title for the current work is Senior UX Designer. This Messages app, with its group chats of AI personas, is something he built; the personas are AI and their words are invented. " +
-  "If you are asked about anything not in those facts (salary, availability, opinions, past employers or dates, personal life), do not guess or make it up: say you don't know and suggest emailing adam@smithkipnis.com. Never invent quotes, numbers or events, and never speak for Adam on commitments.";
-
-/** Also the banner text, which clamps at two lines (~80 characters). */
-export const ADAM_AI_OPENING_MESSAGE =
-  "Hi, I'm an AI stand-in for Adam. Ask me about his work, or browse the chats.";
+/** The banner shows the opening line only; it clamps at two lines (~80 characters). */
+export const ADAM_AI_BANNER_TEXT = "Hey, welcome. I'm Adam. Thanks for stopping by.";
