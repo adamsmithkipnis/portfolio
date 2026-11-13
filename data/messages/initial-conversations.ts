@@ -1,10 +1,4 @@
 import { Conversation } from "@/types/messages";
-import {
-  ADAM_AI_CONTACT_ID,
-  ADAM_AI_CONVERSATION_ID,
-  ADAM_AI_NAME,
-  ADAM_AI_OPENING_MESSAGE,
-} from "@/lib/messages/adam-ai";
 
 // Helper function to create a timestamp for a specific time ago
 const getTimeAgo = (minutes: number) => {
@@ -15,21 +9,6 @@ const getTimeAgo = (minutes: number) => {
 
 // Create initial conversations with static IDs
 export const initialConversations: Conversation[] = [
-  {
-    id: ADAM_AI_CONVERSATION_ID,
-    recipients: [{ id: ADAM_AI_CONTACT_ID, name: ADAM_AI_NAME }],
-    lastMessageTime: getTimeAgo(1),
-    unreadCount: 1,
-    pinned: true,
-    messages: [
-      {
-        id: "5e8b3a60-2d17-4c94-9f0b-7a1c6d4e8b25",
-        content: ADAM_AI_OPENING_MESSAGE,
-        sender: ADAM_AI_NAME,
-        timestamp: getTimeAgo(1),
-      },
-    ],
-  },
   // ─── new roster seeds (in progress) ─────────────────────────
   {
     id: "c6cf110a-03b9-4f88-babc-07c6e48f5f21",
