@@ -1,7 +1,7 @@
 import {
   ADAM_AI_CONVERSATION_ID,
   ADAM_AI_NAME,
-  ADAM_AI_BANNER_TEXT,
+  ADAM_AI_OPENING_MESSAGE,
 } from "@/lib/messages/adam-ai";
 import { initialConversations } from "@/data/messages/initial-conversations";
 import type { MessagesNotificationPayload } from "@/types/messages/notification";
@@ -38,9 +38,9 @@ export function markFirstVisitNudgeShown(storage: Pick<Storage, "setItem"> | nul
 }
 
 /**
- * The banner announces a short version of the opening of the seeded AI-Adam
- * thread, so what pops up matches how the thread starts. The banner text
- * itself says it is the AI version.
+ * The banner announces the seeded AI-Adam thread with its opening message,
+ * flattened to one line the way Messages does for any notification. The banner
+ * clamps to two lines with an ellipsis, as macOS does for a long message.
  */
 export function buildFirstVisitNotification(): MessagesNotificationPayload | null {
   if (!initialConversations.some((c) => c.id === ADAM_AI_CONVERSATION_ID)) return null;
@@ -49,7 +49,7 @@ export function buildFirstVisitNotification(): MessagesNotificationPayload | nul
     conversationId: ADAM_AI_CONVERSATION_ID,
     sender: ADAM_AI_NAME,
     title: ADAM_AI_NAME,
-    body: ADAM_AI_BANNER_TEXT,
+    body: ADAM_AI_OPENING_MESSAGE.trim().replace(/\s+/g, " "),
     type: "message",
     durationMs: FIRST_VISIT_BANNER_MS,
   };

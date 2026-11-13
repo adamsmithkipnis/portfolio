@@ -51,7 +51,7 @@ test("the banner and thread both say it is the AI version, in the thread's own w
   assert.match(thread0(notification.conversationId), /AI version/);
   const thread = initialConversations.find((c) => c.id === notification.conversationId)!;
   assert.equal(thread.messages[0].sender, notification.sender);
-  assert.ok(notification.body.length <= 80, "must fit the banner's two lines");
+  assert.ok(!notification.body.includes("\n"), "flattened to one line");
   assert.match(initialContacts.find((c) => c.name === ADAM_AI_NAME)!.bio ?? "", /AI/);
 });
 

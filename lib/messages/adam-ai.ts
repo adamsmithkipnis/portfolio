@@ -15,5 +15,3 @@ export const ADAM_AI_OPENING_MESSAGE = [
   "So, what brings you here today? Are you hiring, building something, or just curious?",
 ].join("\n\n");
 
-/** The banner text, a short version of the opening; it clamps at two lines (~80 characters). */
-export const ADAM_AI_BANNER_TEXT = "Hey, welcome! I’m Adam. Sort of. The AI version of me anyway.";
