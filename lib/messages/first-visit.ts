@@ -38,8 +38,8 @@ export function markFirstVisitNudgeShown(storage: Pick<Storage, "setItem"> | nul
 }
 
 /**
- * The banner announces the opening line of the seeded AI-Adam thread, from
- * the same constants, so what pops up is how the thread starts. The banner text
+ * The banner announces a short version of the opening of the seeded AI-Adam
+ * thread, so what pops up matches how the thread starts. The banner text
  * itself says it is the AI version.
  */
 export function buildFirstVisitNotification(): MessagesNotificationPayload | null {
