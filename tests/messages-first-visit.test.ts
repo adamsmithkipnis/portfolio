@@ -44,15 +44,21 @@ test("the banner opens a seeded conversation", () => {
   assert.ok(initialConversations.some((c) => c.id === notification.conversationId));
 });
 
-test("the banner is from the labeled AI, and the thread holds that message", () => {
+test("the banner and thread both say it is the AI version, in the thread's own words", () => {
   const notification = buildFirstVisitNotification();
   assert.ok(notification);
-  assert.match(notification.sender, /\(AI\)$/);
+  assert.match(notification.body, /AI version/);
+  assert.match(thread0(notification.conversationId), /AI version/);
   const thread = initialConversations.find((c) => c.id === notification.conversationId)!;
   assert.ok(thread.messages[0].content.startsWith(notification.body));
   assert.equal(thread.messages[0].sender, notification.sender);
   assert.ok(notification.body.length <= 80, "must fit the banner's two lines");
+  assert.match(initialContacts.find((c) => c.name === ADAM_AI_NAME)!.bio ?? "", /AI/);
 });
+
+function thread0(id: string) {
+  return initialConversations.find((c) => c.id === id)!.messages[0].content;
+}
 
 test("the AI persona has a prompt, so the chat route can answer as it", () => {
   const contact = initialContacts.find((c) => c.name === ADAM_AI_NAME);

@@ -9,9 +9,9 @@ export interface InitialContact {
 
 export const initialContacts: InitialContact[] = [
   {
-    // The one persona that speaks as a living person. The "(AI)" in the name is
-    // what the sidebar, header and bubbles show, and the prompt's last two
-    // sentences make it say so and stop it inventing facts.
+    // The one persona that speaks as a living person. Its opening message,
+    // the bio and the prompt's last two sentences are what disclose that it is
+    // an AI and stop it inventing facts.
     name: ADAM_AI_NAME,
     title: "Product Design Leader",
     prompt:

@@ -39,8 +39,8 @@ export function markFirstVisitNudgeShown(storage: Pick<Storage, "setItem"> | nul
 
 /**
  * The banner announces the opening line of the seeded AI-Adam thread, from
- * the same constants, so what pops up is how the thread starts. The sender
- * carries the "(AI)" label.
+ * the same constants, so what pops up is how the thread starts. The banner text
+ * itself says it is the AI version.
  */
 export function buildFirstVisitNotification(): MessagesNotificationPayload | null {
   if (!initialConversations.some((c) => c.id === ADAM_AI_CONVERSATION_ID)) return null;
