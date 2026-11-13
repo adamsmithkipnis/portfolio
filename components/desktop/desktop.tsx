@@ -65,6 +65,7 @@ const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-ap
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
 const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
 import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
+import { soundEffects } from "@/lib/messages/sound-effects";
 import { getStoredUnreadCount } from "@/lib/messages/unread-count";
 import {
   FIRST_VISIT_DELAY_MS,
@@ -813,6 +814,8 @@ function DesktopContent({
 
   // First visit: Messages opens behind Safari, then a notification says what
   // is in it. Runs once per browser; the flag is set when the banner shows.
+  const focusModeRef = useRef(focusMode !== "off");
+  focusModeRef.current = focusMode !== "off";
   const firstVisitRef = useRef({ openWindow, focusWindow, getWindow });
   firstVisitRef.current = { openWindow, focusWindow, getWindow };
   useEffect(() => {
@@ -833,6 +836,8 @@ function DesktopContent({
     const timer = window.setTimeout(() => {
       markFirstVisitNudgeShown(window.localStorage);
       revealAdamThread();
+      // same sound Messages plays for an unread message; focus mode mutes it
+      if (!focusModeRef.current) soundEffects.playUnreadSound();
       setActiveNotification(notification);
       setIsNotificationHovered(false);
       captureEvent("first_visit_nudge_shown");
