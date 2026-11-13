@@ -26,3 +26,11 @@ test("a deleted seed no longer counts, and a user thread does", () => {
 test("garbage in storage falls back to the seeds", () => {
   assert.equal(countUnread({ saved: "nope", deletedInitial: 42 }), seededTotal);
 });
+
+test("a hidden seed is left out of the count until it is revealed", () => {
+  const first = initialConversations.find((c) => c.unreadCount > 0)!;
+  assert.equal(
+    countUnread({ saved: null, deletedInitial: null }, [first.id]),
+    seededTotal - first.unreadCount
+  );
+});

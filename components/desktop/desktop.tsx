@@ -69,6 +69,8 @@ import { getStoredUnreadCount } from "@/lib/messages/unread-count";
 import {
   FIRST_VISIT_DELAY_MS,
   FIRST_VISIT_NOTIFICATION_ID,
+  revealAdamThread,
+  setAdamThreadPending,
   buildFirstVisitNotification,
   markFirstVisitNudgeShown,
   shouldShowFirstVisitNudge,
@@ -820,6 +822,8 @@ function DesktopContent({
     if (!notification) return;
 
     const { openWindow: open, getWindow: get } = firstVisitRef.current;
+    // hold the thread back until the banner fires; set before Messages mounts
+    setAdamThreadPending();
     if (!get("messages")?.isOpen) {
       open("messages");
       // opening focuses; hand focus straight back so Safari stays in front
@@ -828,6 +832,7 @@ function DesktopContent({
 
     const timer = window.setTimeout(() => {
       markFirstVisitNudgeShown(window.localStorage);
+      revealAdamThread();
       setActiveNotification(notification);
       setIsNotificationHovered(false);
       captureEvent("first_visit_nudge_shown");

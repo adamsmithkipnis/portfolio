@@ -54,3 +54,45 @@ export function buildFirstVisitNotification(): MessagesNotificationPayload | nul
     durationMs: FIRST_VISIT_BANNER_MS,
   };
 }
+
+/**
+ * Until the banner fires, the AI-Adam thread stays out of the Messages list
+ * and the unread count, so the thread and the banner appear together. The
+ * flag lives in sessionStorage: it only matters for the tab that is waiting
+ * on the nudge, and a closed tab that never saw the banner should start over.
+ */
+export const ADAM_THREAD_PENDING_KEY = "portfolioAdamThreadPending";
+/** Fired on window when the pending thread is revealed. */
+export const ADAM_THREAD_REVEALED_EVENT = "portfolio:adam-thread-revealed";
+
+export function setAdamThreadPending(): void {
+  try {
+    window.sessionStorage.setItem(ADAM_THREAD_PENDING_KEY, "1");
+  } catch {
+    // Best effort.
+  }
+}
+
+export function isAdamThreadPending(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.sessionStorage.getItem(ADAM_THREAD_PENDING_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Ids of seeded conversations that should not show yet. */
+export function getHiddenSeedIds(): string[] {
+  return isAdamThreadPending() ? [ADAM_AI_CONVERSATION_ID] : [];
+}
+
+/** Reveals the thread; the open Messages app adds it on this event. */
+export function revealAdamThread(): void {
+  try {
+    window.sessionStorage.removeItem(ADAM_THREAD_PENDING_KEY);
+  } catch {
+    // Best effort.
+  }
+  window.dispatchEvent(new Event(ADAM_THREAD_REVEALED_EVENT));
+}

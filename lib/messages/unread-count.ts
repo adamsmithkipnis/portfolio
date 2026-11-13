@@ -1,5 +1,6 @@
 import { initialConversations } from "@/data/messages/initial-conversations";
 import type { Conversation } from "@/types/messages";
+import { getHiddenSeedIds } from "./first-visit";
 import {
   CONVERSATIONS_STORAGE_KEY,
   DELETED_INITIAL_CONVERSATIONS_KEY,
@@ -20,10 +21,11 @@ interface StoredState {
  * merge of seeded and saved conversations, minus everything about selecting
  * one, so the count is right before the app ever runs.
  */
-export function countUnread(state: StoredState): number {
+export function countUnread(state: StoredState, hiddenIds: string[] = []): number {
   const deleted = new Set<string>(
     Array.isArray(state.deletedInitial) ? state.deletedInitial.filter(isString) : []
   );
+  for (const id of hiddenIds) deleted.add(id);
   const saved = Array.isArray(state.saved) ? state.saved.filter(isConversationLike) : null;
 
   const savedById = new Map<string, Conversation>();
@@ -52,7 +54,7 @@ export function getStoredUnreadCount(): number {
   } catch {
     // Storage can be unavailable (privacy modes); the seeds still count.
   }
-  return countUnread({ saved, deletedInitial });
+  return countUnread({ saved, deletedInitial }, getHiddenSeedIds());
 }
 
 function parse(raw: string | null): unknown {

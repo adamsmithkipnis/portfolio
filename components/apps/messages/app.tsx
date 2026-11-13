@@ -5,6 +5,8 @@ import { Nav } from "./nav";
 import { Conversation, Message, Reaction, REACTION_TEXT } from "@/types/messages";
 import { v4 as uuidv4 } from "uuid";
 import { initialConversations } from "@/data/messages/initial-conversations";
+import { ADAM_THREAD_REVEALED_EVENT, getHiddenSeedIds } from "@/lib/messages/first-visit";
+import { ADAM_AI_CONVERSATION_ID } from "@/lib/messages/adam-ai";
 import { MessageQueue } from "@/lib/messages/message-queue";
 import { soundEffects, shouldMuteIncomingSound } from "@/lib/messages/sound-effects";
 import { extractMessageData } from "@/lib/messages/content";
@@ -234,8 +236,9 @@ export default function App({
     }
 
     // Start with initial conversations, excluding deleted ones
+    const hiddenSeedIds = new Set(getHiddenSeedIds());
     let allConversations = initialConversations.filter(
-      (conv) => !deletedInitialIds.has(conv.id)
+      (conv) => !deletedInitialIds.has(conv.id) && !hiddenSeedIds.has(conv.id)
     );
 
     if (saved) {
@@ -314,6 +317,24 @@ export default function App({
       setActiveConversation(defaultConversationId);
     }
   }, [isMobileView, updateUrl]);
+
+  // The first-visit nudge holds the AI-Adam thread back; add it when the banner fires
+  useEffect(() => {
+    const reveal = () => {
+      const seed = initialConversations.find((c) => c.id === ADAM_AI_CONVERSATION_ID);
+      if (!seed) return;
+      let deleted: unknown = null;
+      try {
+        deleted = JSON.parse(localStorage.getItem(DELETED_INITIAL_KEY) ?? "null");
+      } catch {
+        // Ignore parse errors
+      }
+      if (Array.isArray(deleted) && deleted.includes(seed.id)) return;
+      setConversations((prev) => (prev.some((c) => c.id === seed.id) ? prev : [seed, ...prev]));
+    };
+    window.addEventListener(ADAM_THREAD_REVEALED_EVENT, reveal);
+    return () => window.removeEventListener(ADAM_THREAD_REVEALED_EVENT, reveal);
+  }, []);
 
   // Reset unread count and persist active conversation whenever it changes
   useEffect(() => {
