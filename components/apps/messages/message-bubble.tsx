@@ -401,7 +401,7 @@ export const MessageBubble = memo(function MessageBubble({
                           )}
                         />
                       )}
-                        <div className="text-[14px] flex items-center">
+                        <div className="text-[14px] flex items-center whitespace-pre-line">
                         {prepareContent(message.content, message.sender)}
                       </div>
                     </div>
