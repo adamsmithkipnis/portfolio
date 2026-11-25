@@ -286,13 +286,10 @@ export async function buildArchive() {
     const pagePath = path.join(CASE_STUDY_DIR, slug, "index.html");
     let html = await readFile(pagePath, "utf8");
     html = replaceRegion(html, "generated:head", renderCaseStudyHead(slug), pagePath);
-    // A study gains the summary fence once it has metrics and a glance in config.
-    if (CASE_STUDIES[slug].metrics) {
-      html = replaceRegion(html, "generated:summary", renderSummary(slug), pagePath);
-    }
+    html = replaceRegion(html, "generated:summary", renderSummary(slug), pagePath);
     // Only pages with awards carry the fence: a page that lists awards but
     // has nowhere to put them fails loudly rather than dropping them.
-    if (CASE_STUDIES[slug].awards?.length > 0) {
+    if (CASE_STUDIES[slug].awards.length > 0) {
       html = replaceRegion(html, "generated:awards", renderAwards(slug), pagePath);
     }
     html = replaceRegion(html, "generated:pager", renderPager(slug), pagePath);

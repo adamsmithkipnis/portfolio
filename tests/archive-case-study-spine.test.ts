@@ -12,7 +12,7 @@ import { CASE_STUDIES } from "../config/case-studies.mjs";
  * back to bold paragraphs standing in for headings.
  *
  * Two arcs for now. Invoca follows its slide deck section for section; the
- * other two keep a lighter spine until they are brought onto the same arc.
+ * others keep a lighter spine until they are brought onto the same arc.
  */
 
 const DIR = path.join(process.cwd(), "public/archive/smithkipnis/casestudies");
@@ -39,6 +39,7 @@ const EXPECTED_H2: Record<string, string[]> = {
   "invoca-workflow-agent": DECK_ARC,
   "grace-providence": LIGHT_SPINE,
   "wilson-x": LIGHT_SPINE,
+  "gear-iconx": LIGHT_SPINE,
 };
 
 interface Study {
@@ -48,9 +49,7 @@ interface Study {
 }
 
 const studies = CASE_STUDIES as unknown as Record<string, Study>;
-// Gear IconX joined the featured set after this spine was written; it is
-// pinned here once it is brought onto the light spine.
-const pages = Object.keys(EXPECTED_H2).map((slug) => ({
+const pages = Object.keys(studies).map((slug) => ({
   slug,
   study: studies[slug],
   html: readFileSync(path.join(DIR, slug, "index.html"), "utf8"),
@@ -61,8 +60,8 @@ const headings = (html: string) =>
   [...html.matchAll(/<h2 class="cs-h2">([\s\S]*?)<\/h2>/g)].map((m) => text(m[1]));
 const count = (html: string, needle: string) => html.split(needle).length - 1;
 
-test("every pinned section order names a real case study", () => {
-  for (const slug of Object.keys(EXPECTED_H2)) assert.ok(studies[slug], `${slug}: not in CASE_STUDIES`);
+test("every case study has an expected section order", () => {
+  assert.deepEqual(Object.keys(EXPECTED_H2).sort(), Object.keys(studies).sort());
 });
 
 test("one title, and the dek directly under it", () => {

@@ -92,11 +92,27 @@ export const CASE_STUDIES = {
     title: "Samsung Gear IconX",
     role: "Senior Interaction Designer",
     years: "2014–2016",
+    client: "Samsung",
     image: "/archive/smithkipnis/img/gear-iconx/cover.webp",
     alt: "A Samsung Gear IconX earbud in a listener's ear, a fingertip tapping its touch surface.",
     summary:
       "As a Senior Interaction Designer working on Samsung's Gear Icon X earbud headphones, I created prototypes, defined touch based interactions, developed the audio UI, and created specifications for lighting feedback.",
     tags: ["Connected hardware", "Audio UI", "Interaction prototyping", "Human factors"],
+    metrics: [
+      { value: "16", label: "functional prototypes in one hackathon week" },
+      { value: "<$500", label: "total hackathon budget" },
+      { value: "Aug 2016", label: "shipped, a new product category for hearables" },
+      { value: "Galaxy Buds", label: "the line IconX paved the way for" },
+    ],
+    glance: {
+      problem:
+        "People working out mostly listen to music and track progress, but Samsung's headphones still needed a phone or laptop to play anything.",
+      did:
+        "Prototyped the touch and audio interactions, developed the audio UI, specified the lighting feedback, and ran the ear-fit studies behind the industrial design.",
+      outcome:
+        "Samsung shipped the Gear IconX in August 2016, creating a new product category for hearables and paving the way for Galaxy Buds.",
+    },
+    awards: [],
   },
   "wilson-x": {
     title: "Wilson X Connected Basketball",
