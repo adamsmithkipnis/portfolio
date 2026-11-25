@@ -6,6 +6,7 @@ import {
   DOCK_HEIGHT,
   MENU_BAR_HEIGHT,
   fitToDesktop,
+  peekBehindPosition,
   repairSquashedHeight,
   viewportSizedPreset,
 } from "../lib/window-fit";
@@ -125,4 +126,27 @@ test("an unmeasured viewport yields no viewport preset", () => {
 test("only Safari and Finder opt in to viewport-relative defaults", () => {
   const optedIn = APPS.filter((app) => app.fillDesktop).map((app) => app.id);
   assert.deepEqual(optedIn.sort(), ["finder", "safari"]);
+});
+
+const front = { position: { x: 200, y: 40 }, size: { width: 1040, height: 620 } };
+const spotifySize = { width: 1000, height: 700 };
+
+test("a window opened behind another peeks out past its right and bottom edges", () => {
+  const pos = peekBehindPosition(front, spotifySize, 1440);
+  assert.ok(pos.x + spotifySize.width > front.position.x + front.size.width);
+  assert.ok(pos.y + spotifySize.height > front.position.y + front.size.height);
+  assert.ok(pos.y > front.position.y, "never peeks over the front window's title bar");
+});
+
+test("on a tall desktop the back window still shows below the front one", () => {
+  const tall = { position: { x: 580, y: 40 }, size: { width: 1400, height: 900 } };
+  const pos = peekBehindPosition(tall, spotifySize, 2560);
+  assert.ok(pos.y + spotifySize.height > tall.position.y + tall.size.height);
+});
+
+test("the back window's right edge stays on a narrow viewport", () => {
+  const narrow = { position: { x: 16, y: 40 }, size: { width: 992, height: 600 } };
+  const pos = peekBehindPosition(narrow, spotifySize, 1024);
+  assert.ok(pos.x + spotifySize.width <= 1024);
+  assert.ok(pos.x >= 0);
 });

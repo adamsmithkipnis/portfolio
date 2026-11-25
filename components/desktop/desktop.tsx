@@ -247,7 +247,7 @@ function DesktopContent({
     !(initialDocumentRouteAppId && !(initialDocumentRouteAppId === "textedit" ? initialTextEditFile : initialPreviewFile))
   );
   const [appBadges, setAppBadges] = useState<Record<string, number>>({});
-  // The Messages badge before the app has run: Safari opens alone on a first
+  // The Messages badge before the app has run: Messages is closed on a first
   // visit, and the badge is what says the desktop has more in it. Once the app
   // mounts, its own count takes over through handleMessagesUnreadBadgeChange.
   useEffect(() => {
