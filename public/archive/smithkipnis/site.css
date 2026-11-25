@@ -752,3 +752,154 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   /* Too narrow to give up any width to the margins. */
   .cs-img.cs-scaled { width: 100%; }
 }
+
+/* ---------- case study summary block ----------
+   Generated from config/case-studies.mjs (see scripts/build-archive.mjs):
+   the numbers and the at-a-glance answers sit above the narrative, so a
+   reader who only skims gets the outcome first. Everything below the block
+   keeps the page's own classes and look. */
+
+.cs-h1 {
+  font-size: clamp(30px, min(calc(16px + 2.16vw), calc(33.28px + 0.72vw)), 52px);
+  line-height: 1.11;
+  margin: 0;
+}
+.cs-dek { font-style: italic; color: rgb(37 53 81 / 0.72); }
+
+.cs-metrics {
+  list-style: none;
+  display: grid;
+  gap: 18px 22px;
+  margin: 2.2em 0 0;
+  padding: 1.4em 0;
+  border-top: 1px solid rgb(37 53 81 / 0.15);
+  border-bottom: 1px solid rgb(37 53 81 / 0.15);
+}
+/* Three sit across; four sit two by two, so no tile is ever orphaned on a
+   row of its own. Narrow screens take two across either way. */
+.cs-metrics-3 { grid-template-columns: repeat(3, 1fr); }
+.cs-metrics-4 { grid-template-columns: repeat(2, 1fr); }
+.cs-metric-value {
+  display: block;
+  font-size: clamp(24px, 2.2vw, 34px);
+  line-height: 1.05;
+  font-weight: 500;
+}
+.cs-metric-label {
+  display: block;
+  margin-top: 0.4em;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+.cs-glance { margin: 1.4em 0 0; }
+.cs-glance div { margin: 1em 0 0; }
+.cs-glance dt,
+.cs-roles-label,
+.cs-stage-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin: 0;
+}
+.cs-glance dd {
+  margin: 0.3em 0 0;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Two columns: what was mine, and who else was in the room. */
+.cs-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin: 1.6em 0 0;
+}
+.cs-roles .cs-list { margin-top: 0.6em; padding-left: 18px; }
+.cs-roles .cs-list li { font-size: 15px; }
+
+/* The author's own line, set large. A cite is only for a sourced quote. */
+.cs-quote {
+  margin: 2em 0 0;
+  padding: 0.2em 0 0.2em 1.2em;
+  border-left: 3px solid rgb(37 53 81 / 0.25);
+  font-size: clamp(18px, 1.5vw, 24px);
+  line-height: 1.3;
+  font-weight: 500;
+}
+.cs-quote p { margin: 0.5em 0 0; }
+.cs-quote p:first-child { margin-top: 0; }
+.cs-quote cite {
+  display: block;
+  margin-top: 0.7em;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Stage overview: a line per stage before the full-width screens below. */
+.cs-stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px 22px;
+  margin: 1.6em 0 0;
+}
+.cs-stage-title { margin: 0.3em 0 0; font-size: 18px; line-height: 1.25; }
+.cs-stage-text {
+  margin: 0.3em 0 0;
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Awards, generated: the name carries the weight, the rest is detail. */
+.cs-awards { list-style: none; margin: 1.4em 0 0; padding: 0; }
+.cs-award {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0.75em 0;
+  border-top: 1px solid rgb(37 53 81 / 0.12);
+}
+.cs-award:last-child { border-bottom: 1px solid rgb(37 53 81 / 0.12); }
+.cs-award-logo { width: 40px; height: 40px; object-fit: contain; flex: none; }
+.cs-award-body {
+  font-family: Poppins, Manrope, sans-serif;
+  letter-spacing: normal;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+.cs-award-body strong { font-family: Manrope, sans-serif; font-weight: 600; letter-spacing: -0.02em; }
+.cs-award-tier {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 9px;
+  border: 1px solid rgb(37 53 81 / 0.3);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  vertical-align: 1px;
+}
+.cs-award-detail { display: block; opacity: 0.7; }
+
+
+@media (max-width: 700px) {
+  .cs-roles { grid-template-columns: 1fr; }
+  .cs-metrics-3, .cs-metrics-4 { grid-template-columns: repeat(2, 1fr); }
+}

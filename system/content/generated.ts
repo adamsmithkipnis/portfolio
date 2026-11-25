@@ -9,6 +9,6 @@ export const CONTENT_TREE: ContentNode = {
   "path": "/finder",
   "kind": "folder",
   "size": 0,
-  "modified": "2026-10-22",
+  "modified": "2026-11-25",
   "children": []
 };
