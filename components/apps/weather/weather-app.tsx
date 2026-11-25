@@ -1107,7 +1107,7 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
             </aside>
           )}
 
-          <main className="flex-1 min-w-0 min-h-0 bg-transparent relative">
+          <div className="flex-1 min-w-0 min-h-0 bg-transparent relative">
             {!isMobileView && inDesktopShell && (
               <div
                 className="absolute top-0 left-0 right-0 h-12 z-10 select-none"
@@ -1389,7 +1389,7 @@ export function WeatherApp({ isMobile = false, inShell = false }: WeatherAppProp
                 )}
               </div>
             </ScrollArea>
-          </main>
+          </div>
           </div>
         )}
       </div>

@@ -1067,7 +1067,7 @@ export default function App({
       onMouseDown={() => containerRef.current?.focus()}
       className="flex h-full relative outline-none overflow-hidden"
     >
-      <main className="h-full w-full bg-background flex flex-col overflow-hidden">
+      <div className="h-full w-full bg-background flex flex-col overflow-hidden">
         <div className="flex-1 flex min-h-0">
           <div
             className={`h-full flex-shrink-0 overflow-hidden ${
@@ -1150,7 +1150,7 @@ export default function App({
             />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

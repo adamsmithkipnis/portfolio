@@ -1,8 +1,8 @@
 /**
- * The AI stand-in for the site owner, the only persona that speaks as a living
- * person. The name carries no "(AI)" tag; the disclosure is in the opening
- * message itself, the contact's bio, and the prompt, which makes it say so when
- * asked.
+ * The AI stand-in for the site owner. The name carries no "(AI)" tag; the
+ * disclosure is in the opening message itself, the contact's bio, the prompt,
+ * which makes it say so when asked, and the line every thread with a living
+ * persona opens with (lib/messages/ai-disclosure.ts).
  */
 export const ADAM_AI_NAME = "Adam Smith-Kipnis";
 export const ADAM_AI_CONVERSATION_ID = "0c5d1e7a-4b92-4f36-8a1d-6e3b9c2f5a08";

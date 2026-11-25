@@ -3,7 +3,14 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
-import { CASE_STUDIES, FRAMING, ORDER, SITE_MODE } from "../config/case-studies.mjs";
+import {
+  CASE_STUDIES,
+  FRAMING,
+  HOME_PROOF,
+  ORDER,
+  ROLE_LINE,
+  SITE_MODE,
+} from "../config/case-studies.mjs";
 import { buildArchive } from "../scripts/build-archive.mjs";
 
 /**
@@ -42,4 +49,21 @@ test("every mode orders every case study exactly once", () => {
 test("management leads with the team and IC leads with the most recent work", () => {
   assert.equal(ORDER.management[0], "grace-providence");
   assert.equal(ORDER.ic[0], "invoca-workflow-agent");
+});
+
+test("every mode's home page proof points at a metric its case study states", () => {
+  const studies = CASE_STUDIES as Record<string, { metrics: { value: string }[] }>;
+  for (const [mode, proof] of Object.entries(HOME_PROOF) as [string, { slug: string; value: string }[]][]) {
+    assert.ok(proof.length >= 3 && proof.length <= 4, `${mode} proof strip should hold 3 or 4 numbers`);
+    for (const { slug, value } of proof) {
+      assert.ok(
+        studies[slug]?.metrics.some((metric) => metric.value === value),
+        `${mode}: ${slug} has no metric "${value}"`
+      );
+    }
+  }
+});
+
+test("every mode has its own role line, so the page never blends the two", () => {
+  assert.deepEqual(Object.keys(ROLE_LINE).sort(), Object.keys(ORDER).sort());
 });

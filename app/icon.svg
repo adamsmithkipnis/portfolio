@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#253551"/>
+  <rect x="9" y="22" width="46" height="24" rx="5" fill="#ffcf4a" transform="rotate(-4 32 34) skewX(-8)"/>
+  <text x="32" y="43" text-anchor="middle" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="25" font-weight="800" letter-spacing="-1" fill="#253551">ASK</text>
+</svg>

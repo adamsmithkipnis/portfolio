@@ -23,9 +23,12 @@ import {
   FRAMING,
   ORDER,
   SITE_MODE,
+  ROLE_LINE,
+  HOME_PROOF,
 } from "../config/case-studies.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const HOME_PATH = path.join(ROOT, "public/archive/smithkipnis/index.html");
 const CASE_STUDY_DIR = path.join(
   ROOT,
   "public/archive/smithkipnis/casestudies"
@@ -209,6 +212,27 @@ function renderGlance(study) {
   return `  <dl class="cs-glance">\n${rows}\n  </dl>`;
 }
 
+/**
+ * The home page's role line and proof strip, under the headline. Each number
+ * is a link to the case study that states it, and is looked up there rather
+ * than restated, so a figure that changes on its page changes here too.
+ */
+export function renderHomeIntro() {
+  const roleLine = ROLE_LINE[SITE_MODE];
+  const role = roleLine ? `\n  <p class="home-role">${escapeHtml(roleLine)}</p>` : "";
+
+  const items = HOME_PROOF[SITE_MODE].map(({ slug, value }) => {
+    const metric = CASE_STUDIES[slug]?.metrics.find((m) => m.value === value);
+    if (!metric) {
+      throw new Error(`HOME_PROOF: ${slug} has no metric "${value}"`);
+    }
+    return `    <li class="cs-metric"><a href="${BASE}/${slug}"><span class="cs-metric-value">${escapeHtml(metric.value)}</span><span class="cs-metric-label">${escapeHtml(metric.label)}</span></a></li>`;
+  });
+  const proof = `\n  <ul class="cs-metrics cs-metrics-${items.length} home-proof">\n${items.join("\n")}\n  </ul>`;
+
+  return `${role}${proof}\n  `;
+}
+
 export function renderSummary(slug) {
   const study = CASE_STUDIES[slug];
   return `\n${renderMetrics(study)}\n${renderGlance(study)}\n  `;
@@ -275,6 +299,10 @@ export function renderEarlierPager(slug) {
 /** The files this script owns, as { file, contents } after regeneration. */
 export async function buildArchive() {
   const results = [];
+
+  let homeHtml = await readFile(HOME_PATH, "utf8");
+  homeHtml = replaceRegion(homeHtml, "generated:home-intro", renderHomeIntro(), HOME_PATH);
+  results.push({ file: HOME_PATH, contents: homeHtml });
 
   const indexPath = path.join(CASE_STUDY_DIR, "index.html");
   let indexHtml = await readFile(indexPath, "utf8");

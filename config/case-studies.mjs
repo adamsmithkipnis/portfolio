@@ -35,6 +35,36 @@ export const ORDER = {
   ic: ["invoca-workflow-agent", "gear-iconx", "wilson-x", "grace-providence"],
 };
 
+/**
+ * The one line under the home page's headline saying what role this site is
+ * making the case for. One per mode, never a blend: a reader hiring a manager
+ * and a reader hiring a designer are looking for different things. The words
+ * are the author's; an empty string leaves the line off the page.
+ */
+export const ROLE_LINE = {
+  management: "",
+  ic: "",
+};
+
+/**
+ * The numbers under the home page's headline, per mode. Each names a metric a
+ * case study already states, by slug and value, so the figure and its label
+ * are written once (in CASE_STUDIES below) and the home page cannot disagree
+ * with the page it links to.
+ */
+export const HOME_PROOF = {
+  management: [
+    { slug: "grace-providence", value: "2.6M" },
+    { slug: "grace-providence", value: "800 → 150K" },
+    { slug: "wilson-x", value: "6" },
+  ],
+  ic: [
+    { slug: "invoca-workflow-agent", value: "100+" },
+    { slug: "invoca-workflow-agent", value: "3 days" },
+    { slug: "gear-iconx", value: "16" },
+  ],
+};
+
 export const CASE_STUDIES = {
   "invoca-workflow-agent": {
     title: "Invoca Workflow Agent",

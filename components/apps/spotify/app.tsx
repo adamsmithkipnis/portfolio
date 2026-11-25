@@ -242,7 +242,7 @@ export default function App({ isDesktop = false }: AppProps) {
 
       {/* Sidebar and content are separate rounded cards floating on the black
           base, with a gutter between them — Spotify's structural signature. */}
-      <main
+      <div
         className={cn(
           "flex-1 flex min-h-0 overflow-hidden px-2 pb-2",
           !isMobileView && "gap-2"
@@ -278,7 +278,7 @@ export default function App({ isDesktop = false }: AppProps) {
         >
           {renderContent()}
         </div>
-      </main>
+      </div>
 
       <NowPlayingEmbed
         hostRef={hostRef}

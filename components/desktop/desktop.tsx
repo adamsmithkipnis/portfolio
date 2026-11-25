@@ -74,6 +74,7 @@ import {
   shouldShowFirstVisitNudge,
 } from "@/lib/messages/first-visit";
 import { captureEvent } from "@/lib/analytics";
+import { getFinderDefaultPath } from "@/lib/work-links";
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
@@ -302,7 +303,7 @@ function DesktopContent({
     [textEditWindows, previewWindows]
   );
   const openFinderWindow = useCallback((
-    initialPath = "recents",
+    initialPath = getFinderDefaultPath(),
     options?: { size?: { width: number; height: number }; position?: { x: number; y: number } }
   ) => {
     openMultiWindow("finder", createWindowInstanceId("finder"), {
@@ -320,7 +321,7 @@ function DesktopContent({
       bringAppToFront("finder");
       return;
     }
-    openDedicatedFinderWindow("recents", getDefaultFinderWindowPlacement());
+    openDedicatedFinderWindow(getFinderDefaultPath(), getDefaultFinderWindowPlacement());
   }, [finderWindows, bringAppToFront, openDedicatedFinderWindow]);
   const focusOrOpenTrashFinderWindow = useCallback(() => {
     const existingTrashWindow = [...finderWindows]
@@ -379,7 +380,7 @@ function DesktopContent({
       return;
     }
 
-    openDedicatedFinderWindow("recents", getDefaultFinderWindowPlacement());
+    openDedicatedFinderWindow(getFinderDefaultPath(), getDefaultFinderWindowPlacement());
     setFinderRouteProcessed(true);
   }, [finderRouteProcessed, initialAppId, finderWindows, focusFinderApp, openDedicatedFinderWindow]);
 

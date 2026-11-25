@@ -134,3 +134,11 @@ export function getWorkFolderItems(path: string): WorkFolderItem[] | null {
 export function hasWorkItems(): boolean {
   return WORK_LINKS.length > 0 || hasContent();
 }
+
+/**
+ * Where a new Finder window opens. The work is the reason anyone opens Finder
+ * here, so it leads; Recents is the fallback for a build with no case studies.
+ */
+export function getFinderDefaultPath(): string {
+  return hasWorkItems() ? WORK_DIR : "recents";
+}

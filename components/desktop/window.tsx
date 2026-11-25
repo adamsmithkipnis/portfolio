@@ -254,7 +254,10 @@ export function Window({
           !isFocused && "[&_*]:!cursor-default"
         )}
       >
-        <div className="flex-1 min-h-0">
+        {/* Apps render no <main> of their own: several are open at once, and the
+            one a screen reader or crawler should treat as the page is whichever
+            window is in front. */}
+        <div className="flex-1 min-h-0" role={isFocused && !isHiddenMinimized ? "main" : undefined}>
           <WindowFocusProvider
             isFocused={isHiddenMinimized ? false : isFocused}
             appId={appId}
