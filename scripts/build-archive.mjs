@@ -102,7 +102,7 @@ function renderCard(slug) {
       <img src="${study.image}" alt="${escapeHtml(study.alt)}" loading="lazy" />
       <h2 class="cs-card-title">${escapeHtml(study.title)}</h2>
       <p class="cs-card-meta">${escapeHtml(study.role)} &middot; ${escapeHtml(study.years)}</p>
-${renderCardMetrics(study)}
+${study.metrics ? renderCardMetrics(study) : ""}
       <p class="cs-card-summary">${escapeHtml(study.summary)}</p>
       <ul class="cs-tags">
 ${tags}
@@ -299,10 +299,13 @@ export async function buildArchive() {
     const pagePath = path.join(CASE_STUDY_DIR, slug, "index.html");
     let html = await readFile(pagePath, "utf8");
     html = replaceRegion(html, "generated:head", renderCaseStudyHead(slug), pagePath);
-    html = replaceRegion(html, "generated:summary", renderSummary(slug), pagePath);
+    // A study gains the summary fence once it has metrics and a glance in config.
+    if (CASE_STUDIES[slug].metrics) {
+      html = replaceRegion(html, "generated:summary", renderSummary(slug), pagePath);
+    }
     // Only pages with awards carry the fence: a page that lists awards but
     // has nowhere to put them fails loudly rather than dropping them.
-    if (CASE_STUDIES[slug].awards.length > 0) {
+    if (CASE_STUDIES[slug].awards?.length > 0) {
       html = replaceRegion(html, "generated:awards", renderAwards(slug), pagePath);
     }
     html = replaceRegion(html, "generated:pager", renderPager(slug), pagePath);
