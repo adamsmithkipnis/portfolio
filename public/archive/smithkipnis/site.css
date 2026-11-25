@@ -898,21 +898,6 @@ footer svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 }
 .cs-award-detail { display: block; opacity: 0.7; }
 
-/* On the index cards, the same numbers in one line under the meta. */
-.cs-card-metrics {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  margin: 0.8em 0 0;
-  padding: 0;
-  font-family: Poppins, Manrope, sans-serif;
-  letter-spacing: normal;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-.cs-card-metrics strong { font-family: Manrope, sans-serif; font-weight: 600; letter-spacing: -0.02em; }
 
 @media (max-width: 700px) {
   .cs-roles { grid-template-columns: 1fr; }

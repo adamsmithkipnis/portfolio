@@ -80,18 +80,6 @@ function orderedSlugs() {
   return slugs;
 }
 
-/** The first three numbers, in one line under the card's meta. */
-function renderCardMetrics(study) {
-  const items = study.metrics
-    .slice(0, 3)
-    .map(
-      (metric) =>
-        `        <li><strong>${escapeHtml(metric.value)}</strong> ${escapeHtml(metric.label)}</li>`
-    )
-    .join("\n");
-  return `      <ul class="cs-card-metrics">\n${items}\n      </ul>`;
-}
-
 function renderCard(slug) {
   const study = CASE_STUDIES[slug];
   const tags = study.tags
@@ -102,7 +90,6 @@ function renderCard(slug) {
       <img src="${study.image}" alt="${escapeHtml(study.alt)}" loading="lazy" />
       <h2 class="cs-card-title">${escapeHtml(study.title)}</h2>
       <p class="cs-card-meta">${escapeHtml(study.role)} &middot; ${escapeHtml(study.years)}</p>
-${study.metrics ? renderCardMetrics(study) : ""}
       <p class="cs-card-summary">${escapeHtml(study.summary)}</p>
       <ul class="cs-tags">
 ${tags}
