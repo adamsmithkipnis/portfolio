@@ -2,7 +2,9 @@
  * Regenerates the parts of the archived site that follow from
  * `config/case-studies.mjs`: the case study index, the previous/next links on
  * each case study, the description and link-preview tags in each page's head
- * (the scrape left one of those as a label glued to its value).
+ * (the scrape left one of those as a label glued to its value), and the
+ * structured top of each case study — the metrics strip and the at-a-glance
+ * answers — plus the awards list on the pages that have one.
  *
  * Everything else in those pages is hand-authored and left alone. The
  * generated regions are fenced by comment markers, and only what sits between
@@ -78,6 +80,18 @@ function orderedSlugs() {
   return slugs;
 }
 
+/** The first three numbers, in one line under the card's meta. */
+function renderCardMetrics(study) {
+  const items = study.metrics
+    .slice(0, 3)
+    .map(
+      (metric) =>
+        `        <li><strong>${escapeHtml(metric.value)}</strong> ${escapeHtml(metric.label)}</li>`
+    )
+    .join("\n");
+  return `      <ul class="cs-card-metrics">\n${items}\n      </ul>`;
+}
+
 function renderCard(slug) {
   const study = CASE_STUDIES[slug];
   const tags = study.tags
@@ -88,6 +102,7 @@ function renderCard(slug) {
       <img src="${study.image}" alt="${escapeHtml(study.alt)}" loading="lazy" />
       <h2 class="cs-card-title">${escapeHtml(study.title)}</h2>
       <p class="cs-card-meta">${escapeHtml(study.role)} &middot; ${escapeHtml(study.years)}</p>
+${renderCardMetrics(study)}
       <p class="cs-card-summary">${escapeHtml(study.summary)}</p>
       <ul class="cs-tags">
 ${tags}
@@ -181,6 +196,52 @@ export function renderCaseStudyHead(slug) {
   });
 }
 
+/**
+ * The numbers first, then the three answers a skim needs. Sits under the
+ * hand-authored title, dek and role block on each page, so the page's shape
+ * stays the author's and only the facts are shared with the index.
+ */
+function renderMetrics(study) {
+  const items = study.metrics
+    .map(
+      (metric) =>
+        `    <li class="cs-metric"><span class="cs-metric-value">${escapeHtml(metric.value)}</span><span class="cs-metric-label">${escapeHtml(metric.label)}</span></li>`
+    )
+    .join("\n");
+  return `  <ul class="cs-metrics cs-metrics-${study.metrics.length}">\n${items}\n  </ul>`;
+}
+
+function renderGlance(study) {
+  const rows = [
+    ["Problem", study.glance.problem],
+    ["What I did", study.glance.did],
+    ["Outcome", study.glance.outcome],
+  ]
+    .map(([label, text]) => `    <div><dt>${label}</dt><dd>${escapeHtml(text)}</dd></div>`)
+    .join("\n");
+  return `  <dl class="cs-glance">\n${rows}\n  </dl>`;
+}
+
+export function renderSummary(slug) {
+  const study = CASE_STUDIES[slug];
+  return `\n${renderMetrics(study)}\n${renderGlance(study)}\n  `;
+}
+
+/** Bold name, tier as a pill, category and year underneath; a logo when one is set. */
+export function renderAwards(slug) {
+  const study = CASE_STUDIES[slug];
+  const items = study.awards
+    .map((award) => {
+      const logo = award.logo
+        ? `<img class="cs-award-logo" src="${award.logo}" alt="" loading="lazy" />`
+        : "";
+      return `    <li class="cs-award">${logo}<span class="cs-award-body"><strong>${escapeHtml(award.org)}</strong><span class="cs-award-tier">${escapeHtml(award.tier)}</span><span class="cs-award-detail">${escapeHtml(award.category)} &middot; ${escapeHtml(award.year)}</span></span></li>`;
+    })
+    .join("\n");
+  return `\n  <ul class="cs-awards">\n${items}\n  </ul>\n  `;
+}
+
+
 export function renderEarlierHead(project) {
   return renderHeadTags({
     title: `${project.title} — ${SITE_NAME}`,
@@ -238,6 +299,12 @@ export async function buildArchive() {
     const pagePath = path.join(CASE_STUDY_DIR, slug, "index.html");
     let html = await readFile(pagePath, "utf8");
     html = replaceRegion(html, "generated:head", renderCaseStudyHead(slug), pagePath);
+    html = replaceRegion(html, "generated:summary", renderSummary(slug), pagePath);
+    // Only pages with awards carry the fence: a page that lists awards but
+    // has nowhere to put them fails loudly rather than dropping them.
+    if (CASE_STUDIES[slug].awards.length > 0) {
+      html = replaceRegion(html, "generated:awards", renderAwards(slug), pagePath);
+    }
     html = replaceRegion(html, "generated:pager", renderPager(slug), pagePath);
     results.push({ file: pagePath, contents: html });
   }

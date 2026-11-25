@@ -50,8 +50,8 @@
 <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/SNXDSbrib0g" title="Video" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>
     <div class="cs-row">
       <div class="cs-col" style="flex:419">
-  <h2 class="cs-h2">Grace &amp; Providence Apps</h2>
-  <p class="cs-p"><em>Leading the design and creation of AI-enabled mobile native and web experiences, helping more than 2.6 million patients navigate access to healthcare.</em></p>
+  <h1 class="cs-h1">Grace &amp; Providence Apps</h1>
+  <p class="cs-p cs-dek">Leading the design and creation of AI-enabled mobile native and web experiences, helping more than 2.6 million patients navigate access to healthcare.</p>
   <p class="cs-p"><strong>Role</strong><br>Head of Design / Product Design Manager</p>
   <p class="cs-p"><strong>Client</strong><br>Providence Digital Innovation Group</p>
   <p class="cs-p"><strong>Timeline</strong><br>2021 - 2023</p>
@@ -61,20 +61,55 @@
   <p class="cs-p"><em>Grace, CEP apps and Partner Cards are still live in 2026</em></p>
       </div>
     </div>
-<h4 class="cs-h4">At a glance</h4>
-<p class="cs-p"><strong>Problem:</strong> Grace was a decision-tree click-bot with a 1% open rate, serving only 800 monthly active users, in a health system with almost no appetite for AI risk.</p>
-<p class="cs-p"><strong>What I did:</strong> Rebuilt it as a conversational assistant, authored the voice, escalation and design systems behind it, got clinical sign-off on every flow, and managed a five-person team across multiple mobile apps, a core design system, and an SSO product.</p>
-<p class="cs-p"><strong>Outcome:</strong> Open rate 1% to 8%, return rate 13% to 30%, and monthly active users 800 to 150,000, serving 2.6 million patients across MyChart in seven states. Inconsistencies between iOS and Android down by roughly 95%, and a patent application for contextual shortcuts. Grace and the partner cards are still live in 2026.</p>
+<!-- generated:summary:start -->
+  <ul class="cs-metrics cs-metrics-4">
+    <li class="cs-metric"><span class="cs-metric-value">2.6M</span><span class="cs-metric-label">patients served across MyChart in seven states</span></li>
+    <li class="cs-metric"><span class="cs-metric-value">1% → 8%</span><span class="cs-metric-label">open rate</span></li>
+    <li class="cs-metric"><span class="cs-metric-value">13% → 30%</span><span class="cs-metric-label">return rate</span></li>
+    <li class="cs-metric"><span class="cs-metric-value">800 → 150K</span><span class="cs-metric-label">monthly active users</span></li>
+  </ul>
+  <dl class="cs-glance">
+    <div><dt>Problem</dt><dd>Grace was a decision-tree click-bot with a 1% open rate, serving only 800 monthly active users, in a health system with almost no appetite for AI risk.</dd></div>
+    <div><dt>What I did</dt><dd>Rebuilt it as a conversational assistant, authored the voice, escalation and design systems behind it, got clinical sign-off on every flow, and managed a five-person team across multiple mobile apps, a core design system, and an SSO product.</dd></div>
+    <div><dt>Outcome</dt><dd>Open rate 1% to 8%, return rate 13% to 30%, and monthly active users 800 to 150,000, serving 2.6 million patients across MyChart in seven states. Inconsistencies between iOS and Android down by roughly 95%, and a patent application for contextual shortcuts. Grace and the partner cards are still live in 2026.</dd></div>
+  </dl>
+  <!-- generated:summary:end -->
 <img class="cs-img" src="/archive/smithkipnis/img/gracemobile.webp" alt="" loading="lazy" />
-<h3 class="cs-h3">Situation</h3>
-<p class="cs-p">In 2021, Providence Health &amp; Services was navigating the aftermath of COVID-19: caseloads were rising, and caregivers were burning out and leaving the field in large numbers. At the same time, Providence, a Catholic non-profit health system, had launched the Providence Digital Innovation Group (DIG), an internal startup incubator designed to use the health system itself as a platform to build for-profit companies, retaining an equity stake as a long-term strategy to bring revenue back into the hospital and expand access to care.</p>
-<h3 class="cs-h3">Task</h3>
-<p class="cs-p">I joined Providence in 2021 to build and manage a team responsible for several product initiatives: Grace, a cross-platform conversational AI assistant deployed on web, iOS, and Android; the Consumer Engagement Platform (CEP), a white-labeled patient navigation app launched as both the Providence and Swedish Health apps; and a single-sign-on product called Single Patient Identity (SPI).</p>
-<p class="cs-p">I worked as a player-coach, serving simultaneously as an individual contributor and the manager of a five-person team. I had direct IC responsibility for Grace, while building the environment for my team to succeed on the other initiatives. Sometimes that meant stepping in, sometimes stepping aside, and always leading by example.</p>
+
+<h2 class="cs-h2">My thinking</h2>
+<ul class="cs-list">
+  <li><strong>Conversation first: </strong>Conversation-first meant opening with a question rather than a path. The alternative was to keep steering people through a decision tree or a form, which is what the click-bot did and what the engagement numbers reflected.</li>
+  <li><strong>Features the launch depended on, before polish: </strong>The scope that got cut was the visual ambition. We wanted responsive typography, motion, and glassmorphism, and all of it cost more engineering time than we had, so it lost to features the launch actually depended on.</li>
+  <li><strong>A style guide over a QA function: </strong>A style guide was the fix I could reach. We had no QA function that owned visual consistency across platforms, since testers were assigned to iOS or to Android, and engineering was two separate teams. Whoever was implementing a screen would sometimes guess at anything a Figma file did not state outright, which is where much of the variance came from.</li>
+  <li><strong>One universal card over one-offs: </strong>The alternative was what had been happening before I joined: a one-off card designed for each use case. Universal cards were a bet that one well-specified component covering every case would be worth more than the flexibility of designing each one, and consistency was what made the product easier to use.</li>
+  <li><strong>Share the template: </strong>Sharing the partner card template was itself contested. There was internal pushback on giving partners the file at all, and the reason was never made clear to me. I got it to Omada Health, after which sharing was restricted.</li>
+</ul>
+
+<h2 class="cs-h2">What I did</h2>
+<div class="cs-roles">
+  <div>
+    <p class="cs-roles-label">My role</p>
+    <ul class="cs-list">
+      <li>Direct IC responsibility for Grace: championed conversation-first and the move from Watson to Rasa.</li>
+      <li>Authored the conversational guidelines, voice and tone principles, response patterns, and escalation logic.</li>
+      <li>Initiated the Zeroheight style guide and chose it, with Figma, as the system's documentation backbone.</li>
+      <li>Ran the iOS and Android audit, built the entry-portal logic tree that became a patent application, and designed Grace's logo.</li>
+      <li>Presented to hundreds of caregivers to secure the rollout, and defined the analytics behind the partner cards.</li>
+    </ul>
+  </div>
+  <div>
+    <p class="cs-roles-label">The team</p>
+    <ul class="cs-list">
+      <li>A five-person design team I managed as a player-coach, owning the CEP apps, the core design system, and the SPI single sign-on product.</li>
+      <li>Two designers on my team designed the universal card patterns; their taxonomy and templates underpin the partner cards.</li>
+      <li>Two developers built the Figma-to-Flutter plugin with me during a hackathon.</li>
+      <li>Doctors and nurses vetted every conversational flow in regular working sessions, and two engineering teams fixed the inventoried inconsistencies.</li>
+    </ul>
+  </div>
+</div>
     <div class="cs-row">
       <div class="cs-col" style="flex:419">
-    <h3 class="cs-h3">Actions and Outcomes</h3>
-  <h4 class="cs-h4">Fixing Low Engagement at the Root</h4>
+    <h3 class="cs-h3">Fixing low engagement at the root</h3>
   <p class="cs-p">When I joined, Grace had an open rate of about 1% and a return rate of 8%. It had launched as a decision-tree "click-bot" with no natural language understanding, built quickly to increase access to COVID-19 resources. One of my first moves was to champion a conversation-first product principle, making an open text field always available, and to advocate for a change to Grace's underlying engine to support true NLU. The team moved off Watson and onto Rasa, and eventually shipped the always-available text field. That was the first step toward what eventually became a full redesign of the agent.</p>
       </div>
       <div class="cs-col" style="flex:228">
@@ -82,14 +117,14 @@
   <p class="cs-p"><em>Grace click-bot in 2020 before I joined</em></p>
       </div>
     </div>
-    <p class="cs-p">Conversation-first meant opening with a question rather than a path. The alternative was to keep steering people through a decision tree or a form, which is what the click-bot did and what the engagement numbers reflected.</p>
-<h4 class="cs-h4">Major Redesign</h4>
-<p class="cs-p">The redesign covered three things: modernizing the look and feel, building a genuinely conversational experience in place of the old decision-tree structure, creating escalation logic, and establishing consistency and continuity across pages and platforms. Delivering on that meant creating not just designs but the operational infrastructure to support them.&nbsp; One step in that process was leading the creation of a style guide covering interaction patterns, motion, sound, and conversational guidelines, with responsive look-and-feel rules spanning iOS, Android, web, and mobile web. I selected Zeroheight, in combination with Figma, as the documentation backbone for that system, while using design tokens and component libraries in Figma to ensure visual decisions remained consistent as the system scaled across teams.</p>
+<h3 class="cs-h3">Major redesign</h3>
+<p class="cs-p">The redesign covered three things: modernizing the look and feel, building a genuinely conversational experience in place of the old decision-tree structure, creating escalation logic, and establishing consistency and continuity across pages and platforms. Delivering on that meant creating not just designs but the operational infrastructure to support them. One step in that process was leading the creation of a style guide covering interaction patterns, motion, sound, and conversational guidelines, with responsive look-and-feel rules spanning iOS, Android, web, and mobile web. I selected Zeroheight, in combination with Figma, as the documentation backbone for that system, while using design tokens and component libraries in Figma to ensure visual decisions remained consistent as the system scaled across teams.</p>
 <p class="cs-p">As part of the redesign, I authored Grace's conversational guidelines, voice and tone principles, response patterns for Grace's core intents (symptom checking, finding a provider, lab results, coverage questions), and the escalation logic shown below: when Grace should answer directly, perform a task, deep-link to another app or site, or hand off to a human when a request was outside what it could safely handle. Those guidelines became the shared reference for how every new flow was designed, and directly informed the Zeroheight style guide I initiated. I also drove the fix for a critical conversation-continuity issue, state loss on page navigation, before rollout, unblocking the technical foundation the rest of the redesign depended on.</p>
     <div class="cs-row">
       <div class="cs-col" style="flex:323">
   <img class="cs-img" src="/archive/smithkipnis/img/slide21.webp" alt="" loading="lazy" />
-  <p class="cs-p"><em>Zeroheight Style Guide <br />(visual, conversational, sonic, motion)</em></p>
+  <p class="cs-p"><em>Zeroheight Style Guide </em></p>
+  <p class="cs-p"><em>(visual, conversational, sonic, motion)</em></p>
       </div>
       <div class="cs-col" style="flex:323">
   <img class="cs-img" src="/archive/smithkipnis/img/slide12.webp" alt="" loading="lazy" />
@@ -100,27 +135,24 @@
 <p class="cs-p"><em>Before and after</em></p>
 <img class="cs-img" src="/archive/smithkipnis/img/responsivesolutions.webp" alt="" loading="lazy" />
 <p class="cs-p"><em>Cross-platform concept development</em></p>
-    <p class="cs-p">The scope that got cut was the visual ambition. We wanted responsive typography, motion, and glassmorphism, and all of it cost more engineering time than we had, so it lost to features the launch actually depended on.</p>
-<h4 class="cs-h4">Working Inside Healthcare’s Constraints</h4>
+<h3 class="cs-h3">Working inside healthcare's constraints</h3>
 <p class="cs-p">Healthcare has a low appetite for AI risk, for good reason. Generative AI needs real guardrails to stay compliant with PII and PHI regulations and to avoid ever crossing into unreviewed medical guidance; Grace couldn't train on someone's personal lab results or start giving advice it wasn't cleared to give. I worked closely with doctors and nurses in regular working sessions to vet every conversational flow, which became a genuinely productive model for bringing diverse expertise to bear on the same problem.</p>
-<p class="cs-p">When it came time to launch, I presented to hundreds of caregivers across Providence Health to build buy-in for rolling out Grace within MyChart and across clinic websites in Alaska, Washington, Oregon, California, Montana, New Mexico, and Texas.<br></p>
-<h4 class="cs-h4">iOS + Android inconsistencies</h4>
+<p class="cs-p">When it came time to launch, I presented to hundreds of caregivers across Providence Health to build buy-in for rolling out Grace within MyChart and across clinic websites in Alaska, Washington, Oregon, California, Montana, New Mexico, and Texas.</p>
+<h3 class="cs-h3">iOS and Android inconsistencies</h3>
 <p class="cs-p">I make a habit of using the products I build, and while doing a deep dive into our apps, I started noticing inconsistencies between the iOS and Android versions, including formatting, interactions, and color palettes. The causes were mundane but real: no style guide yet existed, design artifacts were treated as suggestions rather than rules during implementation, colors were sometimes sampled from lossy screenshots, and design docs occasionally left questions unanswered that engineers then resolved with their own judgment calls. I did a full side-by-side walkthrough of both apps, built an inventory of every issue, and had my team do the same. We surfaced dozens of inconsistencies and worked with engineering to prioritize fixes, reducing inconsistencies between iOS and Android by roughly 95%.</p>
-    <p class="cs-p">A style guide was the fix I could reach. We had no QA function that owned visual consistency across platforms, since testers were assigned to iOS or to Android, and engineering was two separate teams. Whoever was implementing a screen would sometimes guess at anything a Figma file did not state outright, which is where much of the variance came from.</p>
-<h4 class="cs-h4">AI-enabled Figma Plug-in Experiment for Flutter Code Migration</h4>
+<h3 class="cs-h3">An AI-enabled Figma plug-in for Flutter code migration</h3>
 <p class="cs-p">Around the same time, engineering decided to migrate our native mobile apps from Swift and Java to a unified Flutter codebase, allowing us to build once and deploy to both platforms. I saw an opportunity to streamline Figma-to-code translation and, with ChatGPT's API newly released, worked with two developers during an internal hackathon to build a plugin that exported Figma frames as Flutter code that matched our design system. We built it in under a week and proved it worked: it exported a design-system-compliant button. It also surfaced a real limit. The interaction logic around that button isn't captured by Figma frames, so that logic still had to be written by hand.</p>
-<h4 class="cs-h4">Logic trees, the universal card</h4>
-<p class="cs-p">Building for cross-platform experiences meant designing for wide variation in what context our systems knew about a given user. I built a logic tree showing how Grace's entry portal paths should adjust it’s display and content based on platform and user context.  This led to a patent application for contextual shortcuts. Leading by example with that logic tree, I worked with two designers on my team to design "universal card" patterns for the app's home screen.</p>
+<h3 class="cs-h3">Logic trees and the universal card</h3>
+<p class="cs-p">Building for cross-platform experiences meant designing for wide variation in what context our systems knew about a given user. I built a logic tree showing how Grace's entry portal paths should adjust its display and content based on platform and user context. This led to a patent application for contextual shortcuts. Leading by example with that logic tree, I worked with two designers on my team to design "universal card" patterns for the app's home screen.</p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide40.webp" alt="" loading="lazy" />
 <p class="cs-p"><em>Grace Entry Portals</em></p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide41.webp" alt="" loading="lazy" />
 <p class="cs-p"><em>Grace Floating Action Button (FAB) Cross-Platform Logic</em></p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide20.webp" alt="" loading="lazy" />
-<p class="cs-p"><em>Grace’s Universal Cards</em></p>
+<p class="cs-p"><em>Grace's Universal Cards</em></p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide19.webp" alt="" loading="lazy" />
-<p class="cs-p"><em>Fixing Inconsistency - Before and after Universal Cards</em></p>
-    <p class="cs-p">The alternative was what had been happening before I joined: a one-off card designed for each use case. Universal cards were a bet that one well-specified component covering every case would be worth more than the flexibility of designing each one, and consistency was what made the product easier to use.</p>
-<h4 class="cs-h4">Partnership</h4>
+<p class="cs-p"><em>Fixing inconsistency: before and after Universal Cards</em></p>
+<h3 class="cs-h3">Partnership</h3>
 <p class="cs-p">One challenge was representing external partners, such as Omada Health and Credina, in a way that felt true to each partner's brand while staying consistent with our in-app experience. Building upon the great work from designers on my team, I refined a template for these third-party cards, sharing it with partners, allowing them to adapt it while keeping it consistent with our design language. The card format is still in use in the app today. I was directly involved in the sharper tradeoffs behind this work, including defining the analytics needed to make the business case legible: card impressions, click-through, and downstream program downloads.</p>
     <div class="cs-row">
       <div class="cs-col" style="flex:467">
@@ -132,24 +164,31 @@
   <p class="cs-p"><em>Partner card template</em></p>
       </div>
     </div>
-    <p class="cs-p">Sharing the template was itself contested. There was internal pushback on giving partners the file at all, and the reason was never made clear to me. I got it to Omada Health, after which sharing was restricted.</p>
-<h4 class="cs-h4">Grace's logo</h4>
+<h3 class="cs-h3">Grace's logo</h3>
 <p class="cs-p">In 2022, I documented my exploration into using prompt engineering to explore AI-enabled workflows, designing a new logo for Grace, generating concepts in Midjourney, refining them in Figma, and exploring emotional expression and seasonal treatments before showing the mark in context as a pop-up icon. I later simplified that design further into the icon that represents Grace today.</p>
 <div class="cs-video"><iframe src="https://www.youtube-nocookie.com/embed/4GUX88ot5LM" title="Video" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>
-<h3 class="cs-h3">Result</h3>
+
+<h2 class="cs-h2">Result</h2>
 <p class="cs-p">Grace's native in-app and web presence from this work <strong>is still live today</strong>, durable, shipped interaction design, not a one-off mockup.</p>
 <ul class="cs-list">
       <li><strong>Engagement:</strong> The move to real NLU and the full redesign took Grace from a 1% open rate, a 13% return rate, and 800 monthly active users, to an 8% open rate, a 30% return rate, and 150,000 monthly active users.</li>
       <li><strong>Design system:</strong> The Zeroheight style guide gave the team shared rules instead of one-off judgment calls, a format that was expanded and adopted by all our product teams.</li>
       <li><strong>Safety &amp; buy-in:</strong> Clinical vetting kept every flow within healthcare's compliance guardrails; the presentations I gave to over 200 caregivers as part of our roadshow secured rollout across MyChart to 2.6 million patients and clinic sites in seven states.</li>
       <li><strong>Native presence:</strong> Grace's in-app entry point is still live today. The universal card pattern gave the business partner-facing engagement and conversion data.</li>
-      <li><strong>Floating Action Button (FAB) shortcut menu:</strong> Grace’s usage-based curation approach became a filed patent application.</li>
+      <li><strong>Floating Action Button (FAB) shortcut menu:</strong> Grace's usage-based curation approach became a filed patent application.</li>
       <li><strong>Cross-platform consistency:</strong> My cross-platform audit efforts subsequently reduced iOS/Android inconsistencies by ~95%, tracked directly.</li>
       <li><strong>Figma-to-Flutter plugin:</strong> A week-long experiment that surfaced a real limit ahead of the field: interaction logic isn't captured in Figma frames. It stayed a prototype.</li>
     </ul>
 <p class="cs-p">Together, this is what mobile and web design experience actually looked like on the ground: native entry-point decisions made against real platform constraints, a partner-facing feature built to move a business metric, and a systems-level effort to keep platforms honest with each other.</p>
 <img class="cs-img" src="/archive/smithkipnis/img/slide15.webp" alt="" loading="lazy" />
 <img class="cs-img" src="/archive/smithkipnis/img/slide16.webp" alt="" loading="lazy" />
+
+<h2 class="cs-h2">Context</h2>
+<h3 class="cs-h3">Situation</h3>
+<p class="cs-p">In 2021, Providence Health &amp; Services was navigating the aftermath of COVID-19: caseloads were rising, and caregivers were burning out and leaving the field in large numbers. At the same time, Providence, a Catholic non-profit health system, had launched the Providence Digital Innovation Group (DIG), an internal startup incubator designed to use the health system itself as a platform to build for-profit companies, retaining an equity stake as a long-term strategy to bring revenue back into the hospital and expand access to care.</p>
+<h3 class="cs-h3">Task</h3>
+<p class="cs-p">I joined Providence in 2021 to build and manage a team responsible for several product initiatives: Grace, a cross-platform conversational AI assistant deployed on web, iOS, and Android; the Consumer Engagement Platform (CEP), a white-labeled patient navigation app launched as both the Providence and Swedish Health apps; and a single-sign-on product called Single Patient Identity (SPI).</p>
+<p class="cs-p">I worked as a player-coach, serving simultaneously as an individual contributor and the manager of a five-person team. I had direct IC responsibility for Grace, while building the environment for my team to succeed on the other initiatives. Sometimes that meant stepping in, sometimes stepping aside, and always leading by example.</p>
 <nav class="cs-pager"><!-- generated:pager:start -->
     <a class="cs-next-link" href="/website/casestudies/wilson-x"><span>Next</span>Wilson X Connected Basketball</a>
   <!-- generated:pager:end --></nav>
