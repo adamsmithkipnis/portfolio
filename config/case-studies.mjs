@@ -194,7 +194,7 @@ export const EARLIER_WORK = [
     title: "HackCouture Gauntlet",
     org: "HackCouture",
     summary:
-      "I formed and led the team that took first place in the SIC AT&T wearable computing hackathon with the creation of our gesture detecting fabric glove and air guitar app.",
+      "I formed and led the team that took first place in the Seattle Interactive Conference AT&T wearable computing hackathon with the creation of our gesture detecting fabric glove and air guitar app.",
   },
   { slug: "family-hub-refrigerator", title: "Family Hub Refrigerator" },
   {
