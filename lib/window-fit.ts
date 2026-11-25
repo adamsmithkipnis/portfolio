@@ -151,3 +151,36 @@ export function repairSquashedHeight(
     size: { ...size, height: fitted.size.height },
   };
 }
+
+/** How far a window opened behind another shows past its right and bottom edges. */
+export const PEEK_OFFSET = { x: 96, y: 56 } as const;
+
+/**
+ * Where to put a window so it sits behind `front`, offset down and to the
+ * right so its right and bottom edges show past the front window's.
+ *
+ * The corners line up bottom-right, plus the offset. The window never starts
+ * above the front one's top + offset, so a window taller than the front one
+ * hangs below it instead of peeking over its title bar. The right edge stays
+ * on screen; on a viewport too narrow for the horizontal peek, the window still
+ * shows below the front one. Callers still fit the result to the desktop.
+ */
+export function peekBehindPosition(
+  front: { position: Position; size: Size },
+  size: Size,
+  viewportWidth: number,
+  offset: { x: number; y: number } = PEEK_OFFSET
+): Position {
+  const frontRight = front.position.x + front.size.width;
+  const desiredX = frontRight + offset.x - size.width;
+  const maxX = viewportWidth > 0 ? viewportWidth - size.width : desiredX;
+  return {
+    x: Math.max(0, Math.round(Math.min(desiredX, maxX))),
+    y: Math.round(
+      Math.max(
+        front.position.y + offset.y,
+        front.position.y + front.size.height + offset.y - size.height
+      )
+    ),
+  };
+}

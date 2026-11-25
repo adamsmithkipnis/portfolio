@@ -23,6 +23,7 @@ import {
 } from "./window-state-storage";
 import {
   fitToDesktop,
+  peekBehindPosition,
   repairSquashedHeight,
   viewportSizedPreset,
 } from "./window-fit";
@@ -119,16 +120,20 @@ function getDefaultWindowState(appId: string): WindowState {
 
 // Desktop default configuration (first visit, and after logout/restart/shutdown)
 // Windows listed in z-index order (first = back, last = front).
-// Safari alone: it shows the portfolio, and nothing competes with it for the
-// first read. The dock, with its Messages badge, is the hint that the desktop
-// is explorable. Closed windows are not mounted, so a first visit's page text
-// is the portfolio's chrome and nothing else.
-const DESKTOP_DEFAULT_CONFIG = {
+// Safari in front: it shows the portfolio and gets the first read. Spotify sits
+// behind it, offset down and to the right so its edge shows past Safari's, as
+// the hint that the desktop holds more than one app. `peekBehind` places a
+// window relative to the one named (which must come later in the list).
+const DESKTOP_DEFAULT_CONFIG: {
+  windows: readonly { appId: string; peekBehind?: string }[];
+  focusedAppId: string;
+} = {
   windows: [
+    { appId: "spotify", peekBehind: "safari" },
     { appId: "safari" },
   ],
   focusedAppId: "safari",
-} as const;
+};
 
 // Export for use in desktop.tsx URL handling
 export const DESKTOP_DEFAULT_FOCUSED_APP = DESKTOP_DEFAULT_CONFIG.focusedAppId;
@@ -159,7 +164,7 @@ function getBaseState(): WindowManagerState {
 /**
  * Desktop default state: multiple apps open in windowed mode
  * Used on first visit and after logout/restart/shutdown to show a "fresh desktop" view
- * Safari alone, left of center
+ * Safari centered, Spotify peeking out behind it
  */
 function getDesktopDefaultState(): WindowManagerState {
   const state = getBaseState();
@@ -168,8 +173,13 @@ function getDesktopDefaultState(): WindowManagerState {
   windows.forEach((config, index) => {
     const currentWindow = state.windows[config.appId];
     // The base state already carries the app's (viewport-relative) preset.
+    const front = config.peekBehind ? state.windows[config.peekBehind] : null;
+    const position =
+      front && typeof window !== "undefined"
+        ? peekBehindPosition(front, currentWindow.size, window.innerWidth)
+        : currentWindow.position;
     const preset = fitWindowPresetToDesktop(
-      currentWindow.position,
+      position,
       currentWindow.size,
       getAppById(config.appId)?.minSize
     );
