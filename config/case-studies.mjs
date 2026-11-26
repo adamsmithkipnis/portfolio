@@ -43,7 +43,7 @@ export const ORDER = {
  */
 export const ROLE_LINE = {
   management:
-    "Looking to manage a team again: hiring and growing talent, setting the bar for craft, and staying close enough to the work to ship.",
+    "I’m looking to manage a team again: hiring and growing talent, setting the bar for craft, and shipping great products.",
   ic: "",
 };
 
