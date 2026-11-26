@@ -479,6 +479,34 @@ html, body {
    which keeps the "never hardcode a color" rule in AGENTS.md intact at the
    component level. See docs/design-system.md.
 --------------------------------------------------------------------------- */
+/* The Claude app simulates Claude's desktop client, which has its own warm
+   neutrals and clay accent. Declared once here; components read only these. */
+.claude-app {
+  --claude-base: #faf9f5;
+  --claude-sidebar: #f5f4ee;
+  --claude-surface: #ffffff;
+  --claude-user-bubble: #f0eee6;
+  --claude-text: #141413;
+  --claude-text-subdued: #73726c;
+  --claude-border: rgb(31 30 29 / 0.15);
+  --claude-hover: rgb(31 30 29 / 0.06);
+  --claude-selected: rgb(31 30 29 / 0.09);
+  --claude-accent: #d97757;
+  --claude-accent-text: #ffffff;
+}
+
+.dark .claude-app {
+  --claude-base: #262624;
+  --claude-sidebar: #1f1e1d;
+  --claude-surface: #30302e;
+  --claude-user-bubble: #141413;
+  --claude-text: #faf9f5;
+  --claude-text-subdued: #a6a39a;
+  --claude-border: rgb(250 249 245 / 0.12);
+  --claude-hover: rgb(250 249 245 / 0.06);
+  --claude-selected: rgb(250 249 245 / 0.1);
+}
+
 .spotify-app {
   --spotify-base: #000000;
   --spotify-surface: #121212;

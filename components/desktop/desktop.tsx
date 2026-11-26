@@ -75,6 +75,7 @@ import {
 } from "@/lib/messages/first-visit";
 import { captureEvent } from "@/lib/analytics";
 import { getFinderDefaultPath } from "@/lib/work-links";
+const ClaudeApp = dynamic(() => import("@/components/apps/claude/claude-app").then(m => ({ default: m.ClaudeApp })));
 const SpotifyApp = dynamic(() => import("@/components/apps/spotify/spotify-app").then(m => ({ default: m.SpotifyApp })));
 const TextEditWindow = dynamic(() => import("@/components/apps/textedit").then(m => ({ default: m.TextEditWindow })));
 const PreviewWindow = dynamic(() => import("@/components/apps/preview").then(m => ({ default: m.PreviewWindow })));
@@ -968,6 +969,10 @@ function DesktopContent({
               externalSelectConversationRequest={messagesSelectRequest}
               onExternalSelectRequestHandled={handleMessagesSelectRequestHandled}
             />
+          </Window>
+
+          <Window appId="claude">
+            <ClaudeApp inShell={true} onOpenApp={handleOpenApp} />
           </Window>
 
           <Window appId="settings">

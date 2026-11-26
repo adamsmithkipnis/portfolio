@@ -41,6 +41,18 @@ export const APPS: AppConfig[] = [
     menuBarTitle: "Messages",
   },
   {
+    id: "claude",
+    name: "Claude",
+    icon: "/claude.png",
+    description: "Ask Claude about Adam's work",
+    provenance: { agent: "Claude Code", circa: "November 2026" },
+    accentColor: "#D97757",
+    defaultPosition: { x: 200, y: 70 },
+    defaultSize: { width: 920, height: 640 },
+    minSize: { width: 560, height: 420 },
+    menuBarTitle: "Claude",
+  },
+  {
     id: "photos",
     name: "Photos",
     icon: "/photos.png",

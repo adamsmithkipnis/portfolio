@@ -125,6 +125,23 @@ messages runs through the braintrust proxy to gpt-5.2 (`GROUP_CHAT_MODEL` in
 cap (~300). it's a public endpoint — an unguarded one is the only
 real cost risk in this project.
 
+the claude app's `/api/claude` follows the same rules: per-session and per-IP
+rate limits, the same history window, a per-message cap, and a `max_tokens`
+cap (1500, `lib/claude/model.ts`). it goes through the braintrust proxy, which
+needs an anthropic key in braintrust's ai providers. each visitor gets
+`claude-sonnet-5-5` for their first `SONNET_ANSWERS_PER_VISITOR` (10) answers,
+then `claude-haiku-5-5`; the count is kept per session cookie in server memory
+(`lib/claude/visitor-usage.ts`). don't send `temperature` — these models 400
+on non-default sampling. the key is meant to run on the max plan's monthly api
+credit with auto-reload off, so running out stops replies instead of billing.
+`CLAUDE_APP_MODEL_OVERRIDE` is for local testing only — never set it in
+production. the model answers only from `lib/claude/portfolio-facts.ts`
+(built from `config/case-studies.mjs`), and its tool calls are matched against
+known slugs and page ids in `lib/claude/tools.ts` before the desktop acts on
+them. model output is rendered as markdown **without** `rehype-raw`.
+example chats in `data/claude/example-chats.ts` must be real sessions; they
+stay hidden while `EXAMPLE_CHATS_READY` is false.
+
 if a persona speaks as a real person it must be clearly labeled AI. **never
 fabricate quotes or testimonials attributed to real people.**
 

@@ -468,6 +468,7 @@ const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 |-----|-----------------|----------------|----------|
 | Notes | Yes (search) | Yes | `sidebar.tsx` |
 | Messages | Yes (search, message input) | Yes | `sidebar.tsx` |
+| Claude | Yes (composer) | Yes | `claude/composer.tsx` |
 | iTerm | Yes (terminal input) | Yes | `terminal.tsx` |
 | TextEdit | Yes (textarea) | Yes | `textedit-app.tsx`, `textedit-window.tsx` |
 | Photos | No | Not needed | - |
@@ -542,6 +543,14 @@ Current exceptions:
   `--spotify-text`, `--spotify-text-subdued`, `--spotify-divider`. It also sets
   `color-scheme: dark` and renders dark in both themes, because the real
   Spotify desktop client has no light mode.
+
+- **Claude** (`.claude-app`) — `--claude-base`, `--claude-sidebar`,
+  `--claude-surface`, `--claude-user-bubble`, `--claude-text`,
+  `--claude-text-subdued`, `--claude-border`, `--claude-hover`,
+  `--claude-selected`, `--claude-accent`, `--claude-accent-text`. Light and
+  dark values both, following Claude's own warm neutrals and clay accent. Its
+  sidebar uses a neutral selected fill instead of the blue accent, because the
+  real client does.
 
 Everything else follows the shared tokens and the `#0A7CFF` accent below.
 
