@@ -110,7 +110,7 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
 
   return (
     <RecentsProvider>
-      <div className="h-dvh flex flex-col bg-background">
+      <div className="h-dvh flex flex-col bg-background" role="main">
         {activeAppId === "notes" && (
           <NotesApp
             isMobile={true}

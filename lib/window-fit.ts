@@ -152,8 +152,14 @@ export function repairSquashedHeight(
   };
 }
 
-/** How far a window opened behind another shows past its right and bottom edges. */
-export const PEEK_OFFSET = { x: 96, y: 56 } as const;
+/**
+ * How far a window opened behind another shows past its right and bottom edges.
+ *
+ * The horizontal figure is wide enough that the strip of Spotify left showing
+ * holds whole words: at 96 the front window's edge fell inside the right-aligned
+ * "12 playlists" count and cut its first digit off.
+ */
+export const PEEK_OFFSET = { x: 112, y: 56 } as const;
 
 /**
  * Where to put a window so it sits behind `front`, offset down and to the
@@ -183,4 +189,24 @@ export function peekBehindPosition(
       )
     ),
   };
+}
+
+/**
+ * The peeking window's height once it has to share a short desktop.
+ *
+ * Fitting a preset to the desktop slides a window up when it would run under
+ * the dock, which on a laptop lifted the back window's title bar above the
+ * front one's. Shortening it instead keeps the peek to the right and bottom,
+ * down to the app's minimum; below that the slide is the lesser evil.
+ */
+export function peekBehindHeight(
+  position: Position,
+  size: Size,
+  viewportHeight: number,
+  minSize?: Size
+): number {
+  if (viewportHeight <= 0) return size.height;
+  const availableBottom = viewportHeight - DOCK_HEIGHT - DEFAULT_WINDOW_DOCK_GAP;
+  const floor = Math.min(minSize?.height ?? 0, size.height);
+  return Math.max(floor, Math.min(size.height, availableBottom - position.y));
 }

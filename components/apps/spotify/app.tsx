@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useWindowFocus } from "@/lib/window-focus-context";
 import { loadSpotifyState, saveSpotifyState } from "@/lib/sidebar-persistence";
 import { useSpotifyEmbed } from "@/lib/spotify/use-spotify-embed";
+import { SPOTIFY_INITIAL_TRACK_URI } from "@/config/spotify";
 import { SPOTIFY_AUDIOBOOKS, SPOTIFY_PLAYLISTS } from "@/lib/spotify/data";
 import { findAudiobookById, findPlaylistById } from "@/lib/spotify/format";
 import type { LibraryFilter, SpotifyView } from "@/lib/spotify/types";
@@ -48,8 +49,8 @@ export default function App({ isDesktop = false }: AppProps) {
   const windowFocus = useWindowFocus();
   const inShell = !!(isDesktop && windowFocus);
 
-  const { hostRef, state, requestedUri, failed, playTrack, togglePlay } =
-    useSpotifyEmbed();
+  const { hostRef, state, requestedUri, isReady, failed, playTrack, togglePlay } =
+    useSpotifyEmbed({ initialUri: SPOTIFY_INITIAL_TRACK_URI });
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
   const location = history[historyIndex] ?? initialLocation;
@@ -242,7 +243,7 @@ export default function App({ isDesktop = false }: AppProps) {
 
       {/* Sidebar and content are separate rounded cards floating on the black
           base, with a gutter between them — Spotify's structural signature. */}
-      <main
+      <div
         className={cn(
           "flex-1 flex min-h-0 overflow-hidden px-2 pb-2",
           !isMobileView && "gap-2"
@@ -278,11 +279,11 @@ export default function App({ isDesktop = false }: AppProps) {
         >
           {renderContent()}
         </div>
-      </main>
+      </div>
 
       <NowPlayingEmbed
         hostRef={hostRef}
-        hasPlayed={state.playingUri !== null}
+        hasPlayed={isReady || state.playingUri !== null}
         failed={failed}
       />
     </div>

@@ -3,7 +3,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
-import { CASE_STUDIES, FRAMING, ORDER, SITE_MODE } from "../config/case-studies.mjs";
+import {
+  CASE_STUDIES,
+  FRAMING,
+  ORDER,
+  ROLE_LINE,
+  SITE_MODE,
+} from "../config/case-studies.mjs";
 import { buildArchive } from "../scripts/build-archive.mjs";
 
 /**
@@ -42,4 +48,8 @@ test("every mode orders every case study exactly once", () => {
 test("management leads with the team and IC leads with the most recent work", () => {
   assert.equal(ORDER.management[0], "grace-providence");
   assert.equal(ORDER.ic[0], "invoca-workflow-agent");
+});
+
+test("every mode has its own role line, so the page never blends the two", () => {
+  assert.deepEqual(Object.keys(ROLE_LINE).sort(), Object.keys(ORDER).sort());
 });

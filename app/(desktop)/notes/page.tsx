@@ -1,10 +1,11 @@
 import { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 import { isMobileRequest } from "@/lib/is-mobile-request";
 import { NotesDesktopPage } from "./[slug]/notes-desktop-page";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "adam smith-kipnis",
+    title: siteConfig.title,
     openGraph: {
       images: [`/notes/api/og/?title=${encodeURIComponent("notes")}&emoji=${encodeURIComponent("✏️")}`],
     },

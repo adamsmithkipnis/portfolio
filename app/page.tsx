@@ -1,14 +1,15 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { APPS } from "@/lib/app-config";
+import { WORK_LINKS } from "@/lib/work-links";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
+  alternates: { canonical: "/" },
   openGraph: {
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
   },
 };
 
@@ -47,6 +48,31 @@ export default function Home() {
       {DOCK_ICONS.map((icon) => (
         <link key={icon} rel="preload" as="image" type="image/png" href={icon} />
       ))}
+      {/*
+        The desktop is client-rendered and the portfolio sits in a frame inside
+        it, so the server-rendered document used to say nothing about who this
+        is or where the work lives. This is that, for crawlers, link unfurlers
+        and screen readers: the same name, description and case studies the
+        visible site shows. The first link appears on keyboard focus, as a way
+        past the desktop; the rest stay out of the tab order.
+      */}
+      <header className="sr-only focus-within:not-sr-only focus-within:fixed focus-within:left-3 focus-within:top-9 focus-within:z-[100] focus-within:rounded-md focus-within:bg-background focus-within:px-3 focus-within:py-2 focus-within:text-sm focus-within:text-foreground focus-within:shadow-lg">
+        <h1>{siteConfig.title}</h1>
+        <p>{siteConfig.description}</p>
+        <nav aria-label="Portfolio">
+          <a href="/website">Skip to the portfolio site</a>
+          <ul>
+            {WORK_LINKS.map((link) => (
+              <li key={link.slug}>
+                <a href={link.archivePath} tabIndex={-1}>
+                  {link.title}
+                </a>
+                {link.summary ? <p>{link.summary}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
       <HomeClient />
     </>
   );

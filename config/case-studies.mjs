@@ -35,6 +35,18 @@ export const ORDER = {
   ic: ["invoca-workflow-agent", "gear-iconx", "wilson-x", "grace-providence"],
 };
 
+/**
+ * The one line under the home page's headline saying what role this site is
+ * making the case for. One per mode, never a blend: a reader hiring a manager
+ * and a reader hiring a designer are looking for different things. The words
+ * are the author's; an empty string leaves the line off the page.
+ */
+export const ROLE_LINE = {
+  management:
+    "Looking to manage a team again: hiring and growing talent, setting the bar for craft, and staying close enough to the work to ship.",
+  ic: "",
+};
+
 export const CASE_STUDIES = {
   "invoca-workflow-agent": {
     title: "Invoca Workflow Agent",

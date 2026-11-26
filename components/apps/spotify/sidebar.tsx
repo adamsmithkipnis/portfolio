@@ -10,6 +10,7 @@ import type {
   SpotifyPlaylist,
   SpotifyView,
 } from "@/lib/spotify/types";
+import { SpokenName } from "./spoken-name";
 
 interface SidebarProps {
   playlists: SpotifyPlaylist[];
@@ -153,7 +154,7 @@ function LibraryRow({
               : "text-[var(--spotify-text)]"
           )}
         >
-          {title}
+          <SpokenName name={title} />
         </p>
         <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
           {subtitle}

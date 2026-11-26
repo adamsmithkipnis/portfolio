@@ -23,6 +23,7 @@ import {
 } from "./window-state-storage";
 import {
   fitToDesktop,
+  peekBehindHeight,
   peekBehindPosition,
   repairSquashedHeight,
   viewportSizedPreset,
@@ -178,11 +179,15 @@ function getDesktopDefaultState(): WindowManagerState {
       front && typeof window !== "undefined"
         ? peekBehindPosition(front, currentWindow.size, window.innerWidth)
         : currentWindow.position;
-    const preset = fitWindowPresetToDesktop(
-      position,
-      currentWindow.size,
-      getAppById(config.appId)?.minSize
-    );
+    const minSize = getAppById(config.appId)?.minSize;
+    const size =
+      front && typeof window !== "undefined"
+        ? {
+            ...currentWindow.size,
+            height: peekBehindHeight(position, currentWindow.size, window.innerHeight, minSize),
+          }
+        : currentWindow.size;
+    const preset = fitWindowPresetToDesktop(position, size, minSize);
 
     currentWindow.isOpen = true;
     currentWindow.isMaximized = false;

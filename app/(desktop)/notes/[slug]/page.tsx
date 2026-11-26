@@ -3,6 +3,7 @@ import { createClient as createServerClient } from "@/utils/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 import { isMobileRequest } from "@/lib/is-mobile-request";
 import { Note as NoteType } from "@/lib/notes/types";
 import { NotesDesktopPage } from "./notes-desktop-page";
@@ -71,7 +72,7 @@ export async function generateMetadata({
   const emoji = note.emoji || "👋🏼";
 
   return {
-    title: "adam smith-kipnis",
+    title: siteConfig.title,
     openGraph: {
       images: [
         `/notes/api/og/?title=${encodeURIComponent(title)}&emoji=${encodeURIComponent(emoji)}`,

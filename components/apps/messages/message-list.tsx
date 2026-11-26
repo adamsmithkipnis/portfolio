@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { soundEffects, shouldMuteIncomingSound } from "@/lib/messages/sound-effects";
 import { loadMessagesConversation } from "@/lib/sidebar-persistence";
+import { getAiDisclosure } from "@/lib/messages/ai-disclosure";
 
 // Tracks whether the component has been mounted in this page session.
 // Resets on page refresh (module reloads). Persists across minimize/restore (page stays loaded).
@@ -173,10 +174,19 @@ export function MessageList({
     }
   }, [messages, conversation?.hideAlerts, focusModeActive, isWindowFocused]);
 
+  const aiDisclosure = conversation
+    ? getAiDisclosure(conversation.recipients.map((recipient) => recipient.name))
+    : null;
+
   return (
     <div ref={messageListRef} className="flex-1 flex flex-col-reverse relative">
       {/* Messages layer */}
       <div className="flex-1 relative">
+        {aiDisclosure && (
+          <div className="w-full flex justify-center pt-3 pb-1 px-3 bg-background">
+            <p className="text-[12px] text-muted-foreground text-center max-w-[80%]">{aiDisclosure}</p>
+          </div>
+        )}
         {messages.map((message, index) => (
           <div
             key={message.id}

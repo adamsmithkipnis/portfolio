@@ -175,7 +175,7 @@ export default function App({ isDesktop = false }: AppProps) {
       tabIndex={-1}
       className="flex h-full relative outline-none overflow-hidden"
     >
-      <main className="h-full w-full bg-background flex flex-col overflow-hidden">
+      <div className="h-full w-full bg-background flex flex-col overflow-hidden">
         <div className="flex-1 flex min-h-0">
           {/* Sidebar */}
           <div
@@ -257,7 +257,7 @@ export default function App({ isDesktop = false }: AppProps) {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

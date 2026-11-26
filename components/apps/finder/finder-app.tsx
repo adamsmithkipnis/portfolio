@@ -22,6 +22,7 @@ import {
   EARLIER_WORK_LINKS,
   getWorkFolderItems,
   getWorkLink,
+  getFinderDefaultPath,
   hasWorkItems,
   WORK_LINKS,
 } from "@/lib/work-links";
@@ -288,9 +289,9 @@ export function FinderApp({
   const getInitialPath = (): string => {
     if (initialPath) return initialPath;
     if (!inShell) {
-      return loadFinderPath() || "recents";
+      return loadFinderPath() || getFinderDefaultPath();
     }
-    return "recents";
+    return getFinderDefaultPath();
   };
 
   const [currentPath, setCurrentPathRaw] = useState(getInitialPath);

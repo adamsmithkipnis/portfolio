@@ -81,3 +81,15 @@ export function findAudiobookById(
   if (!id) return null;
   return audiobooks.find((book) => book.id === id) ?? null;
 }
+
+/**
+ * What a screen reader should say for a name. One playlist is named in Zalgo
+ * text: a few characters carrying hundreds of stacked combining marks, shown
+ * as Spotify shows it. Read aloud that is minutes of noise, so a name that is
+ * mostly marks is spoken as what it is instead.
+ */
+export function spokenName(name: string): string {
+  const marks = name.match(/\p{M}/gu)?.length ?? 0;
+  const letters = name.match(/[\p{L}\p{N}]/gu)?.length ?? 0;
+  return marks > 20 && marks > letters ? "Zalgo-text playlist" : name;
+}

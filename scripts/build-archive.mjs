@@ -23,9 +23,11 @@ import {
   FRAMING,
   ORDER,
   SITE_MODE,
+  ROLE_LINE,
 } from "../config/case-studies.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const HOME_PATH = path.join(ROOT, "public/archive/smithkipnis/index.html");
 const CASE_STUDY_DIR = path.join(
   ROOT,
   "public/archive/smithkipnis/casestudies"
@@ -209,6 +211,17 @@ function renderGlance(study) {
   return `  <dl class="cs-glance">\n${rows}\n  </dl>`;
 }
 
+/**
+ * The home page's role line, under the headline. Empty in config means
+ * nothing is rendered.
+ */
+export function renderHomeIntro() {
+  const roleLine = ROLE_LINE[SITE_MODE];
+  const role = roleLine ? `\n  <p class="home-role">${escapeHtml(roleLine)}</p>` : "";
+
+  return `${role}\n  `;
+}
+
 export function renderSummary(slug) {
   const study = CASE_STUDIES[slug];
   return `\n${renderMetrics(study)}\n${renderGlance(study)}\n  `;
@@ -275,6 +288,10 @@ export function renderEarlierPager(slug) {
 /** The files this script owns, as { file, contents } after regeneration. */
 export async function buildArchive() {
   const results = [];
+
+  let homeHtml = await readFile(HOME_PATH, "utf8");
+  homeHtml = replaceRegion(homeHtml, "generated:home-intro", renderHomeIntro(), HOME_PATH);
+  results.push({ file: HOME_PATH, contents: homeHtml });
 
   const indexPath = path.join(CASE_STUDY_DIR, "index.html");
   let indexHtml = await readFile(indexPath, "utf8");

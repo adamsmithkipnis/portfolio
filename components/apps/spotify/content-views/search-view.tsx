@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/spotify/format";
 import type { SpotifyAudiobook, SpotifyPlaylist } from "@/lib/spotify/types";
 import { BookAudio, ListMusic, Pause, Play } from "lucide-react";
+import { SpokenName } from "../spoken-name";
 
 const MAX_TRACK_RESULTS = 60;
 
@@ -147,7 +148,7 @@ export function SearchView({
                         )}
                       </div>
                       <p className="text-[15px] font-semibold truncate text-[var(--spotify-text)]">
-                        {playlist.name}
+                        <SpokenName name={playlist.name} />
                       </p>
                       <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
                         {playlist.tracks.length} songs

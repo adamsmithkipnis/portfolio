@@ -6,6 +6,7 @@ import {
   DOCK_HEIGHT,
   MENU_BAR_HEIGHT,
   fitToDesktop,
+  peekBehindHeight,
   peekBehindPosition,
   repairSquashedHeight,
   viewportSizedPreset,
@@ -149,4 +150,18 @@ test("the back window's right edge stays on a narrow viewport", () => {
   const pos = peekBehindPosition(narrow, spotifySize, 1024);
   assert.ok(pos.x + spotifySize.width <= 1024);
   assert.ok(pos.x >= 0);
+});
+
+test("on a short desktop the back window gets shorter instead of sliding over the title bar", () => {
+  const laptopFront = { position: { x: 202, y: 40 }, size: { width: 1037, height: 560 } };
+  const pos = peekBehindPosition(laptopFront, spotifySize, 1440);
+  const height = peekBehindHeight(pos, spotifySize, 820, { width: 720, height: 520 });
+  assert.ok(pos.y > laptopFront.position.y);
+  assert.ok(pos.y + height <= 820 - 80 - 12, "stays clear of the dock");
+  assert.ok(height >= 520);
+});
+
+test("a tall desktop leaves the back window at its own height", () => {
+  const pos = { x: 600, y: 300 };
+  assert.equal(peekBehindHeight(pos, spotifySize, 1600, { width: 720, height: 520 }), 700);
 });
