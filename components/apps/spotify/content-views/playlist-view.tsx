@@ -10,10 +10,12 @@ import {
   formatTotalDuration,
   playlistHeaderHue,
   totalPlaylistDuration,
+  spokenName,
 } from "@/lib/spotify/format";
 import type { SpotifyPlaylist } from "@/lib/spotify/types";
 import { siteConfig } from "@/config/site";
 import { Clock, ExternalLink, ListMusic, Pause, Play } from "lucide-react";
+import { SpokenName } from "../spoken-name";
 
 interface PlaylistViewProps {
   playlist: SpotifyPlaylist;
@@ -219,7 +221,7 @@ export function PlaylistView({
                 {playlist.coverArt ? (
                   <Image
                     src={playlist.coverArt}
-                    alt={playlist.name}
+                    alt={spokenName(playlist.name)}
                     fill
                     className="object-cover"
                     unoptimized
@@ -236,7 +238,7 @@ export function PlaylistView({
                   Public Playlist
                 </p>
                 <h1
-                  title={playlist.name}
+                  title={spokenName(playlist.name)}
                   style={{ fontSize: `${titlePx}px` }}
                   className={cn(
                     "font-extrabold tracking-tight text-[var(--spotify-text)] break-words overflow-hidden",
@@ -246,7 +248,7 @@ export function PlaylistView({
                       : "line-clamp-3",
                   )}
                 >
-                  {playlist.name}
+                  <SpokenName name={playlist.name} />
                 </h1>
                 {playlist.description && (
                   <p className="text-sm text-[var(--spotify-text-subdued)] line-clamp-2">
@@ -289,7 +291,7 @@ export function PlaylistView({
             <button
               onClick={() => firstTrackUri && onTrackPlay(firstTrackUri, 0)}
               disabled={!firstTrackUri}
-              aria-label={`Play ${playlist.name}`}
+              aria-label={`Play ${spokenName(playlist.name)}`}
               className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--spotify-green)] text-black transition-transform can-hover:hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Play className="w-6 h-6 fill-current ml-0.5" />

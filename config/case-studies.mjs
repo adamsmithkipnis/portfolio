@@ -42,7 +42,8 @@ export const ORDER = {
  * are the author's; an empty string leaves the line off the page.
  */
 export const ROLE_LINE = {
-  management: "",
+  management:
+    "Looking to manage a team again: hiring and growing talent, setting the bar for craft, and staying close enough to the work to ship.",
   ic: "",
 };
 

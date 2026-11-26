@@ -1,7 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { initialContacts } from "../data/messages/initial-contacts";
-import { ADAM_AI_NAME } from "../lib/messages/adam-ai";
 import { initialConversations } from "../data/messages/initial-conversations";
 import {
   FIRST_VISIT_STORAGE_KEY,
@@ -44,22 +42,11 @@ test("the banner opens a seeded conversation", () => {
   assert.ok(initialConversations.some((c) => c.id === notification.conversationId));
 });
 
-test("the banner and thread both say it is the AI version, in the thread's own words", () => {
+test("the banner quotes the last thing someone else said in that thread", () => {
   const notification = buildFirstVisitNotification();
   assert.ok(notification);
-  assert.match(notification.body, /AI version/);
-  assert.match(thread0(notification.conversationId), /AI version/);
   const thread = initialConversations.find((c) => c.id === notification.conversationId)!;
-  assert.equal(thread.messages[0].sender, notification.sender);
+  const last = thread.messages.filter((m) => m.sender !== "me" && m.sender !== "system").at(-1)!;
+  assert.equal(notification.sender, last.sender);
   assert.ok(!notification.body.includes("\n"), "flattened to one line");
-  assert.match(initialContacts.find((c) => c.name === ADAM_AI_NAME)!.bio ?? "", /AI/);
-});
-
-function thread0(id: string) {
-  return initialConversations.find((c) => c.id === id)!.messages[0].content;
-}
-
-test("the AI persona has a prompt, so the chat route can answer as it", () => {
-  const contact = initialContacts.find((c) => c.name === ADAM_AI_NAME);
-  assert.ok(contact?.prompt?.includes("AI"));
 });

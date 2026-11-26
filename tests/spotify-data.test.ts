@@ -134,3 +134,17 @@ test("playlists and audiobooks do not share ids", () => {
     "a shared id would make the selected-item lookup ambiguous"
   );
 });
+
+test("a Zalgo-text playlist name is spoken as what it is, and ordinary names as written", async () => {
+  const { spokenName } = await import("../lib/spotify/format");
+  const spoken = SPOTIFY_PLAYLISTS.map((playlist) => spokenName(playlist.name));
+  assert.equal(spoken.filter((name) => name === "Zalgo-text playlist").length, 1);
+  assert.equal(spokenName("Disco Francais"), "Disco Francais");
+  assert.equal(spokenName("Bumpin'"), "Bumpin'");
+});
+
+test("the track waiting in the now-playing bar is one the library holds", async () => {
+  const { SPOTIFY_INITIAL_TRACK_URI } = await import("../config/spotify");
+  const uris = SPOTIFY_PLAYLISTS.flatMap((playlist) => playlist.tracks.map((track) => track.uri));
+  assert.ok(uris.includes(SPOTIFY_INITIAL_TRACK_URI));
+});

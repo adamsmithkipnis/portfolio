@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { formatTotalDuration, totalPlaylistDuration } from "@/lib/spotify/format";
+import { formatTotalDuration, totalPlaylistDuration, spokenName } from "@/lib/spotify/format";
 import type { SpotifyAudiobook, SpotifyPlaylist } from "@/lib/spotify/types";
 import { BookAudio, ListMusic, Play } from "lucide-react";
+import { SpokenName } from "../spoken-name";
 
 /** Spotify shows eight quick-access tiles on Home. */
 const QUICK_ACCESS_COUNT = 8;
@@ -101,7 +102,7 @@ export function HomeView({
               {/* Covers the tile so a click anywhere opens the playlist. */}
               <button
                 onClick={() => onPlaylistSelect(playlist.id)}
-                aria-label={`Open ${playlist.name}`}
+                aria-label={`Open ${spokenName(playlist.name)}`}
                 className="absolute inset-0"
               />
 
@@ -122,13 +123,13 @@ export function HomeView({
               </div>
 
               <span className="relative flex-1 min-w-0 pr-2 text-[15px] font-bold leading-tight text-[var(--spotify-text)] line-clamp-2 pointer-events-none">
-                {playlist.name}
+                <SpokenName name={playlist.name} />
               </span>
 
               <button
                 onClick={() => onPlaylistPlay(playlist.id)}
-                aria-label={`Play ${playlist.name}`}
-                title={`Play ${playlist.name}`}
+                aria-label={`Play ${spokenName(playlist.name)}`}
+                title={`Play ${spokenName(playlist.name)}`}
                 className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-[var(--spotify-green)] text-black shadow-lg opacity-0 translate-y-1 transition-all can-hover:group-hover:opacity-100 can-hover:group-hover:translate-y-[-50%] focus-visible:opacity-100"
               >
                 <Play className="w-4 h-4 fill-current ml-0.5" />
@@ -165,7 +166,7 @@ export function HomeView({
                 {playlist.coverArt ? (
                   <Image
                     src={playlist.coverArt}
-                    alt={playlist.name}
+                    alt={spokenName(playlist.name)}
                     fill
                     className="object-cover"
                     unoptimized
@@ -177,7 +178,7 @@ export function HomeView({
                 )}
               </div>
               <p className="text-[15px] font-semibold truncate text-[var(--spotify-text)]">
-                {playlist.name}
+                <SpokenName name={playlist.name} />
               </p>
               <p className="text-[13px] text-[var(--spotify-text-subdued)] truncate">
                 {playlist.tracks.length} songs ·{" "}
