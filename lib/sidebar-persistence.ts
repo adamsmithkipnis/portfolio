@@ -44,6 +44,7 @@ const STORAGE_KEYS = {
   SPOTIFY_STATE: "spotify-state",
   NOTES_SELECTED: "notes-selected-slug",
   MESSAGES_CONVERSATION: "messages-conversation",
+  CLAUDE_VIEW: "claude-view",
   WEATHER_SELECTED_CITY: "weather-selected-city",
   WEATHER_DATA_CACHE: "weather-data-cache",
   // Local storage (durable user content)
@@ -496,6 +497,51 @@ export function clearNotesState(): void {
 }
 
 // ============================================================================
+// Claude Persistence
+// ============================================================================
+
+// Which chat is open and whether the artifact panel shows. Chats themselves
+// are durable content in localStorage (lib/claude/chat-storage.ts).
+export interface ClaudeViewState {
+  chatId: string | null;
+  artifactId: string | null;
+}
+
+export function loadClaudeView(): ClaudeViewState {
+  const empty: ClaudeViewState = { chatId: null, artifactId: null };
+  if (typeof window === "undefined") return empty;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.CLAUDE_VIEW);
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw) as Partial<ClaudeViewState>;
+    return {
+      chatId: typeof parsed.chatId === "string" ? parsed.chatId : null,
+      artifactId: typeof parsed.artifactId === "string" ? parsed.artifactId : null,
+    };
+  } catch {
+    return empty;
+  }
+}
+
+export function saveClaudeView(view: ClaudeViewState): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.CLAUDE_VIEW, JSON.stringify(view));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export function clearClaudeState(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(STORAGE_KEYS.CLAUDE_VIEW);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+// ============================================================================
 // Messages Persistence
 // ============================================================================
 
@@ -773,6 +819,9 @@ export function clearAppState(appId: string): void {
     case "messages":
       clearMessagesState();
       break;
+    case "claude":
+      clearClaudeState();
+      break;
     case "weather":
       clearWeatherState();
       break;
@@ -790,6 +839,7 @@ export function clearAllAppState(): void {
   clearSpotifyState();
   clearNotesState();
   clearMessagesState();
+  clearClaudeState();
   clearWeatherState();
   clearItermStorage();
 }

@@ -20,6 +20,10 @@ const MessagesApp = dynamic(
   () => import("@/components/apps/messages/messages-app").then((mod) => mod.MessagesApp),
   { ssr: false }
 );
+const ClaudeApp = dynamic(
+  () => import("@/components/apps/claude/claude-app").then((mod) => mod.ClaudeApp),
+  { ssr: false }
+);
 const SettingsApp = dynamic(
   () => import("@/components/apps/settings/settings-app").then((mod) => mod.SettingsApp),
   { ssr: false }
@@ -125,6 +129,9 @@ export function MobileShell({ initialApp, initialNoteSlug, initialNote }: Mobile
             inShell={false}
             focusModeActive={focusMode !== "off"}
           />
+        )}
+        {activeAppId === "claude" && (
+          <ClaudeApp isMobile={true} inShell={false} onOpenApp={handleOpenAppFromFinder} />
         )}
         {activeAppId === "settings" && <SettingsApp isMobile={true} inShell={false} />}
         {activeAppId === "iterm" && <ITermApp isMobile={true} inShell={false} />}

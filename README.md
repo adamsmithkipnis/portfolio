@@ -28,6 +28,11 @@ a macos sierra 10.12 themed desktop with:
 - pinned conversations and swipe gestures
 - @mentions and contact management
 - command menu (⌘K) with keyboard shortcuts
+
+**claude** - a simulated claude desktop app that answers questions about the portfolio
+- live, streaming replies grounded only in `config/case-studies.mjs` (claude via the braintrust proxy)
+- starter prompts, a recents sidebar, and pinned example chats from real work (hidden until written)
+- can open case studies and site pages in safari, and write documents into an artifact panel
 - focus mode integration (mutes notifications)
 
 **iterm** - terminal emulator
@@ -130,6 +135,10 @@ the app uses next.js app router with a route group for the desktop environment. 
 - conversations stored in localstorage
 - ai responses generated via braintrust proxy (openai-compatible)
 - no server-side message storage
+
+**claude** chats are client-side only:
+- chats stored in localstorage (`claudeChats`), the open chat in sessionstorage
+- replies stream from `/api/claude` as newline-delimited json; tool calls are validated server-side before the desktop acts on them
 
 **photos** use supabase storage:
 - images stored in supabase storage bucket
@@ -237,8 +246,11 @@ NEXT_PUBLIC_SUPABASE_URL="<your-supabase-url>"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="<your-anon-key>"
 SUPABASE_SERVICE_ROLE_KEY="<your-service-role-key>"
 
-# braintrust (required for messages ai)
+# braintrust (required for messages and claude ai)
+# the claude app also needs an anthropic key added in braintrust → settings → ai providers
 BRAINTRUST_API_KEY="<your-braintrust-api-key>"
+# local testing only: run the claude app against another model
+# CLAUDE_APP_MODEL_OVERRIDE="gpt-5.2"
 
 # photos upload (required for ios shortcut)
 PHOTOS_UPLOAD_API_KEY="<generate-random-key>"

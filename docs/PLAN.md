@@ -190,7 +190,9 @@ state to diff against.
   managers *will* open it on a phone. Responsive linear fallback, or
   desktop-only with content still reachable? **Biggest practical risk to the
   project.**
-- **Which fifth app**, if any, beyond Notes/Messages/Finder/Terminal
+- ~~**Which fifth app**, if any, beyond Notes/Messages/Finder/Terminal~~ — Claude
+  (2026-11-25): a simulated Claude desktop app that answers questions about the
+  portfolio and opens case studies. See the AI chat section of `AGENTS.md`.
 - ~~**Case study content model**~~ — resolved: Markdown files in `content/`, walked
   at build time. See the implementation notes in `docs/CONTENT-MODEL.md`
 

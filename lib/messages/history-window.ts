@@ -12,11 +12,11 @@ import type { Message } from "@/types/messages";
 export const CHAT_HISTORY_WINDOW = 40;
 export const CHAT_HISTORY_MAX_CHARS = 12_000;
 
-export function trimConversationHistory(
-  messages: Message[],
+export function trimConversationHistory<T extends Pick<Message, "content">>(
+  messages: T[],
   window = CHAT_HISTORY_WINDOW,
   maxChars = CHAT_HISTORY_MAX_CHARS
-): Message[] {
+): T[] {
   let recent = messages.length > window ? messages.slice(-window) : messages.slice();
 
   let total = recent.reduce((sum, message) => sum + message.content.length, 0);
