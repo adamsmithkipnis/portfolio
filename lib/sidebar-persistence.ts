@@ -46,6 +46,7 @@ const STORAGE_KEYS = {
   MESSAGES_CONVERSATION: "messages-conversation",
   CLAUDE_VIEW: "claude-view",
   WEATHER_SELECTED_CITY: "weather-selected-city",
+  FIGMA_STATE: "figma-state",
   WEATHER_DATA_CACHE: "weather-data-cache",
   // Local storage (durable user content)
   WEATHER_CUSTOM_CITIES: "weather-custom-cities",
@@ -796,6 +797,39 @@ export function clearWeatherState(): void {
   }
 }
 
+export interface FigmaViewState {
+  slug: string;
+  pageId: string | null;
+}
+
+/** The open Figma file and page. Session-only: a new tab starts at Recents. */
+export function loadFigmaState(): FigmaViewState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEYS.FIGMA_STATE);
+    if (!saved) return null;
+    const parsed = JSON.parse(saved) as Partial<FigmaViewState>;
+    if (typeof parsed.slug !== "string") return null;
+    return { slug: parsed.slug, pageId: typeof parsed.pageId === "string" ? parsed.pageId : null };
+  } catch {
+    return null;
+  }
+}
+
+export function saveFigmaState(state: FigmaViewState | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (state) sessionStorage.setItem(STORAGE_KEYS.FIGMA_STATE, JSON.stringify(state));
+    else sessionStorage.removeItem(STORAGE_KEYS.FIGMA_STATE);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export function clearFigmaState(): void {
+  saveFigmaState(null);
+}
+
 export function clearAppState(appId: string): void {
   switch (appId) {
     case "finder":
@@ -828,6 +862,9 @@ export function clearAppState(appId: string): void {
     case "iterm":
       clearItermStorage();
       break;
+    case "figma":
+      clearFigmaState();
+      break;
   }
 }
 
@@ -842,4 +879,5 @@ export function clearAllAppState(): void {
   clearClaudeState();
   clearWeatherState();
   clearItermStorage();
+  clearFigmaState();
 }

@@ -63,6 +63,7 @@ const FinderApp = dynamic(() => import("@/components/apps/finder/finder-app").th
 const PhotosApp = dynamic(() => import("@/components/apps/photos/photos-app").then(m => ({ default: m.PhotosApp })));
 const CalendarApp = dynamic(() => import("@/components/apps/calendar/calendar-app").then(m => ({ default: m.CalendarApp })));
 const WeatherApp = dynamic(() => import("@/components/apps/weather/weather-app").then(m => ({ default: m.WeatherApp })));
+const FigmaApp = dynamic(() => import("@/components/apps/figma/figma-app").then(m => ({ default: m.FigmaApp })));
 const SafariApp = dynamic(() => import("@/components/apps/safari/safari-app").then(m => ({ default: m.SafariApp })));
 import type { ArchivePageRequest } from "@/components/apps/safari/safari-app";
 import { getStoredUnreadCount } from "@/lib/messages/unread-count";
@@ -998,6 +999,10 @@ function DesktopContent({
 
           <Window appId="weather">
             <WeatherApp inShell={true} />
+          </Window>
+
+          <Window appId="figma">
+            <FigmaApp inShell={true} onOpenApp={handleOpenApp} />
           </Window>
 
           <Window appId="safari">

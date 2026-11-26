@@ -172,6 +172,8 @@ state to diff against.
       page collage image links to its case study. Thumbnails come in with
       `npm run import:earlier-work-images`
 - [ ] Quick Look, tag filtering, `confidential` redaction, deep-link restore
+- [ ] Figma app — real canvases from the Figma account, in three phases. See
+      `docs/figma-app.md`
 - [ ] Essays into Notes
 - [ ] Messages personas
 - [x] Resume escape hatch — `~/Desktop`, opens in Preview, visible as a desktop icon
