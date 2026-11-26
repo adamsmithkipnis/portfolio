@@ -84,6 +84,12 @@ there is a curated set; the `/photos` route still works)
 - non-dock app (appears in dock only while open)
 - shared weather scene renderer and palettes documented in `docs/weather-scenes.md`
 
+**figma** - design files from my Figma account
+- opens at `/figma` to a Recents grid; each file opens on a pan/zoom canvas with pages, layers and a details panel
+- pages are exported images (`public/figma/`) described by manifests in `config/figma/`; see `docs/figma-app.md`
+- "Read the case study" hands the archived case study to Safari
+- desktop only; phones fall back to Finder
+
 **safari** - web browser
 - opens at `/safari`
 - start page is the archived smithkipnis.com, framed same-origin from `/website`,

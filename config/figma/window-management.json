@@ -1,0 +1,133 @@
+{
+  "slug": "window-management",
+  "title": "Feature - Window Management",
+  "kind": "design",
+  "fileKey": "LpNQkR3RwV27AuQs5JoHE9",
+  "edited": "2026-07",
+  "caseStudy": "grace-providence",
+  "background": "#1e1e1e",
+  "pages": [
+    {
+      "id": "notes",
+      "name": "Notes",
+      "image": "/figma/window-management/notes.png",
+      "w": 4810,
+      "h": 3880,
+      "layers": [
+        {
+          "name": "Cover",
+          "x": 28,
+          "y": 0,
+          "w": 2343,
+          "h": 1406
+        },
+        {
+          "name": "Notes",
+          "x": 28,
+          "y": 1731,
+          "w": 1485,
+          "h": 604,
+          "note": "Open questions going in: does the crown need refresh and close, should there be a minimise, and what does refresh actually reset?"
+        },
+        {
+          "name": "Problem description",
+          "x": 28,
+          "y": 2393,
+          "w": 898,
+          "h": 417,
+          "note": "Users couldn't move between Grace and MyChart without closing Grace, which reset the conversation."
+        },
+        {
+          "name": "Current behavior by breakpoint",
+          "x": 0,
+          "y": 2864,
+          "w": 4810,
+          "h": 1016,
+          "note": "Where the Grace window sits today on desktop, tablet, and two phone sizes."
+        }
+      ]
+    },
+    {
+      "id": "solution",
+      "name": "Solution",
+      "image": "/figma/window-management/solution.png",
+      "w": 11744,
+      "h": 8023,
+      "layers": [
+        {
+          "name": "Current Design",
+          "x": 200,
+          "y": 200,
+          "w": 3132,
+          "h": 1180,
+          "note": "Today's window on desktop, mobile web, and the CEP app."
+        },
+        {
+          "name": "Proposed Flow — Desktop",
+          "x": 187,
+          "y": 1700,
+          "w": 11300,
+          "h": 1431,
+          "note": "Step by step: log in, ask Grace for lab results, minimise to read them, reopen without losing the conversation."
+        },
+        {
+          "name": "Proposed Flow — Mobile Web",
+          "x": 200,
+          "y": 4064,
+          "w": 5831,
+          "h": 1373,
+          "note": "Same journey on a phone. Grace minimises itself when it takes you to lab results, so the page is visible."
+        },
+        {
+          "name": "Proposed Flow — CEP Mobile",
+          "x": 200,
+          "y": 6495,
+          "w": 4157,
+          "h": 1225,
+          "note": "In the CEP app, minimise lives in the top-right menu, and Grace tells you where you've landed."
+        }
+      ]
+    },
+    {
+      "id": "exploration",
+      "name": "Exploration",
+      "image": "/figma/window-management/exploration.png",
+      "w": 5231,
+      "h": 1502,
+      "layers": [
+        {
+          "name": "Collapsed",
+          "x": 531,
+          "y": 355,
+          "w": 375,
+          "h": 947,
+          "note": "The CEP home screen with Grace closed."
+        },
+        {
+          "name": "Expanded",
+          "x": 1906,
+          "y": 355,
+          "w": 375,
+          "h": 947,
+          "note": "Grace as a bottom sheet with a drag handle, and minimise and close in the header."
+        },
+        {
+          "name": "Minimised",
+          "x": 3281,
+          "y": 355,
+          "w": 375,
+          "h": 947,
+          "note": "Grace tucked into the tab bar, with a badge."
+        },
+        {
+          "name": "Pull to Refresh",
+          "x": 4656,
+          "y": 355,
+          "w": 375,
+          "h": 947,
+          "note": "Refresh moves from a header button to a pull gesture."
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,10 @@
-# Figma app — plan
+# Figma app
 
 A Figma lookalike inside the desktop that shows real work from Adam's Figma
 account: canvases visitors can pan and zoom, design narration, and (later)
 clickable prototypes.
 
-**Status:** planned, not started
+**Status:** Phase 1 built (two files); Phases 2–3 planned
 **Last updated:** 2026-11-25
 
 ---
@@ -13,71 +13,75 @@ clickable prototypes.
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| **Rendering** | Faux Figma chrome built on our tokens; frames are static exports | Embedding figma.com drops a foreign UI into a Tahoe window, is slow, can hit sign-in walls, and requires every file to be publicly shared |
-| **Content source** | Exported PNG/WebP + a per-file manifest, **committed to the repo** | No runtime Figma API, no token in the client, no rate limits. Same "drop in a folder" rule as `content/work/` |
-| **Escape hatch** | Each file may carry an `figmaUrl` → "Open in Figma" | For visitors who want the real file, only where it's actually shared |
+| **Rendering** | Lookalike Figma chrome; pages are static exports | Embedding figma.com drops a foreign UI into a Tahoe window, is slow, can hit sign-in walls, and requires every file to be publicly shared |
+| **Content source** | One exported image per page + a manifest, **committed to the repo** | No runtime Figma API, no token in the client, no rate limits |
+| **Granularity** | Whole pages, not single frames | One image keeps the original layout exactly; layers are rectangles over it. Frame-level exports can come later if zoomed-in sharpness matters |
 | **Comments** | Adam's own design narration only | Repo rule: never fabricate quotes attributed to real people. No fake teammates in comment threads |
-| **Mobile** | Not supported; falls back to Finder (like Preview) | Pan/zoom canvas plus three panels doesn't fit 375px |
-| **Name and icon** | Open — decide deliberately (see Open questions) | Same trade-off Spotify already made |
+| **Mobile** | Not supported; falls back to Finder (like Preview) | A pan/zoom canvas between two panels doesn't fit 375px |
+| **Name and icon** | "Figma", with the Figma mark on a dark tile | Same trade-off Spotify already made (decided 2026-11-25) |
+| **NDA** | Invoca, Providence and Grace files cleared to publish | Adam confirmed 2026-11-25 |
+| **Window size** | Fixed 1100×700, not `fillDesktop` | `tests/window-fit.test.ts` deliberately limits viewport-sized defaults to Safari and Finder |
 
 ---
 
 ## Content model
 
 ```
-content/figma/
-├── invoca-copilot/
-│   ├── file.json          ← manifest (below)
-│   ├── cover.webp         ← Recents grid thumbnail
-│   └── frames/
-│       ├── 1-2.webp       ← named by Figma node id
-│       └── 1-9.webp
-└── window-management/
-    └── ...
+config/figma/
+├── window-management.json     ← manifest
+└── grace-design-system.json
+public/figma/
+├── window-management/notes.png, solution.png, exploration.png   ← one image per page, named by page id
+└── grace-design-system/cover.png, colors.png, …
 ```
 
-`file.json`:
+Manifests live in `config/`, not `content/`, so the Finder content walk
+(`scripts/build-content.mjs`) doesn't mount them. `lib/figma-files.ts` imports
+each one and defines the types.
 
 ```jsonc
 {
-  "title": "Invoca Copilot — Case Study",
-  "edited": "2026-09",              // display only
-  "figmaUrl": null,                  // set only if the file is shared publicly
-  "caseStudy": "invoca-workflow-agent", // optional: slug from config/case-studies.mjs, opens in Safari
+  "slug": "window-management",
+  "title": "Feature - Window Management",
+  "kind": "design",                     // or "slides": the layer list reads "Slides"
+  "fileKey": "LpNQkR3RwV27AuQs5JoHE9",  // for re-exports; never linked
+  "edited": "2026-07",                  // "Edited Jul 2026" in Recents
+  "caseStudy": "grace-providence",      // optional: slug in config/case-studies.mjs
+  "background": "#1e1e1e",              // canvas color around the page
   "pages": [
     {
-      "name": "Explorations",
-      "frames": [
-        {
-          "id": "1:2", "name": "Copilot panel — v1",
-          "x": 0, "y": 0, "w": 1440, "h": 900,
-          "image": "frames/1-2.webp",
-          "note": "One sentence of rationale shown in the details panel",
-          "links": [{ "from": { "x": 40, "y": 80, "w": 120, "h": 32 }, "to": "1:9" }] // phase 3
-        }
-      ],
-      "comments": [{ "x": 320, "y": 140, "text": "Why we dropped the side rail" }] // phase 2
+      "id": "notes", "name": "Notes",
+      "image": "/figma/window-management/notes.png", "w": 4810, "h": 3880,
+      "layers": [
+        { "name": "Problem description", "x": 28, "y": 2393, "w": 898, "h": 417,
+          "note": "One line of rationale, shown in the details panel" }
+      ]
     }
   ]
 }
 ```
 
-Frame positions come from the file's real canvas coordinates, so the layout
-reads like the original. Only frames listed in the manifest ship; whole pages
-are never exported blindly.
+Layer rectangles are in **page-image pixels**, with the origin at the image's
+top-left. A page export covers the bounding box of the page's top-level nodes,
+so a node at Figma `(x, y)` sits at `(x − minX, y − minY)`. The first layer of
+the first page is the Recents thumbnail.
 
-### Export pipeline
+`tests/figma-files.test.ts` checks that every image exists, every layer fits
+inside its page, slugs are unique, and every `caseStudy` slug exists.
 
-A one-off script, `scripts/export-figma.mjs`, run by hand and **never in
-`prebuild`**:
+### Exporting
 
-1. Reads `FIGMA_TOKEN` from `.env.local` (never committed, never shipped)
-2. For each file in a small config list, fetches node metadata and renders the
-   chosen frames (`GET /v1/images`, 2x, WebP after conversion)
-3. Writes `file.json` skeletons and images; hand-written `note` and `comments`
-   survive re-runs
+v1 was exported with the Figma MCP server, not a script:
 
-Re-exporting is a deliberate act because what ships in the repo is public.
+1. `get_metadata` on the file (no node id) lists its pages; on a page id it
+   lists top-level frames with positions
+2. `get_screenshot` on a **page id** with a large `maxDimension` (12000) returns
+   the whole page at 1×. A Slides file's page `0:1` comes back as one strip of
+   slides, 1920×1080 each, at x = 240 + i × 2160, y = 240
+3. Images go to `public/figma/<slug>/`, layers into the manifest
+
+Re-exporting is a deliberate act: what ships in the repo is public. Notes are
+hand-written, so a re-export must keep them.
 
 ---
 
@@ -85,60 +89,68 @@ Re-exporting is a deliberate act because what ships in the repo is public.
 
 ```
 components/apps/figma/
-├── figma-app.tsx         ← content: owns state, no window chrome
-├── figma-window.tsx      ← desktop chrome wrapper (platform seam)
-├── recents-grid.tsx      ← home: file tiles
-├── canvas.tsx            ← pan/zoom viewport, frames, selection, comment pins
-├── layers-panel.tsx      ← pages + frames list (left)
-├── details-panel.tsx     ← selected frame: size, note, "Open case study" (right)
-└── use-canvas-camera.ts  ← transform math, gestures, zoom-to-fit
+├── figma-app.tsx      ← state, title bar, Recents grid, layers + details panels
+└── figma-canvas.tsx   ← pan/zoom viewport, hover and selection outlines
+lib/figma-camera.ts    ← pure camera math (fit, zoom at point, steps, hit test)
+lib/figma-files.ts     ← manifests + types
 ```
 
-- Registered in `lib/app-config.ts` (`showOnDockByDefault` TBD, `mobile.supported: false`,
-  `shellFallbackAppId: "finder"`)
-- "Open case study" resolves the slug through `lib/work-links.ts` and calls the
-  shell's `onOpenApp("safari", archivePath)`, the same way Finder opens a
-  `.webloc` (`components/apps/finder/finder-app.tsx`). **No import from
-  `components/apps/safari`**, which would break the layer rule
-- View state (open file, page, camera, selection) goes in `sessionStorage`; add a
-  `"figma"` case to `clearAppState()` in `lib/sidebar-persistence.ts`
-- Follow the new-app checklist in `docs/design-system.md`. Panel colors use
-  tokens; Figma's own dark UI is **not** copied hex-for-hex
+- Registered in `lib/app-config.ts` (`mobile.supported: false`,
+  `shellFallbackAppId: "finder"`), routed at `/figma` (`lib/shell-routing.ts`,
+  `app/(desktop)/figma/`), rendered in `components/desktop/desktop.tsx`
+- "Read the case study" resolves the slug through `lib/work-links.ts` and calls
+  the shell's `onOpenApp("safari", archivePath)`, the same way Finder opens a
+  `.webloc`. No import from `components/apps/safari`
+- The open file and page persist in `sessionStorage` (`figma-state`);
+  `clearAppState("figma")` clears it when the window closes
+- Panels use the same Tailwind classes as the other apps (`bg-muted`,
+  `bg-blue-500` selection). The page canvas color comes from the file, as data
 
 ### Canvas interactions
 
 | Input | Action |
 |---|---|
-| Space + drag, or middle-drag | Pan |
-| Trackpad two-finger scroll | Pan |
-| ⌘ + scroll / pinch | Zoom at cursor (clamped ~5%–400%) |
-| ⇧1 / ⇧0 | Zoom to fit / 100% |
-| Click frame or layer row | Select; layers and canvas stay in sync |
-| Double-click a layer row | Zoom to that frame |
-| Esc | Deselect; then blur (so `q` quits, per checklist) |
+| Drag | Pan (visitors don't need marquee select) |
+| Two-finger scroll / wheel | Pan |
+| ⌘ or ctrl + scroll / pinch | Zoom at the pointer, 2%–400% |
+| Click a frame | Select it; the layer list and details panel follow |
+| Click a layer row, or double-click a frame | Select and zoom to it |
+| ⇧1 / ⇧0 / ⇧2 | Fit page / 100% / zoom to selection |
+| + / − | Figma's zoom steps |
+| Esc | Deselect |
 
-Use CSS transforms on one layer and `<img loading="lazy">` per frame. No
-canvas/WebGL renderer until frame counts prove it's needed.
+One `<img>` per page under a CSS transform. Outlines are drawn in screen space,
+so they stay crisp at any zoom.
 
 ---
 
 ## Phases
 
-### Phase 1 — Browser + canvas (v1)
-Files: **Invoca Copilot — Case Study**, **Feature - Window Management** (+ the
-Exploration file as a second page), **(Redesign) Grace Design System**,
-**macOS 26** easter egg.
+### Phase 1 — Browser + canvas ✅
+Files: **Feature - Window Management** (Notes, Solution, Exploration pages),
+**(Redesign) Grace Design System** (Cover, Colors, Buttons, Chat Bubbles, FAB,
+Mockups).
 
-- [ ] NDA check: confirm what can ship from Invoca and Grace (see Open questions)
-- [ ] Export script + manifests for the four files
-- [ ] App registration, icon, window chrome
-- [ ] Recents grid → open file → canvas with layers + details panels
-- [ ] Pan/zoom/select, zoom-to-fit on open
-- [ ] "Open case study" → Safari on the archived page (`invoca-workflow-agent`;
-      `grace-providence` for Grace)
-- [ ] Design-system view for Grace: component frames grouped by component, variants in a row
-- [ ] macOS 26 file framed as this desktop's "source file"
-- [ ] `npm run check` green; by-eye pass at multiple window sizes
+- [x] NDA check: all three cleared
+- [x] Manifests and page exports for the two files
+- [x] App registration, icon, routes, window chrome
+- [x] Recents grid → open file → canvas with layers + details panels
+- [x] Pan/zoom/select, fit on open
+- [x] "Read the case study" → Safari (`grace-providence`)
+- [ ] **Invoca Copilot — Case Study**: pulled from v1 on 2026-11-25. The Figma
+      Slides deck still says HubSpot (the vendor was ThoughtSpot), has two
+      "Toast IQ" lines that never go on the site, and slide 5 is an unfilled
+      NotebookLM screenshot placeholder. The text is baked into the slide
+      images, so the fix is in Figma, then a re-export (key
+      `co1SPG0Mny08gGhrzepmph`, page `0:1`, `caseStudy: "invoca-workflow-agent"`,
+      `kind: "slides"`, background `#e5e5e5`)
+- [ ] Adam to review and rewrite the layer notes (the current ones are drafted from text in the files)
+- [ ] Window Management › Solution includes a "Meeting notes: 6-22-23" text block, readable when zoomed in; decide whether it stays
+- [ ] **macOS 26** easter egg: held back. It's Apple's community UI kit, not Adam's
+      work, and Apple's design-resources license doesn't allow redistributing it.
+      Alternative: a page from Adam's own work that uses it, or this site's own
+      design tokens
+- [ ] By-eye pass at multiple window sizes and in dark mode
 
 ### Phase 2 — Narration + more files
 Files: **CEP Design System**, **Staris AI**, **Storybooth**, **Workflow Agent**
@@ -154,7 +166,7 @@ case study is `invoca-workflow-agent`).
 Files: **Feature - MyChart Launch Options**, **Feature - Grace FAB & Menu**.
 
 - [ ] ▶ button enters presentation view: one frame fills the window
-- [ ] Hotspots from `links`, taken from the file's prototype connections at export time
+- [ ] Hotspots from the file's prototype connections, exported with the frames
 - [ ] Hotspot hint flash on misclick (as in Figma); Esc exits
 - [ ] Simple transitions only (instant / dissolve / slide)
 
@@ -162,12 +174,9 @@ Files: **Feature - MyChart Launch Options**, **Feature - Grace FAB & Menu**.
 
 ## Open questions
 
-- **NDA / employer content.** Invoca, Providence (MyChart) and Grace are
-  employer work. Decide per file: ship as-is, ship redacted frames, or keep only
-  the case-study version. Invoca content must match the deck (canon).
-- **Name and icon.** Call it "Figma" with Figma's icon (like Spotify), or a
-  neutral name? Check Figma's brand guidelines before deciding.
-- **Dock placement.** On the Dock by default, or discoverable via Finder →
-  Applications and the case studies?
-- **Image weight.** Budget per file (~2–4 MB?) and whether to add a
-  low-res-first strategy for zoomed-out views.
+- **Dock placement.** Figma is on the Dock by default for now. Keep it there, or
+  make it discoverable only via Finder → Applications and the case studies?
+- **Image weight.** The public folder is ~12 MB, mostly Grace Mockups (5 MB) and
+  Window Management Solution (3.3 MB). Each page loads only when opened, but a
+  low-res-first image for zoomed-out views would help on slow connections.
+  `ffmpeg` here has no WebP encoder; `cwebp` would cut these sizes a lot.

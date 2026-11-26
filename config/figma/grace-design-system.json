@@ -1,0 +1,376 @@
+{
+  "slug": "grace-design-system",
+  "title": "(Redesign) Grace Design System",
+  "kind": "design",
+  "fileKey": "rNC9UdPGeCwnsc33fxJdIb",
+  "edited": "2022",
+  "caseStudy": "grace-providence",
+  "background": "#e5e5e5",
+  "pages": [
+    {
+      "id": "cover",
+      "name": "Cover",
+      "image": "/figma/grace-design-system/cover.png",
+      "w": 2343,
+      "h": 1406,
+      "layers": [
+        {
+          "name": "Cover",
+          "x": 0,
+          "y": 0,
+          "w": 2343,
+          "h": 1406
+        }
+      ]
+    },
+    {
+      "id": "colors",
+      "name": "Colors",
+      "image": "/figma/grace-design-system/colors.png",
+      "w": 5409,
+      "h": 2102,
+      "layers": [
+        {
+          "name": "Notes",
+          "x": 0,
+          "y": 27,
+          "w": 1000,
+          "h": 1392
+        },
+        {
+          "name": "Color Token Documentation",
+          "x": 1216,
+          "y": 27,
+          "w": 1718,
+          "h": 2075,
+          "note": "Every color as a named token with its purpose: primary, secondary, neutral and common."
+        },
+        {
+          "name": "Color cards",
+          "x": 3014,
+          "y": 0,
+          "w": 2371,
+          "h": 1582,
+          "note": "The palette as swatches, with opacity variants."
+        }
+      ]
+    },
+    {
+      "id": "buttons",
+      "name": "Buttons",
+      "image": "/figma/grace-design-system/buttons.png",
+      "w": 1973,
+      "h": 2119,
+      "layers": [
+        {
+          "name": "Option",
+          "x": 151,
+          "y": 93,
+          "w": 141,
+          "h": 576,
+          "note": "Quick-reply chips, with and without an icon, in five states."
+        },
+        {
+          "name": "Confirm",
+          "x": 324,
+          "y": 93,
+          "w": 382,
+          "h": 336,
+          "note": "Full-width confirm button: default, selected, hover, focused and disabled."
+        },
+        {
+          "name": "Send",
+          "x": 738,
+          "y": 93,
+          "w": 146,
+          "h": 296
+        },
+        {
+          "name": "Close",
+          "x": 916,
+          "y": 93,
+          "w": 72,
+          "h": 240
+        },
+        {
+          "name": "Restart",
+          "x": 1020,
+          "y": 93,
+          "w": 72,
+          "h": 240
+        },
+        {
+          "name": "Minimize",
+          "x": 1124,
+          "y": 93,
+          "w": 72,
+          "h": 240
+        },
+        {
+          "name": "Thumbs",
+          "x": 1228,
+          "y": 93,
+          "w": 129,
+          "h": 240
+        },
+        {
+          "name": "Star",
+          "x": 1389,
+          "y": 93,
+          "w": 72,
+          "h": 240
+        },
+        {
+          "name": "Rewind",
+          "x": 1493,
+          "y": 93,
+          "w": 60,
+          "h": 192
+        },
+        {
+          "name": "Time Selection",
+          "x": 1585,
+          "y": 93,
+          "w": 130,
+          "h": 316
+        },
+        {
+          "name": "Day Selection",
+          "x": 1747,
+          "y": 93,
+          "w": 64,
+          "h": 256
+        },
+        {
+          "name": "Carousel",
+          "x": 1843,
+          "y": 93,
+          "w": 130,
+          "h": 295
+        },
+        {
+          "name": "Spec — primary button",
+          "x": 37,
+          "y": 1728,
+          "w": 400,
+          "h": 391,
+          "note": "Redlines for padding and sizing."
+        },
+        {
+          "name": "Spec — icon button",
+          "x": 588,
+          "y": 1728,
+          "w": 400,
+          "h": 391,
+          "note": "Redlines for padding and sizing."
+        }
+      ]
+    },
+    {
+      "id": "chat-bubbles",
+      "name": "Chat Bubbles",
+      "image": "/figma/grace-design-system/chat-bubbles.png",
+      "w": 757,
+      "h": 1219,
+      "layers": [
+        {
+          "name": "Grace Message",
+          "x": 0,
+          "y": 0,
+          "w": 350,
+          "h": 110,
+          "note": "Grace's message bubble."
+        },
+        {
+          "name": "User Message",
+          "x": 0,
+          "y": 172,
+          "w": 747,
+          "h": 300,
+          "note": "User bubbles, single and multi-line, with and without undo, plus thumbs-up and thumbs-down replies."
+        },
+        {
+          "name": "Chat bubble behavior",
+          "x": 0,
+          "y": 594,
+          "w": 382,
+          "h": 612,
+          "note": "How a conversation stacks inside the window."
+        }
+      ]
+    },
+    {
+      "id": "fab",
+      "name": "Floating Action Button",
+      "image": "/figma/grace-design-system/fab.png",
+      "w": 273,
+      "h": 320,
+      "layers": [
+        {
+          "name": "Grace FAB",
+          "x": 0,
+          "y": 0,
+          "w": 273,
+          "h": 320,
+          "note": "Pill and round variants across default, selected, hover, focused and disabled."
+        }
+      ]
+    },
+    {
+      "id": "mockups",
+      "name": "Mockups",
+      "image": "/figma/grace-design-system/mockups.png",
+      "w": 10212,
+      "h": 8519,
+      "layers": [
+        {
+          "name": "Main mockups",
+          "x": 915,
+          "y": 0,
+          "w": 1331,
+          "h": 1284
+        },
+        {
+          "name": "Introduction - Main Menu",
+          "x": 915,
+          "y": 1611,
+          "w": 445,
+          "h": 1013
+        },
+        {
+          "name": "Typed Utterance",
+          "x": 1777,
+          "y": 1611,
+          "w": 382,
+          "h": 711
+        },
+        {
+          "name": "Thumbs up / Thumbs down",
+          "x": 2639,
+          "y": 1602,
+          "w": 1270,
+          "h": 720
+        },
+        {
+          "name": "Modals",
+          "x": 4498,
+          "y": 1602,
+          "w": 824,
+          "h": 720
+        },
+        {
+          "name": "Feedback Flow",
+          "x": 5924,
+          "y": 1602,
+          "w": 1362,
+          "h": 818
+        },
+        {
+          "name": "Multi Select",
+          "x": 915,
+          "y": 2846,
+          "w": 788,
+          "h": 720
+        },
+        {
+          "name": "Message provider",
+          "x": 2159,
+          "y": 2839,
+          "w": 1206,
+          "h": 727
+        },
+        {
+          "name": "Rewind Button",
+          "x": 3807,
+          "y": 2839,
+          "w": 865,
+          "h": 727
+        },
+        {
+          "name": "Calendar",
+          "x": 5300,
+          "y": 2839,
+          "w": 832,
+          "h": 927
+        },
+        {
+          "name": "Appointment",
+          "x": 6454,
+          "y": 2839,
+          "w": 832,
+          "h": 927
+        },
+        {
+          "name": "Appointment Confirmation",
+          "x": 7666,
+          "y": 2839,
+          "w": 1238,
+          "h": 727
+        },
+        {
+          "name": "Forced Text Input",
+          "x": 9810,
+          "y": 2839,
+          "w": 382,
+          "h": 727
+        },
+        {
+          "name": "Expresscare Virtual Visit",
+          "x": 0,
+          "y": 4120,
+          "w": 1351,
+          "h": 727
+        },
+        {
+          "name": "Carousel",
+          "x": 1777,
+          "y": 4120,
+          "w": 887,
+          "h": 927
+        },
+        {
+          "name": "Vertical Stack",
+          "x": 3420,
+          "y": 4120,
+          "w": 382,
+          "h": 736
+        },
+        {
+          "name": "Medication",
+          "x": 4282,
+          "y": 4120,
+          "w": 382,
+          "h": 727
+        },
+        {
+          "name": "Type Ahead",
+          "x": 5018,
+          "y": 4120,
+          "w": 382,
+          "h": 705
+        },
+        {
+          "name": "Spelling Detection",
+          "x": 5959,
+          "y": 4120,
+          "w": 382,
+          "h": 727
+        },
+        {
+          "name": "MyChart Crown Styling",
+          "x": 915,
+          "y": 5257,
+          "w": 1792,
+          "h": 1235
+        },
+        {
+          "name": "CEP Grace",
+          "x": 915,
+          "y": 7700,
+          "w": 1367,
+          "h": 812
+        }
+      ]
+    }
+  ]
+}

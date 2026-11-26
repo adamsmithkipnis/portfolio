@@ -17,6 +17,7 @@ const APP_ROUTE_SEGMENTS = {
   spotify: "spotify",
   textedit: "textedit",
   preview: "preview",
+  figma: "figma",
 } as const;
 
 const APP_ROUTE_SEGMENT_SET = new Set(Object.keys(APP_ROUTE_SEGMENTS));
