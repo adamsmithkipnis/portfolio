@@ -43,7 +43,7 @@ export const APPS: AppConfig[] = [
   {
     id: "claude",
     name: "Claude",
-    icon: "/claude.svg",
+    icon: "/claude.png",
     description: "Ask Claude about Adam's work",
     provenance: { agent: "Claude Code", circa: "November 2026" },
     accentColor: "#D97757",
