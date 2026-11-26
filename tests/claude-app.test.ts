@@ -10,12 +10,21 @@ import {
   titleFromFirstMessage,
 } from "../lib/claude/chat-storage";
 import { MAX_INCOMING_MESSAGES, parseIncomingMessages } from "../lib/claude/incoming";
-import { CLAUDE_MAX_MESSAGE_CHARS } from "../lib/claude/model";
+import {
+  CLAUDE_APP_ECONOMY_MODEL,
+  CLAUDE_APP_PRIMARY_MODEL,
+  CLAUDE_MAX_MESSAGE_CHARS,
+  SONNET_ANSWERS_PER_VISITOR,
+  pickClaudeAppModel,
+} from "../lib/claude/model";
+import { getSonnetAnswerCount, recordSonnetAnswer, resetVisitorUsage } from "../lib/claude/visitor-usage";
 import { OPENABLE_SITE_PAGES, PORTFOLIO_PROJECTS } from "../lib/claude/portfolio-facts";
 import { parseStreamChunk } from "../lib/claude/stream-client";
 import { buildClaudeSystemPrompt } from "../lib/claude/system-prompt";
 import { ARTIFACT_MAX_MARKDOWN_CHARS, buildClaudeTools, toClaudeAction } from "../lib/claude/tools";
 import type { ClaudeChat } from "../lib/claude/types";
+import { classifyUpstreamError } from "../lib/claude/upstream-errors";
+import { describeStreamError } from "../lib/claude/stream-client";
 import { EXAMPLE_CHATS, EXAMPLE_CHATS_READY } from "../data/claude/example-chats";
 
 // --- grounding -------------------------------------------------------------
@@ -193,4 +202,47 @@ test("placeholder example chats never ship", () => {
     (c) => c.title.includes("[") || c.messages.some((m) => m.content.includes("goes here"))
   );
   if (hasPlaceholder) assert.equal(EXAMPLE_CHATS_READY, false);
+});
+
+// --- upstream errors -------------------------------------------------------
+
+test("a missing model provider reads as not configured, not an outage", () => {
+  const noProvider = Object.assign(new Error("404 Braintrust gateway error: No provider found for 'claude-sonnet-5-5'"), { status: 404 });
+  assert.equal(classifyUpstreamError(noProvider), "not_configured");
+  assert.equal(classifyUpstreamError(Object.assign(new Error("quota"), { status: 429 })), "quota_exceeded");
+  assert.equal(classifyUpstreamError(new Error("fetch failed")), "upstream_unavailable");
+  assert.doesNotMatch(describeStreamError("not_configured"), /try again/i);
+});
+
+// --- model tiering ---------------------------------------------------------
+
+test("visitors get Sonnet for their first answers, then Haiku", () => {
+  assert.equal(pickClaudeAppModel(0).id, CLAUDE_APP_PRIMARY_MODEL.id);
+  assert.equal(pickClaudeAppModel(SONNET_ANSWERS_PER_VISITOR - 1).id, CLAUDE_APP_PRIMARY_MODEL.id);
+  assert.equal(pickClaudeAppModel(SONNET_ANSWERS_PER_VISITOR).id, CLAUDE_APP_ECONOMY_MODEL.id);
+  assert.equal(pickClaudeAppModel(SONNET_ANSWERS_PER_VISITOR + 40).id, CLAUDE_APP_ECONOMY_MODEL.id);
+});
+
+test("each visitor's Sonnet answers are counted separately and expire", () => {
+  resetVisitorUsage();
+  const now = Date.now();
+  for (let i = 0; i < SONNET_ANSWERS_PER_VISITOR; i++) recordSonnetAnswer("visitor-a", now);
+  recordSonnetAnswer("visitor-b", now);
+  assert.equal(getSonnetAnswerCount("visitor-a", now), SONNET_ANSWERS_PER_VISITOR);
+  assert.equal(pickClaudeAppModel(getSonnetAnswerCount("visitor-a", now)).id, CLAUDE_APP_ECONOMY_MODEL.id);
+  assert.equal(pickClaudeAppModel(getSonnetAnswerCount("visitor-b", now)).id, CLAUDE_APP_PRIMARY_MODEL.id);
+  const thirtyOneDays = 31 * 24 * 60 * 60 * 1000;
+  assert.equal(getSonnetAnswerCount("visitor-a", now + thirtyOneDays), 0);
+  resetVisitorUsage();
+});
+
+test("running out of API credit has its own message", () => {
+  const noCredit = Object.assign(new Error("400 Your credit balance is too low to access the Anthropic API."), { status: 400 });
+  assert.equal(classifyUpstreamError(noCredit), "out_of_credit");
+  assert.match(describeStreamError("out_of_credit"), /next month/);
+});
+
+test("the stream reports which model answered", () => {
+  const { events } = parseStreamChunk('{"type":"model","label":"Haiku 5.5"}\n');
+  assert.deepEqual(events, [{ type: "model", label: "Haiku 5.5" }]);
 });

@@ -3,19 +3,21 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { ArrowUp, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CLAUDE_APP_MODEL_LABEL, CLAUDE_MAX_MESSAGE_CHARS } from "@/lib/claude/model";
+import { CLAUDE_MAX_MESSAGE_CHARS } from "@/lib/claude/model";
 
 interface ComposerProps {
   onSend: (text: string) => void;
   onStop: () => void;
   isStreaming: boolean;
+  /** The model that answered last, e.g. "Sonnet 5.5". */
+  modelLabel: string;
   autoFocus?: boolean;
   placeholder?: string;
 }
 
 const MAX_TEXTAREA_HEIGHT = 200;
 
-export function Composer({ onSend, onStop, isStreaming, autoFocus, placeholder }: ComposerProps) {
+export function Composer({ onSend, onStop, isStreaming, modelLabel, autoFocus, placeholder }: ComposerProps) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -65,7 +67,7 @@ export function Composer({ onSend, onStop, isStreaming, autoFocus, placeholder }
         className="block w-full resize-none bg-transparent px-1 text-[15px] leading-6 text-[var(--claude-text)] placeholder:text-[var(--claude-text-subdued)] focus:outline-none"
       />
       <div className="mt-2 flex items-center justify-between">
-        <span className="px-1 text-xs text-[var(--claude-text-subdued)]">{CLAUDE_APP_MODEL_LABEL}</span>
+        <span className="px-1 text-xs text-[var(--claude-text-subdued)]">{modelLabel}</span>
         {isStreaming ? (
           <button
             type="button"

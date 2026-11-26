@@ -19,6 +19,8 @@ export interface ClaudeMessage {
   content: string;
   actions?: ClaudeAction[];
   createdAt: number;
+  /** Which model answered, as the composer labels it. */
+  model?: string;
   /** Set when the reply failed or was cut short; the text says why. */
   error?: boolean;
 }
@@ -45,6 +47,7 @@ export type ClaudeStreamEvent =
   | { type: "text"; delta: string }
   | { type: "action"; action: ClaudeAction }
   | { type: "error"; reason: ClaudeErrorReason; retryAfterSeconds?: number }
+  | { type: "model"; label: string }
   | { type: "done" };
 
 export type ClaudeErrorReason =
@@ -53,4 +56,6 @@ export type ClaudeErrorReason =
   | "payload_too_large"
   | "upstream_unavailable"
   | "invalid_request"
-  | "empty_reply";
+  | "empty_reply"
+  | "not_configured"
+  | "out_of_credit";

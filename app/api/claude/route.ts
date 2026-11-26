@@ -14,13 +14,16 @@ import {
 } from "@/lib/server/request-security";
 import {
   CLAUDE_APP_MAX_TOKENS,
-  CLAUDE_APP_MODEL,
-  CLAUDE_APP_TEMPERATURE,
+  CLAUDE_APP_PRIMARY_MODEL,
+  getModelOverride,
+  pickClaudeAppModel,
 } from "@/lib/claude/model";
+import { getSonnetAnswerCount, recordSonnetAnswer } from "@/lib/claude/visitor-usage";
 import { buildClaudeSystemPrompt } from "@/lib/claude/system-prompt";
 import { buildClaudeTools, toClaudeAction } from "@/lib/claude/tools";
 import type { ClaudeAction, ClaudeErrorReason, ClaudeStreamEvent } from "@/lib/claude/types";
 import { parseIncomingMessages } from "@/lib/claude/incoming";
+import { classifyUpstreamError } from "@/lib/claude/upstream-errors";
 
 /**
  * The Claude app's chat endpoint. Public, so it keeps every guard /api/chat
@@ -55,11 +58,6 @@ function getClient() {
   return client;
 }
 
-function isQuotaError(error: unknown): boolean {
-  if (error && typeof error === "object" && "status" in error && (error as { status: number }).status === 429) return true;
-  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
-  return message.includes("quota") || message.includes("insufficient");
-}
 
 const encoder = new TextEncoder();
 const line = (event: ClaudeStreamEvent) => encoder.encode(`${JSON.stringify(event)}\n`);
@@ -109,6 +107,11 @@ export async function POST(req: NextRequest) {
     ...thread.map((m) => ({ role: m.role, content: m.content })),
   ];
 
+  // Sonnet for a visitor's first answers, then Haiku (lib/claude/model.ts).
+  const sonnetAnswersSoFar = getSonnetAnswerCount(identity.sessionId);
+  const tierModel = pickClaudeAppModel(sonnetAnswersSoFar);
+  const model = getModelOverride() ?? tierModel;
+
   const upstreamAbort = new AbortController();
   const timeout = setTimeout(() => upstreamAbort.abort("claude upstream timeout"), UPSTREAM_TIMEOUT_MS);
   req.signal.addEventListener("abort", () => upstreamAbort.abort("client closed"));
@@ -128,17 +131,22 @@ export async function POST(req: NextRequest) {
           async (span) => {
             span.log({
               input: { user_message: thread[thread.length - 1].content },
-              metadata: { app: "claude", message_count: thread.length, model: CLAUDE_APP_MODEL },
+              metadata: {
+                app: "claude",
+                message_count: thread.length,
+                model: model.id,
+                visitor_sonnet_answers: sonnetAnswersSoFar,
+              },
             });
+            send({ type: "model", label: model.label });
 
             const completion = await getClient().chat.completions.create(
               {
-                model: CLAUDE_APP_MODEL,
+                model: model.id,
                 messages: chatMessages,
                 tools: TOOLS,
                 stream: true,
                 max_tokens: CLAUDE_APP_MAX_TOKENS,
-                temperature: CLAUDE_APP_TEMPERATURE,
               },
               { signal: upstreamAbort.signal }
             );
@@ -183,6 +191,11 @@ export async function POST(req: NextRequest) {
             }
 
             span.log({ output: { assistant_response: text, actions }, metadata: { finish_reason: finishReason } });
+
+            // Only a finished Sonnet answer counts toward the visitor's quota.
+            if (tierModel.id === CLAUDE_APP_PRIMARY_MODEL.id && (text || actions.length > 0)) {
+              recordSonnetAnswer(identity.sessionId);
+            }
           },
           { name: "claude-app" }
         );
@@ -190,7 +203,7 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         if (!req.signal.aborted) {
           console.error("Claude app upstream error:", error);
-          send({ type: "error", reason: isQuotaError(error) ? "quota_exceeded" : "upstream_unavailable" });
+          send({ type: "error", reason: classifyUpstreamError(error) });
           send({ type: "done" });
         }
       } finally {

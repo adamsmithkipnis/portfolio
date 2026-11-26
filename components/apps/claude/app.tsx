@@ -11,6 +11,7 @@ import { describeStreamError, streamClaudeReply } from "@/lib/claude/stream-clie
 import type { ClaudeAction, ClaudeChat, ClaudeMessage } from "@/lib/claude/types";
 import { trimConversationHistory } from "@/lib/messages/history-window";
 import { loadClaudeView, saveClaudeView } from "@/lib/sidebar-persistence";
+import { CLAUDE_APP_PRIMARY_MODEL } from "@/lib/claude/model";
 import { cn } from "@/lib/utils";
 import { ArtifactPane } from "./artifact-pane";
 import { Composer } from "./composer";
@@ -25,6 +26,17 @@ interface AppProps {
 }
 
 const EXAMPLES = EXAMPLE_CHATS_READY ? EXAMPLE_CHATS : [];
+
+/** The model that answered most recently, across every chat. */
+function latestModelLabel(chats: ClaudeChat[]): string | null {
+  let latest: { at: number; label: string } | null = null;
+  for (const chat of chats) {
+    for (const m of chat.messages) {
+      if (m.model && (!latest || m.createdAt >= latest.at)) latest = { at: m.createdAt, label: m.model };
+    }
+  }
+  return latest?.label ?? null;
+}
 
 const newId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -49,6 +61,8 @@ export default function App({ isDesktop, inShell, onOpenApp }: AppProps) {
   const [artifactId, setArtifactId] = useState<string | null>(null);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [mobileView, setMobileView] = useState<"list" | "chat">("chat");
+  // The route says which model answered; the composer shows the latest one.
+  const [modelLabel, setModelLabel] = useState(CLAUDE_APP_PRIMARY_MODEL.label);
   const abortRef = useRef<AbortController | null>(null);
 
   // Load durable chats and the tab's view state once, on the client.
@@ -56,6 +70,8 @@ export default function App({ isDesktop, inShell, onOpenApp }: AppProps) {
     const stored = loadClaudeChats();
     const view = loadClaudeView();
     setChats(stored);
+    const storedLabel = latestModelLabel(stored);
+    if (storedLabel) setModelLabel(storedLabel);
     const knownIds = new Set([...stored, ...EXAMPLES].map((c) => c.id));
     if (view.chatId && knownIds.has(view.chatId)) setActiveChatId(view.chatId);
     if (view.artifactId) setArtifactId(view.artifactId);
@@ -160,6 +176,10 @@ export default function App({ isDesktop, inShell, onOpenApp }: AppProps) {
       await streamClaudeReply(
         sendable,
         {
+          onModel: (label) => {
+            setModelLabel(label);
+            updateMessage(chatId, reply.id, (m) => ({ ...m, model: label }));
+          },
           onText: (delta) => {
             gotContent = true;
             updateMessage(chatId, reply.id, (m) => ({ ...m, content: m.content + delta }));
@@ -306,7 +326,13 @@ export default function App({ isDesktop, inShell, onOpenApp }: AppProps) {
                 </button>
               </div>
             ) : (
-              <Composer onSend={send} onStop={stop} isStreaming={isStreaming} placeholder="Reply to Claude" />
+              <Composer
+                onSend={send}
+                onStop={stop}
+                isStreaming={isStreaming}
+                modelLabel={modelLabel}
+                placeholder="Reply to Claude"
+              />
             )}
             <Disclosure />
           </div>
@@ -318,7 +344,13 @@ export default function App({ isDesktop, inShell, onOpenApp }: AppProps) {
               <ClaudeSpark className="h-8 w-8 shrink-0" />
               {hydrated ? greeting() : "Hello"}
             </h2>
-            <Composer onSend={send} onStop={stop} isStreaming={isStreaming} autoFocus={isDesktop} />
+            <Composer
+              onSend={send}
+              onStop={stop}
+              isStreaming={isStreaming}
+              modelLabel={modelLabel}
+              autoFocus={isDesktop}
+            />
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {CLAUDE_STARTERS.map((starter) => (
                 <button

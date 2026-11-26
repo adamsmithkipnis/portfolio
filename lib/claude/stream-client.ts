@@ -1,6 +1,7 @@
 import type { ClaudeAction, ClaudeErrorReason, ClaudeMessage, ClaudeStreamEvent } from "./types";
 
 export interface StreamHandlers {
+  onModel?: (label: string) => void;
   onText: (delta: string) => void;
   onAction: (action: ClaudeAction) => void;
   onError: (reason: ClaudeErrorReason, retryAfterSeconds?: number) => void;
@@ -67,7 +68,8 @@ export async function streamClaudeReply(
       const parsed = parseStreamChunk(buffer);
       buffer = parsed.rest;
       for (const event of parsed.events) {
-        if (event.type === "text") handlers.onText(event.delta);
+        if (event.type === "model") handlers.onModel?.(event.label);
+        else if (event.type === "text") handlers.onText(event.delta);
         else if (event.type === "action") handlers.onAction(event.action);
         else if (event.type === "error") onError(event.reason, event.retryAfterSeconds);
       }
@@ -91,6 +93,10 @@ export function describeStreamError(reason: ClaudeErrorReason, retryAfterSeconds
       return "That conversation got too long. Start a new chat to keep going.";
     case "invalid_request":
       return "Something about that message couldn't be sent. Try rephrasing it.";
+    case "out_of_credit":
+      return "The live demo has used this month's allowance and will be back next month. Every case study is still in Safari.";
+    case "not_configured":
+      return "The live demo isn't connected to Claude yet. The rest of the site works as usual.";
     case "empty_reply":
       return "Claude didn't come back with an answer. Try asking another way.";
     default:

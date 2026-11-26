@@ -248,6 +248,7 @@ SUPABASE_SERVICE_ROLE_KEY="<your-service-role-key>"
 
 # braintrust (required for messages and claude ai)
 # the claude app also needs an anthropic key added in braintrust → settings → ai providers
+# (sonnet 5.5 for each visitor's first 10 answers, then haiku 5.5)
 BRAINTRUST_API_KEY="<your-braintrust-api-key>"
 # local testing only: run the claude app against another model
 # CLAUDE_APP_MODEL_OVERRIDE="gpt-5.2"
