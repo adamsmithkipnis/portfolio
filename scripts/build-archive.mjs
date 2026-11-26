@@ -24,7 +24,6 @@ import {
   ORDER,
   SITE_MODE,
   ROLE_LINE,
-  HOME_PROOF,
 } from "../config/case-studies.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -213,24 +212,14 @@ function renderGlance(study) {
 }
 
 /**
- * The home page's role line and proof strip, under the headline. Each number
- * is a link to the case study that states it, and is looked up there rather
- * than restated, so a figure that changes on its page changes here too.
+ * The home page's role line, under the headline. Empty in config means
+ * nothing is rendered.
  */
 export function renderHomeIntro() {
   const roleLine = ROLE_LINE[SITE_MODE];
   const role = roleLine ? `\n  <p class="home-role">${escapeHtml(roleLine)}</p>` : "";
 
-  const items = HOME_PROOF[SITE_MODE].map(({ slug, value }) => {
-    const metric = CASE_STUDIES[slug]?.metrics.find((m) => m.value === value);
-    if (!metric) {
-      throw new Error(`HOME_PROOF: ${slug} has no metric "${value}"`);
-    }
-    return `    <li class="cs-metric"><a href="${BASE}/${slug}"><span class="cs-metric-value">${escapeHtml(metric.value)}</span><span class="cs-metric-label">${escapeHtml(metric.label)}</span></a></li>`;
-  });
-  const proof = `\n  <ul class="cs-metrics cs-metrics-${items.length} home-proof">\n${items.join("\n")}\n  </ul>`;
-
-  return `${role}${proof}\n  `;
+  return `${role}\n  `;
 }
 
 export function renderSummary(slug) {

@@ -47,25 +47,6 @@ export const ROLE_LINE = {
   ic: "",
 };
 
-/**
- * The numbers under the home page's headline, per mode. Each names a metric a
- * case study already states, by slug and value, so the figure and its label
- * are written once (in CASE_STUDIES below) and the home page cannot disagree
- * with the page it links to.
- */
-export const HOME_PROOF = {
-  management: [
-    { slug: "grace-providence", value: "2.6M" },
-    { slug: "grace-providence", value: "800 → 150K" },
-    { slug: "wilson-x", value: "6" },
-  ],
-  ic: [
-    { slug: "invoca-workflow-agent", value: "100+" },
-    { slug: "invoca-workflow-agent", value: "3 days" },
-    { slug: "gear-iconx", value: "16" },
-  ],
-};
-
 export const CASE_STUDIES = {
   "invoca-workflow-agent": {
     title: "Invoca Workflow Agent",
