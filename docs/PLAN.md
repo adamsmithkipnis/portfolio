@@ -188,10 +188,13 @@ state to diff against.
 
 ## Open Questions
 
-- **Mobile strategy.** A macOS simulator on a phone is awkward, and hiring
+- ~~**Mobile strategy.** A macOS simulator on a phone is awkward, and hiring
   managers *will* open it on a phone. Responsive linear fallback, or
   desktop-only with content still reachable? **Biggest practical risk to the
-  project.**
+  project.**~~ — an iOS shell (2026-11-27): phones get a simulated iOS, landing
+  in the App Switcher with Safari centred. Built in phases; until the
+  switch-over a phone on `/` still gets the archived site. See
+  `docs/ios-shell.md`
 - ~~**Which fifth app**, if any, beyond Notes/Messages/Finder/Terminal~~ — Claude
   (2026-11-25): a simulated Claude desktop app that answers questions about the
   portfolio and opens case studies. See the AI chat section of `AGENTS.md`.

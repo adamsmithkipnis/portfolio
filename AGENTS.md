@@ -20,6 +20,7 @@ this file captures the patterns and conventions that matter most when working in
 | `system/content/generated.ts` | **generated** content tree — run `npm run content` |
 | `lib/window-context.tsx` | window state machine (open/close/focus/minimize/drag/resize) |
 | `lib/sidebar-persistence.ts` | view state persistence + `clearAppState()` |
+| `lib/ios/` | iOS shell state and gesture recognition (pure, tested) — see `docs/ios-shell.md` |
 | `lib/desktop/z-index.ts` | z-index layers: windows 1-50, dock 60, menu bar 70, fullscreen 80, overlays 90-100 |
 | `components/desktop/` | desktop shell (dock, menu bar, window, notification center) |
 | `components/apps/` | all app implementations |
@@ -33,6 +34,7 @@ read before building, update when you ship:
 | `AGENTS.md` | new patterns or conventions emerge |
 | `docs/design-system.md` | new UI components or design tokens added |
 | `docs/document-apps.md` | TextEdit/Preview launch behavior or empty-state UX changes |
+| `docs/ios-shell.md` | iOS shell gesture model, architecture, or phase status changes |
 | `docs/weather-scenes.md` | weather scene architecture, shared renderer behavior, or effect tuning changes |
 | `README.md` | new apps added or architecture changes |
 
@@ -101,6 +103,19 @@ if a change requires violating this, the change is wrong — fix the boundary.
 keep app **content** separate from app **chrome**. content components render
 data and own state; platform wrappers supply the frame. this is what makes
 adding an iOS shell later a new chrome layer rather than a rewrite.
+
+the iOS shell is being built in phases; `docs/ios-shell.md` is the plan of
+record. two rules from it apply everywhere:
+
+- **never fight a real edge gesture.** the visitor's OS and browser own the
+  physical screen edges. simulated gestures start in shell-owned strips inside
+  the viewport, and the real back swipe is made to do the simulated back through
+  history entries
+- **every gesture has a tap equivalent**
+
+iOS tokens come from UIKit (`design-tokens/extract-tokens-ios.swift`) and are
+scoped to `[data-shell="ios"]`; the same never-hardcode and never-edit-generated
+rules apply.
 
 ## upstream
 

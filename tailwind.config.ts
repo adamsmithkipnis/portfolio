@@ -101,6 +101,7 @@ export default {
     plugin(({ addVariant }) => {
       addVariant("can-hover", "@media (any-hover: hover) and (any-pointer: fine)");
       addVariant("desktop", "[data-shell='desktop'] &");
+      addVariant("ios", "[data-shell='ios'] &");
     }),
   ],
 } satisfies Config;

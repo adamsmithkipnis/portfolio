@@ -79,6 +79,40 @@ The goal is to make this a *measured* comparison rather than eyeballing.
 Matching against a captured target beats adjusting against memory. The tint is
 already correct from extraction, so blur is the only free variable.
 
+## iOS
+
+The iOS shell (`docs/ios-shell.md`) gets its values the same way, from UIKit.
+UIKit only exists on iOS, so the extractor is built for the simulator and run
+inside a booted one (requires Xcode with an iOS 26 simulator):
+
+```bash
+# 1. Extract from the simulator
+xcrun simctl boot "iPhone 17"        # any booted iPhone simulator will do
+xcrun -sdk iphonesimulator swiftc -target arm64-apple-ios26.0-simulator \
+  extract-tokens-ios.swift -o /tmp/extract-tokens-ios
+xcrun simctl spawn booted /tmp/extract-tokens-ios > tokens.ios.json
+
+# 2. Generate CSS + Tailwind
+node build-tokens.mjs ios
+```
+
+| File | Contents |
+|---|---|
+| `tokens.ios.json` | Raw extraction: semantic colors at light/dark and base/elevated, the Dynamic Type ramp at the default size, control and bar heights |
+| `tokens.ios.css` | The same `--color-*` / `--text-*` grammar as macOS, scoped to `[data-shell="ios"]` and keyed to the app's `.dark` class |
+| `tailwind.tokens.ios.js` | Tailwind theme extension |
+
+Both platforms share variable names on purpose: a component reads
+`var(--color-label)` and gets the value of the shell it is rendered in.
+
+**Not extractable on iOS**, and hand-seeded in `build-tokens.mjs` (`IOS_SEED`)
+as `--ios-*`: Liquid Glass and blur, corner radii, the Home Screen icon grid,
+animation curves. Tune them by eye against a real iPhone; never present them as
+measured.
+
+`extract-tokens-ios.swift` has not been run yet, so `tokens.ios.json` does not
+exist and the iOS outputs are not generated.
+
 ## Font licensing — important
 
 **Do not embed the SF font files.** Apple's license covers system font use in
@@ -91,8 +125,9 @@ licensing exposure. Non-Apple visitors fall back to Inter.
 ## Files
 
 ```
-extract-tokens.swift   Queries AppKit, emits JSON
-build-tokens.mjs       JSON -> CSS + Tailwind
+extract-tokens.swift       Queries AppKit, emits JSON
+extract-tokens-ios.swift   Queries UIKit in the simulator, emits JSON
+build-tokens.mjs           JSON -> CSS + Tailwind, per platform
 tokens.json            Generated (commit it — it's the reference)
 tokens.css             Generated
 tailwind.tokens.js     Generated
