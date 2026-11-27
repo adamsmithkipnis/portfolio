@@ -32,8 +32,8 @@ export const GESTURE_TUNING = {
   flickVelocityPxPerMs: 0.5,
   /** Shorter drags than this snap back. */
   minTravelPx: 24,
-  /** Slow drags past this fraction of the viewport go home, not to the switcher. */
-  homeTravelFraction: 0.4,
+  /** A finger held this still for this long, mid-drag, has asked for the switcher. */
+  pauseMs: 150,
   /** A pull-down opens its panel past this fraction of the viewport. */
   pullOpenFraction: 0.18,
   /** The Control Center corner, as a fraction of the status bar's width. */
@@ -65,14 +65,12 @@ function isTap(samples: readonly GestureSample[]): boolean {
 /**
  * What a drag that began on the home indicator means once the finger lifts.
  *
- * A fast upward flick goes home. A slower drag goes to the App Switcher,
- * unless it travelled most of the way up the screen, which also goes home.
- * Anything short, or moving back down at release, snaps back to the app.
+ * Speed at release decides, not distance: lifting while still moving up goes
+ * home, and slowing to a stop first opens the App Switcher, however far the
+ * finger travelled. Anything short, or moving back down at release, snaps back
+ * to the app.
  */
-export function resolveHomeGesture(
-  samples: readonly GestureSample[],
-  viewportHeight: number
-): HomeGestureResult {
+export function resolveHomeGesture(samples: readonly GestureSample[]): HomeGestureResult {
   if (samples.length === 0) return "cancel";
   if (isTap(samples)) return "tap";
 
@@ -81,9 +79,28 @@ export function resolveHomeGesture(
 
   if (velocityUp <= -GESTURE_TUNING.flickVelocityPxPerMs) return "cancel";
   if (travelUp < GESTURE_TUNING.minTravelPx) return "cancel";
-  if (velocityUp >= GESTURE_TUNING.flickVelocityPxPerMs) return "home";
-  if (travelUp >= viewportHeight * GESTURE_TUNING.homeTravelFraction) return "home";
-  return "switcher";
+  return velocityUp >= GESTURE_TUNING.flickVelocityPxPerMs ? "home" : "switcher";
+}
+
+/**
+ * Whether a drag in progress has paused long enough to mean "switcher", so the
+ * shell can show the card settle before the finger lifts. A still finger sends
+ * no pointer events, so the caller polls this with the current time.
+ */
+export function isHomeGesturePaused(samples: readonly GestureSample[], now: number): boolean {
+  if (samples.length === 0) return false;
+  const last = samples[samples.length - 1];
+  if (samples[0].y - last.y < GESTURE_TUNING.minTravelPx) return false;
+
+  // When the finger last moved beyond the slop from where it is now.
+  let stillSince = samples[0].t;
+  for (let i = samples.length - 1; i >= 0; i--) {
+    if (Math.hypot(samples[i].x - last.x, samples[i].y - last.y) > GESTURE_TUNING.tapSlopPx) {
+      stillSince = samples[i + 1].t;
+      break;
+    }
+  }
+  return now - stillSince >= GESTURE_TUNING.pauseMs;
 }
 
 /** How far up the home gesture has dragged, 0 at rest to 1 at the top. */

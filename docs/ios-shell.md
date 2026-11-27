@@ -38,19 +38,41 @@ rules that follow from it:
 ### the phase 0 spike
 
 `/ios-spike` (unlinked, `noindex`) is a throwaway page that tests exactly the
-table above on a real phone. open it on the deploy preview, work down the
-checklist, tap **Copy results**, and paste the JSON back. the log line that
-matters is `POINTERCANCEL`: it means the browser or OS took a touch away from
-one of our strips.
+table above on a real device. it is a guided run: one instruction at a time,
+and the page records the outcome itself (which gesture resolved, whether the
+browser took the touch with a `pointercancel`, whether the page was hidden,
+resized, reloaded or zoomed, whether back stepped one level). the tester only
+supplies the finger. at the end the run is posted to `/api/ios-spike`, which
+writes it to the function log under a four-character code shown on screen;
+search the runtime logs for `ios-spike-result <code>`.
+
+touches cannot usefully be injected instead: synthetic swipes are not
+guaranteed to trigger a phone's own navigation gestures, which is the thing
+under test.
 
 run it in each of: iOS Safari, iOS Chrome, Android Chrome with gesture
-navigation, Android Chrome with three-button navigation.
+navigation, Android Chrome with three-button navigation. an iPad is a partial
+stand-in for an iPhone: same engine, but no browser toolbar at the bottom, so
+iPhone Safari's bottom edge stays unverified until an iPhone run.
 
 if the bottom strip is unreliable anywhere, the fallback is to inset the
 simulated screen as a rounded "device within the device", so no simulated edge
 touches a physical one.
 
-delete `app/ios-spike/` and `components/ios/spike/` once the table is confirmed.
+delete `app/ios-spike/`, `app/api/ios-spike/` and `components/ios/spike/` once
+the table is confirmed.
+
+### findings so far
+
+- **the switcher is a pause, not a distance.** the first real run sent a slow
+  drag Home because it travelled far. `resolveHomeGesture` now decides on
+  release speed alone, and `isHomeGesturePaused` lets the shell show the card
+  settle ("Let go") before the finger lifts. once that has shown, lifting
+  cannot turn into a flick.
+- **a tap right after a flick loses its `click`.** in Chromium touch emulation
+  a tap within roughly 400ms of a flick gets `pointerdown` and `pointerup` but
+  no `click`. not yet confirmed on a real device. if it holds, Home Screen
+  icons should act on `pointerup`, so a quick flick-home-then-tap is not eaten.
 
 ## architecture
 
